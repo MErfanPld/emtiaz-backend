@@ -1,0 +1,27 @@
+:root {
+  /* Primary — logo wine red */
+  --color-primary: #AF2C38;
+  --color-primary-dark: #8A222C;
+  --color-primary-tint: #F8E8EA;
+
+  /* Neutrals */
+  --color-ink: #1F2430;
+  --color-text-secondary: #6B7280;
+  --color-background: #FAF7F5;
+  --color-surface: #FFFFFF;
+  --color-border: #E8E1DE;
+
+  /* Accent */
+  --color-gold: #B8923A;
+  --color-gold-subtle: #F5EBD3;
+
+  /* Status */
+  --color-success: #2E7D5B;
+  --color-warning: #D98E04;
+  --color-error: #C62828;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-ink);
+}

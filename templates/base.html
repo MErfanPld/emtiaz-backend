@@ -1,0 +1,26 @@
+{% load static %}
+
+<!doctype html>
+<html class="scroll-smooth" dir="rtl" lang="fa">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>مجموعه تخصصی املاک امتیاز | مرجع معاملات لوکس شمیرانات</title>
+    <!-- Persian Typography (Vazirmatn) -->
+    {% include "./_header.html" %}
+  </head>
+  <body
+    class="bg-surface text-on-surface antialiased selection:bg-white-dim selection:text-primary"
+  >
+    <!-- ==================== 1. TOP APP BAR (Shared Component: TopNavBar) ==================== -->
+    {% include "./includes/navbar.html" %}
+
+    <!-- ==================== CONTENT ==================== -->
+    {% block content %}{% endblock content %}
+
+   <!-- ==================== 9. FOOTER (Shared Component: Footer) ==================== -->
+
+   {% include "./includes/footer.html" %}
+    {% include "./_footer.html" %}
+  </body>
+</html>

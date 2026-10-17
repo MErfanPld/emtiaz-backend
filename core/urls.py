@@ -1,3 +1,8 @@
-from django.urls import path, include
+from django.urls import path
+from .views import *
 
-urlpatterns = []
+app_name = 'core'
+
+urlpatterns = [
+    path('', HomeView.as_view(), name='home'),
+]
