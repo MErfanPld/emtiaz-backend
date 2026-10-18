@@ -20,7 +20,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Local apps
     'core',
     'blog',
     'accounts',
@@ -31,6 +30,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',  # بعد از Session، قبل از Common
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -50,6 +50,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.i18n',
             ],
         },
     },
@@ -71,10 +72,16 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# --- i18n: فقط سایت عمومی (نه داشبورد/لاگین/پروفایل) ---
 LANGUAGE_CODE = 'fa'
-TIME_ZONE = 'Asia/Tehran'
+LANGUAGES = [
+    ('fa', 'فارسی'),
+    ('en', 'English'),
+]
+LOCALE_PATHS = [BASE_DIR / 'locale']
 USE_I18N = True
 USE_TZ = True
+TIME_ZONE = 'Asia/Tehran'
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'assets']
@@ -85,18 +92,14 @@ MEDIA_ROOT = BASE_DIR / 'static_cdn' / 'media_root'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
 
-# Auth redirects (classic session auth)
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'dashboard:index'
 LOGOUT_REDIRECT_URL = 'accounts:login'
 
-# Session / مرا به خاطر بسپار
-SESSION_COOKIE_AGE = 60 * 60 * 24 * 14  # حداکثر ۱۴ روز وقتی remember_me فعال است
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 14
 SESSION_SAVE_EVERY_REQUEST = False
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
-# Email (console for development)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

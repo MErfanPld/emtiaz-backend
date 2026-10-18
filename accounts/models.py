@@ -60,10 +60,8 @@ class User(AbstractUser):
         APPROVED = 'approved', _('تأیید شده')
         REJECTED = 'rejected', _('رد شده')
 
-    # حذف کامل فیلد username برای جلوگیری از خطای NoneType در ادمین
     username = None
 
-    # فیلدهای ارثی AbstractUser با برچسب فارسی
     first_name = models.CharField(_('نام'), max_length=150, blank=True)
     last_name = models.CharField(_('نام خانوادگی'), max_length=150, blank=True)
     is_staff = models.BooleanField(
@@ -91,24 +89,7 @@ class User(AbstractUser):
         help_text=_('مثال: 09123456789'),
     )
 
-    email = models.EmailField(
-        _('ایمیل'),
-        blank=True,
-        default='',
-    )
-
-    avatar = models.ImageField(
-        _('تصویر پروفایل'),
-        upload_to='avatars/%Y/%m/',
-        null=True,
-        blank=True,
-    )
-
-    date_of_birth = models.DateField(
-        _('تاریخ تولد'),
-        null=True,
-        blank=True,
-    )
+    email = models.EmailField(_('ایمیل'), blank=True, default='')
 
     personnel_code = models.CharField(
         _('کد پرسنلی'),
@@ -173,11 +154,7 @@ class User(AbstractUser):
         blank=True,
     )
 
-    rejection_reason = models.TextField(
-        _('دلیل رد'),
-        blank=True,
-        default='',
-    )
+    rejection_reason = models.TextField(_('دلیل رد'), blank=True, default='')
 
     created_at = models.DateTimeField(_('تاریخ ایجاد'), auto_now_add=True)
     updated_at = models.DateTimeField(_('آخرین ویرایش'), auto_now=True)
