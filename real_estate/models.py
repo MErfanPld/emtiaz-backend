@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.text import slugify
 
 
@@ -47,6 +48,7 @@ class Property(models.Model):
     bedrooms = models.PositiveSmallIntegerField('تعداد خواب', default=0)
     parking = models.PositiveSmallIntegerField('پارکینگ', default=0)
     floor = models.CharField('طبقه', max_length=40, blank=True)
+    year_built = models.CharField('سال ساخت', max_length=40, blank=True)
 
     price = models.BigIntegerField('قیمت (تومان)', default=0, help_text='عدد خام به تومان')
     price_label = models.CharField(
@@ -58,6 +60,8 @@ class Property(models.Model):
 
     agency_name = models.CharField('نام دفتر املاک', max_length=120, blank=True)
     agency_name_en = models.CharField('نام دفتر (انگلیسی)', max_length=120, blank=True)
+    consultant_name = models.CharField('نام مشاور', max_length=120, blank=True)
+    consultant_phone = models.CharField('تلفن مشاور', max_length=40, blank=True)
 
     badge_primary = models.CharField('نشان اصلی', max_length=60, blank=True, help_text='مثلاً فروش انحصاری')
     badge_secondary = models.CharField('نشان فرعی', max_length=60, blank=True)
@@ -96,6 +100,9 @@ class Property(models.Model):
             self.slug = f'{base}-{self.code}'.lower()[:220]
         super().save(*args, **kwargs)
 
+    def get_absolute_url(self):
+        return reverse('real_estate:detail', kwargs={'slug': self.slug})
+
     @property
     def display_image(self):
         if self.cover_image:
@@ -108,3 +115,12 @@ class Property(models.Model):
         if not self.price:
             return '—'
         return f'{self.price:,}'
+
+    def transaction_label_en(self):
+        mapping = {
+            'sale': 'For sale',
+            'rent': 'For rent',
+            'presale': 'Pre-sale',
+            'partnership': 'Partnership',
+        }
+        return mapping.get(self.transaction_type, self.get_transaction_type_display())

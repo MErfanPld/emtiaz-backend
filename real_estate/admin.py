@@ -49,13 +49,20 @@ class PropertyAdmin(admin.ModelAdmin):
             ),
         }),
         ('مشخصات فنی', {
-            'fields': ('area_sqm', 'bedrooms', 'parking', 'floor'),
+            'fields': ('area_sqm', 'bedrooms', 'parking', 'floor', 'year_built'),
         }),
         ('قیمت', {
             'fields': ('price', 'price_label'),
         }),
-        ('دفتر و نشان‌ها', {
-            'fields': ('agency_name', 'agency_name_en', 'badge_primary', 'badge_secondary'),
+        ('دفتر و مشاور', {
+            'fields': (
+                'agency_name',
+                'agency_name_en',
+                'consultant_name',
+                'consultant_phone',
+                'badge_primary',
+                'badge_secondary',
+            ),
         }),
         ('تصاویر', {
             'fields': ('cover_image', 'cover_image_url', 'image_count'),

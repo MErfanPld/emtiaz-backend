@@ -1,6 +1,6 @@
 from django.db.models import Q
 from django.utils.translation import get_language
-from django.views.generic import ListView
+from django.views.generic import DetailView, ListView
 
 from .models import Property
 
@@ -57,4 +57,29 @@ class PropertyListView(ListView):
         ctx['current_sort'] = self.request.GET.get('sort', 'newest')
         ctx['transaction_types'] = Property.TransactionType.choices
         ctx['property_types'] = Property.PropertyType.choices
+        return ctx
+
+
+class PropertyDetailView(DetailView):
+    model = Property
+    context_object_name = 'property'
+    slug_field = 'slug'
+    slug_url_kwarg = 'slug'
+
+    def get_queryset(self):
+        return Property.objects.filter(is_active=True)
+
+    def get_template_names(self):
+        if _lang_is_en():
+            return ['real_estate/property_detail_en.html']
+        return ['real_estate/property_detail.html']
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        obj = self.object
+        ctx['similar'] = (
+            Property.objects.filter(is_active=True)
+            .filter(Q(area_name=obj.area_name) | Q(property_type=obj.property_type))
+            .exclude(pk=obj.pk)[:3]
+        )
         return ctx
