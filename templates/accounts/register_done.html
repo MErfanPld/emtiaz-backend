@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ثبت‌نام موفق - املاک امتیاز</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{% static 'css/tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body class="min-h-screen bg-brand-surface flex items-center justify-center p-6">
+  <div class="max-w-md w-full bg-white rounded-xl shadow-sm border border-brand-border p-8 text-center">
+    <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+      <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+    </div>
+    <h1 class="text-xl font-bold text-brand-navy mb-2">ثبت‌نام با موفقیت انجام شد</h1>
+    <p class="text-sm text-gray-600 mb-6 leading-relaxed">
+      حساب شما ایجاد شد و هم‌اکنون در وضعیت <strong>در انتظار تأیید</strong> است.
+      پس از بررسی توسط مدیر، امکان ورود به پنل را خواهید داشت.
+    </p>
+    <a href="{% url 'accounts:login' %}" class="inline-flex h-11 px-6 items-center justify-center rounded-lg bg-primary text-white text-sm font-medium">بازگشت به صفحه ورود</a>
+  </div>
+</body>
+</html>

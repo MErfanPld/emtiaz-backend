@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ثبت‌نام - املاک امتیاز</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{% static 'css/tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+  <link rel="stylesheet" href="{% static 'responsive.css' %}">
+  <script src="{% static 'js/tailwind-config.js' %}"></script>
+</head>
+<body class="min-h-screen bg-brand-surface selection:bg-brand-gold/30">
+  <div class="max-w-md mx-auto px-6 py-12">
+    <div class="mb-8 text-center">
+      <h1 class="text-2xl font-extrabold text-brand-navy mb-2">ثبت‌نام در املاک امتیاز</h1>
+      <p class="text-sm text-gray-600">پس از ثبت‌نام، حساب شما توسط مدیر بررسی و تأیید می‌شود.</p>
+    </div>
+
+    {% if form.non_field_errors %}
+    <div class="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <form method="post" class="space-y-4" novalidate>
+      {% csrf_token %}
+      {% for field in form %}
+      <div>
+        <label class="block text-xs font-semibold mb-1.5">{{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}</label>
+        {{ field }}
+        {% if field.errors %}<p class="mt-1 text-[11px] text-red-600">{{ field.errors|striptags }}</p>{% endif %}
+      </div>
+      {% endfor %}
+      <button type="submit" class="w-full h-12 rounded-lg bg-primary text-white font-medium text-sm shadow-md hover:shadow-lg transition">ثبت‌نام</button>
+    </form>
+
+    <p class="mt-6 text-center text-xs text-gray-500">
+      قبلاً ثبت‌نام کرده‌اید؟
+      <a href="{% url 'accounts:login' %}" class="text-primary font-semibold hover:underline">ورود</a>
+    </p>
+  </div>
+</body>
+</html>

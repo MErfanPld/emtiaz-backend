@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-12">
+  <h1 class="text-2xl font-bold mb-2">داشبورد</h1>
+  <p class="text-gray-600 text-sm">سلام {{ user.get_full_name|default:user.email }}، به پنل مدیریت خوش آمدید.</p>
+</div>
+{% endblock %}
