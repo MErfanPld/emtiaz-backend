@@ -1,22 +1,23 @@
 from django import forms
 from django.contrib.auth import authenticate, get_user_model
-from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
 
 
-class EmailAuthenticationForm(AuthenticationForm):
-    """Login form using email as username field."""
+class PhoneAuthenticationForm(AuthenticationForm):
+    """Login with phone number + password."""
 
-    username = forms.EmailField(
-        label=_('ایمیل'),
-        widget=forms.EmailInput(attrs={
+    username = forms.CharField(
+        label=_('شماره موبایل'),
+        widget=forms.TextInput(attrs={
             'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm text-brand-charcoal transition duration-150',
-            'placeholder': 'ایمیل خود را وارد کنید',
-            'autocomplete': 'email',
+            'placeholder': '09123456789',
+            'autocomplete': 'tel',
             'dir': 'ltr',
             'id': 'username',
+            'inputmode': 'tel',
         }),
     )
     password = forms.CharField(
@@ -39,21 +40,25 @@ class EmailAuthenticationForm(AuthenticationForm):
     )
 
     error_messages = {
-        'invalid_login': _('ایمیل یا رمز عبور صحیح نیست.'),
+        'invalid_login': _('شماره موبایل یا رمز عبور صحیح نیست.'),
         'inactive': _('این حساب غیرفعال است.'),
     }
 
+    def clean_username(self):
+        phone = self.cleaned_data.get('username', '')
+        return User.objects.normalize_phone(phone)
+
     def clean(self):
-        email = self.cleaned_data.get('username')
+        phone = self.cleaned_data.get('username')
         password = self.cleaned_data.get('password')
 
-        if email is not None and password:
+        if phone and password:
             self.user_cache = authenticate(
-                self.request, username=email, password=password
+                self.request, username=phone, password=password
             )
             if self.user_cache is None:
                 raise self.get_invalid_login_error()
-            # Extra business rule: must be approved
+
             if not getattr(self.user_cache, 'is_approved', False):
                 if self.user_cache.approval_status == User.ApprovalStatus.PENDING:
                     raise forms.ValidationError(
@@ -74,7 +79,7 @@ class EmailAuthenticationForm(AuthenticationForm):
 
 
 class RegisterForm(forms.ModelForm):
-    """Public registration – always creates pending account."""
+    """Public registration – always pending."""
 
     password1 = forms.CharField(
         label=_('رمز عبور'),
@@ -97,12 +102,13 @@ class RegisterForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'phone_number', 'job_title')
+        fields = ('phone_number', 'first_name', 'last_name', 'email', 'job_title')
         widgets = {
-            'email': forms.EmailInput(attrs={
+            'phone_number': forms.TextInput(attrs={
                 'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm',
-                'placeholder': 'ایمیل',
+                'placeholder': '09123456789',
                 'dir': 'ltr',
+                'inputmode': 'tel',
             }),
             'first_name': forms.TextInput(attrs={
                 'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm',
@@ -112,9 +118,9 @@ class RegisterForm(forms.ModelForm):
                 'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm',
                 'placeholder': 'نام خانوادگی',
             }),
-            'phone_number': forms.TextInput(attrs={
+            'email': forms.EmailInput(attrs={
                 'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm',
-                'placeholder': '۰۹۱۲۳۴۵۶۷۸۹',
+                'placeholder': 'ایمیل (اختیاری)',
                 'dir': 'ltr',
             }),
             'job_title': forms.TextInput(attrs={
@@ -123,22 +129,20 @@ class RegisterForm(forms.ModelForm):
             }),
         }
         labels = {
-            'email': _('ایمیل'),
+            'phone_number': _('شماره موبایل'),
             'first_name': _('نام'),
             'last_name': _('نام خانوادگی'),
-            'phone_number': _('شماره موبایل'),
+            'email': _('ایمیل'),
             'job_title': _('عنوان شغلی'),
         }
 
-    def clean_email(self):
-        email = self.cleaned_data.get('email', '').lower().strip()
-        if User.objects.filter(email__iexact=email).exists():
-            raise forms.ValidationError(_('کاربری با این ایمیل قبلاً ثبت‌نام کرده است.'))
-        return email
-
     def clean_phone_number(self):
-        phone = self.cleaned_data.get('phone_number')
-        if phone and User.objects.filter(phone_number=phone).exists():
+        phone = User.objects.normalize_phone(self.cleaned_data.get('phone_number', ''))
+        if not phone:
+            raise forms.ValidationError(_('شماره موبایل الزامی است.'))
+        if not (phone.startswith('09') and len(phone) == 11 and phone.isdigit()):
+            raise forms.ValidationError(_('شماره موبایل معتبر نیست. مثال: 09123456789'))
+        if User.objects.filter(phone_number=phone).exists():
             raise forms.ValidationError(_('این شماره موبایل قبلاً ثبت شده است.'))
         return phone
 
@@ -163,15 +167,13 @@ class RegisterForm(forms.ModelForm):
 
 
 class ProfileForm(forms.ModelForm):
-    """User can edit limited profile fields only."""
-
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'phone_number', 'job_title', 'avatar', 'date_of_birth')
+        fields = ('first_name', 'last_name', 'email', 'job_title', 'avatar', 'date_of_birth')
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm'}),
             'last_name': forms.TextInput(attrs={'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm'}),
-            'phone_number': forms.TextInput(attrs={'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm', 'dir': 'ltr'}),
+            'email': forms.EmailInput(attrs={'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm', 'dir': 'ltr'}),
             'job_title': forms.TextInput(attrs={'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm'}),
             'date_of_birth': forms.DateInput(attrs={'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm', 'type': 'date'}),
             'avatar': forms.ClearableFileInput(attrs={'class': 'text-sm'}),

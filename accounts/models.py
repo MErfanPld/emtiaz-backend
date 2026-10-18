@@ -4,20 +4,39 @@ from django.utils.translation import gettext_lazy as _
 
 
 class UserManager(BaseUserManager):
-    """Custom manager for User model that supports email and phone as identifiers."""
+    """Manager with phone_number as the primary identifier."""
 
-    def create_user(self, email, password=None, **extra_fields):
-        if not email:
-            raise ValueError(_('The Email field must be set'))
-        email = self.normalize_email(email)
-        extra_fields.setdefault('is_active', True)
-        extra_fields.setdefault('approval_status', User.ApprovalStatus.PENDING)
-        user = self.model(email=email, **extra_fields)
+    use_in_migrations = True
+
+    def _create_user(self, phone_number, password, **extra_fields):
+        if not phone_number:
+            raise ValueError(_('شماره موبایل الزامی است.'))
+        phone_number = self.normalize_phone(phone_number)
+        user = self.model(phone_number=phone_number, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password=None, **extra_fields):
+    @staticmethod
+    def normalize_phone(phone):
+        phone = (phone or '').strip().replace(' ', '').replace('-', '')
+        # convert Persian/Arabic digits to English
+        trans = str.maketrans('۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩', '01234567890123456789')
+        phone = phone.translate(trans)
+        if phone.startswith('+98'):
+            phone = '0' + phone[3:]
+        if phone.startswith('98') and len(phone) >= 12:
+            phone = '0' + phone[2:]
+        return phone
+
+    def create_user(self, phone_number, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', False)
+        extra_fields.setdefault('is_superuser', False)
+        extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('approval_status', User.ApprovalStatus.PENDING)
+        return self._create_user(phone_number, password, **extra_fields)
+
+    def create_superuser(self, phone_number, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
@@ -28,65 +47,58 @@ class UserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError(_('Superuser must have is_superuser=True.'))
 
-        return self.create_user(email, password, **extra_fields)
+        return self._create_user(phone_number, password, **extra_fields)
 
 
 class User(AbstractUser):
     """
-    Custom User model for Emtiaz Real Estate platform.
-    - Uses email as the primary unique identifier for authentication.
-    - Separates account activation (is_active) from managerial approval (approval_status).
-    - Supports organizational fields needed by a real-estate agency.
+    Custom user for Emtiaz.
+    Login identifier: phone_number (Iranian mobile).
+    approval_status is independent from is_active.
     """
 
     class ApprovalStatus(models.TextChoices):
-        PENDING = 'pending', _('Pending')
-        APPROVED = 'approved', _('Approved')
-        REJECTED = 'rejected', _('Rejected')
+        PENDING = 'pending', _('در انتظار تأیید')
+        APPROVED = 'approved', _('تأیید شده')
+        REJECTED = 'rejected', _('رد شده')
 
-    # Override username to be optional / not primary
+    # username kept optional for admin compatibility; not used for login
     username = models.CharField(
         _('username'),
         max_length=150,
         unique=True,
         blank=True,
         null=True,
-        help_text=_('Optional. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
-    )
-
-    email = models.EmailField(
-        _('email address'),
-        unique=True,
-        error_messages={
-            'unique': _('A user with that email already exists.'),
-        },
     )
 
     phone_number = models.CharField(
-        _('phone number'),
+        _('شماره موبایل'),
         max_length=15,
         unique=True,
-        null=True,
+        help_text=_('مثال: 09123456789'),
+    )
+
+    email = models.EmailField(
+        _('ایمیل'),
         blank=True,
-        help_text=_('Iranian mobile number, e.g. 09123456789'),
+        default='',
     )
 
     avatar = models.ImageField(
-        _('avatar'),
+        _('تصویر پروفایل'),
         upload_to='avatars/%Y/%m/',
         null=True,
         blank=True,
     )
 
     date_of_birth = models.DateField(
-        _('date of birth'),
+        _('تاریخ تولد'),
         null=True,
         blank=True,
     )
 
-    # Organizational
     personnel_code = models.CharField(
-        _('personnel code'),
+        _('کد پرسنلی'),
         max_length=50,
         unique=True,
         null=True,
@@ -94,18 +106,17 @@ class User(AbstractUser):
     )
 
     job_title = models.CharField(
-        _('job title'),
+        _('عنوان شغلی'),
         max_length=100,
         blank=True,
         default='',
     )
 
     branch = models.CharField(
-        _('branch / unit'),
+        _('شعبه / واحد'),
         max_length=100,
         blank=True,
         default='',
-        help_text=_('Organizational branch or unit'),
     )
 
     manager = models.ForeignKey(
@@ -114,29 +125,24 @@ class User(AbstractUser):
         null=True,
         blank=True,
         related_name='subordinates',
-        verbose_name=_('direct manager'),
+        verbose_name=_('مدیر مستقیم'),
     )
 
     internal_notes = models.TextField(
-        _('internal notes'),
+        _('یادداشت داخلی'),
         blank=True,
         default='',
-        help_text=_('Internal management notes (not visible to the user)'),
     )
 
-    # Approval workflow (separated from is_active)
     approval_status = models.CharField(
-        _('approval status'),
+        _('وضعیت تأیید'),
         max_length=20,
         choices=ApprovalStatus.choices,
         default=ApprovalStatus.PENDING,
         db_index=True,
     )
 
-    requested_at = models.DateTimeField(
-        _('requested at'),
-        auto_now_add=True,
-    )
+    requested_at = models.DateTimeField(_('تاریخ درخواست'), auto_now_add=True)
 
     approved_by = models.ForeignKey(
         'self',
@@ -144,54 +150,52 @@ class User(AbstractUser):
         null=True,
         blank=True,
         related_name='approved_users',
-        verbose_name=_('approved by'),
+        verbose_name=_('تأییدکننده'),
     )
 
     approved_at = models.DateTimeField(
-        _('approved / rejected at'),
+        _('تاریخ تأیید / رد'),
         null=True,
         blank=True,
     )
 
     rejection_reason = models.TextField(
-        _('rejection reason'),
+        _('دلیل رد'),
         blank=True,
         default='',
     )
 
-    # Timestamps
-    created_at = models.DateTimeField(_('created at'), auto_now_add=True)
-    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
+    created_at = models.DateTimeField(_('ایجاد'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('آخرین ویرایش'), auto_now=True)
 
     objects = UserManager()
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name']  # for createsuperuser
+    USERNAME_FIELD = 'phone_number'
+    REQUIRED_FIELDS = ['first_name', 'last_name']
 
     class Meta:
-        verbose_name = _('user')
-        verbose_name_plural = _('users')
+        verbose_name = _('کاربر')
+        verbose_name_plural = _('کاربران')
         ordering = ['-created_at']
         indexes = [
             models.Index(fields=['approval_status', 'is_active']),
-            models.Index(fields=['email']),
             models.Index(fields=['phone_number']),
         ]
 
     def __str__(self):
         full_name = self.get_full_name()
-        return full_name if full_name else self.email
+        return full_name if full_name else self.phone_number
+
+    def save(self, *args, **kwargs):
+        if self.phone_number:
+            self.phone_number = UserManager.normalize_phone(self.phone_number)
+        super().save(*args, **kwargs)
 
     @property
     def is_approved(self):
-        """Return True only when the account has been managerially approved."""
         return self.approval_status == self.ApprovalStatus.APPROVED
 
     def can_authenticate(self):
-        """
-        Business rule: a user can obtain / use protected resources only when
-        the account is both active and approved.
-        """
         return self.is_active and self.is_approved
 
     def approve(self, by_user, commit=True):
@@ -203,7 +207,7 @@ class User(AbstractUser):
         if commit:
             self.save(update_fields=[
                 'approval_status', 'approved_by', 'approved_at',
-                'rejection_reason', 'updated_at'
+                'rejection_reason', 'updated_at',
             ])
 
     def reject(self, by_user, reason='', commit=True):
@@ -215,5 +219,5 @@ class User(AbstractUser):
         if commit:
             self.save(update_fields=[
                 'approval_status', 'approved_by', 'approved_at',
-                'rejection_reason', 'updated_at'
+                'rejection_reason', 'updated_at',
             ])
