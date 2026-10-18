@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<main class="w-full max-w-[1320px] mx-auto px-4 sm:px-6 md:px-12 py-6 sm:py-8 flex-1 bg-[#f7faf7]">
+  <nav class="flex flex-wrap items-center justify-between gap-3 mb-6 text-sm text-on-surface-variant">
+    <div class="flex flex-wrap items-center gap-2">
+      <a class="hover:text-primary" href="{% url 'core:home' %}">Home</a>
+      <span>/</span>
+      <a class="hover:text-primary" href="{% url 'real_estate:list' %}">Properties</a>
+      <span>/</span>
+      <span class="text-primary font-semibold line-clamp-1">{% firstof property.title_en property.title %}</span>
+    </div>
+    <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#c1c8c4] text-xs">
+      <span class="material-symbols-outlined text-xs">tag</span>
+      <span>Code: {{ property.code }}</span>
+    </div>
+  </nav>
+
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-[#c1c8c4] text-left">
+    <div>
+      <div class="flex flex-wrap items-center gap-2 mb-3">
+        <span class="px-3 py-1 rounded-full bg-primary text-on-primary text-xs font-bold">{{ property.transaction_label_en }}</span>
+        {% if property.is_complex_office %}
+        <span class="px-3 py-1 rounded-full bg-[#f7faf7] border border-black/40 text-xs font-semibold flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">verified</span> Complex-appraised
+        </span>
+        {% endif %}
+      </div>
+      <h1 class="text-2xl md:text-3xl font-extrabold text-primary tracking-tight mb-2">{% firstof property.title_en property.title %}</h1>
+      <div class="flex items-center gap-2 text-on-surface-variant text-sm sm:text-base">
+        <span class="material-symbols-outlined text-lg">location_on</span>
+        <span>{% firstof property.address_line_en property.address_line property.area_name_en property.area_name %}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 py-5 px-4 sm:px-6 my-6 bg-white rounded-xl border border-[#c1c8c4] shadow-sm text-left">
+    <div class="flex items-center gap-2"><span class="material-symbols-outlined text-xl text-primary">square_foot</span><div><div class="text-xs text-outline">Area</div><div class="text-sm font-bold text-primary">{{ property.area_sqm }} m²</div></div></div>
+    <div class="flex items-center gap-2"><span class="material-symbols-outlined text-xl text-primary">bed</span><div><div class="text-xs text-outline">Beds</div><div class="text-sm font-bold text-primary">{{ property.bedrooms }}</div></div></div>
+    <div class="flex items-center gap-2"><span class="material-symbols-outlined text-xl text-primary">apartment</span><div><div class="text-xs text-outline">Floor</div><div class="text-sm font-bold text-primary">{% if property.floor %}{{ property.floor }}{% else %}—{% endif %}</div></div></div>
+    <div class="flex items-center gap-2"><span class="material-symbols-outlined text-xl text-primary">calendar_today</span><div><div class="text-xs text-outline">Year</div><div class="text-sm font-bold text-primary">{% if property.year_built %}{{ property.year_built }}{% else %}—{% endif %}</div></div></div>
+    <div class="flex items-center gap-2"><span class="material-symbols-outlined text-xl text-primary">directions_car</span><div><div class="text-xs text-outline">Parking</div><div class="text-sm font-bold text-primary">{{ property.parking }}</div></div></div>
+    <div class="flex items-center gap-2"><span class="material-symbols-outlined text-xl text-primary">gavel</span><div><div class="text-xs text-outline">Deed</div><div class="text-sm font-bold text-primary">{% if property.has_deed %}Titled{% else %}Review needed{% endif %}</div></div></div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mb-12">
+    <div class="lg:col-span-2 space-y-6">
+      <div class="relative h-[280px] sm:h-[360px] md:h-[440px] rounded-2xl overflow-hidden border border-[#c1c8c4] bg-surface-container">
+        {% if property.display_image %}
+        <img class="w-full h-full object-cover" src="{{ property.display_image }}" alt="{% firstof property.title_en property.title %}"/>
+        {% else %}
+        <div class="w-full h-full flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined text-6xl">apartment</span></div>
+        {% endif %}
+      </div>
+      <section class="bg-white rounded-2xl border border-[#c1c8c4] p-5 sm:p-6 text-left">
+        <h2 class="text-lg font-bold text-primary mb-3">Description</h2>
+        {% if property.description_en or property.description %}
+        <div class="text-sm sm:text-base text-on-surface-variant leading-relaxed whitespace-pre-line">{% firstof property.description_en property.description %}</div>
+        {% else %}
+        <p class="text-sm text-on-surface-variant">No additional description has been published.</p>
+        {% endif %}
+      </section>
+    </div>
+
+    <aside class="space-y-4">
+      <div class="bg-white rounded-2xl border border-[#c1c8c4] p-5 shadow-sm sticky top-24 text-left">
+        <div class="mb-4">
+          <span class="text-xs text-outline block">Appraisal value</span>
+          <span class="text-2xl font-black text-primary">{{ property.formatted_price }} <span class="text-sm font-normal">Toman</span></span>
+        </div>
+        {% if property.agency_name or property.agency_name_en %}
+        <div class="p-4 rounded-xl bg-[#f7faf7] border border-[#c1c8c4] mb-5">
+          <h4 class="font-bold text-primary mb-1">{% firstof property.agency_name_en property.agency_name %}</h4>
+          {% if property.consultant_name %}<div class="text-sm flex justify-between"><span class="text-on-surface-variant">Advisor</span><span class="font-bold">{{ property.consultant_name }}</span></div>{% endif %}
+          {% if property.consultant_phone %}<div class="text-sm flex justify-between mt-1"><span class="text-on-surface-variant">Phone</span><a class="font-bold text-primary" dir="ltr" href="tel:{{ property.consultant_phone }}">{{ property.consultant_phone }}</a></div>{% endif %}
+        </div>
+        {% endif %}
+        <div class="space-y-3">
+          <a href="{% if property.consultant_phone %}tel:{{ property.consultant_phone }}{% else %}tel:02122008890{% endif %}" class="w-full h-12 bg-primary text-on-primary rounded-lg font-bold flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined">phone_in_talk</span> Call advisor
+          </a>
+          <a href="{% url 'core:about' %}#visit" class="w-full h-12 bg-white border border-black/30 text-primary rounded-lg font-bold flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined">event</span> Request visit
+          </a>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  {% if similar %}
+  <section class="mb-12">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6 pb-4 border-b border-[#c1c8c4] text-left">
+      <div>
+        <h2 class="text-xl font-bold text-primary">Similar properties</h2>
+        <p class="text-sm text-outline">Comparable units nearby</p>
+      </div>
+      <a class="text-sm font-semibold text-primary" href="{% url 'real_estate:list' %}">View all →</a>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      {% for p in similar %}
+      <a href="{% url 'real_estate:detail' p.slug %}" class="bg-white rounded-xl overflow-hidden border border-[#c1c8c4] hover:shadow-md flex flex-col text-left">
+        <div class="relative h-44 overflow-hidden bg-surface-container">
+          {% if p.display_image %}<img class="w-full h-full object-cover" src="{{ p.display_image }}" alt=""/>{% endif %}
+        </div>
+        <div class="p-4">
+          <h3 class="font-bold text-primary mb-1 line-clamp-1">{% firstof p.title_en p.title %}</h3>
+          <p class="text-xs text-outline mb-2">{% firstof p.area_name_en p.area_name %}</p>
+          <div class="text-sm font-bold text-primary">{{ p.formatted_price }} Toman</div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="bg-primary text-on-primary rounded-2xl p-6 sm:p-10 mb-10">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+      <div class="max-w-2xl">
+        <h2 class="text-xl sm:text-2xl font-bold mb-2">Ready to visit this property?</h2>
+        <p class="text-sm sm:text-base text-white/80">Our resident office or complex reception will arrange the viewing.</p>
+      </div>
+      <a class="px-6 py-3.5 rounded-lg bg-black text-white font-bold flex items-center gap-2" href="{% if property.consultant_phone %}tel:{{ property.consultant_phone }}{% else %}tel:02122008890{% endif %}">
+        <span class="material-symbols-outlined">call</span> Call for visit
+      </a>
+    </div>
+  </section>
+</main>
+{% endblock %}
