@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ورود به پنل مدیریت - املاک امتیاز</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{% static 'css/tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+  <link rel="stylesheet" href="{% static 'responsive.css' %}">
+  <script src="{% static 'js/tailwind-config.js' %}"></script>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-gold/30 selection:text-brand-navy bg-brand-surface">
+  <div class="min-h-screen flex flex-col lg:flex-row w-full">
+    <div class="w-full lg:w-[55%] flex flex-col justify-between p-6 sm:p-10 md:p-14 lg:p-16 xl:p-20 bg-brand-surface order-1">
+      <div class="flex items-center justify-between w-full max-w-md mx-auto mb-8 lg:mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white shadow-sm">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-bold text-lg text-brand-navy tracking-tight">املاک امتیاز</span>
+            <span class="text-[11px] text-gray-500 font-medium">مجتمع تخصصی و مرکز متمرکز املاک</span>
+          </div>
+        </div>
+        <a href="{% url 'core:home' %}" class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-primary transition-colors px-3 py-1.5 rounded-md hover:bg-gray-100/70">
+          <span>بازگشت به سایت</span>
+        </a>
+      </div>
+
+      <div class="w-full max-w-md mx-auto my-auto py-4">
+        <div class="mb-8">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-gold-subtle text-brand-navy border border-brand-gold/30 text-xs font-semibold mb-3">
+            <span class="w-2 h-2 rounded-full bg-brand-gold"></span>
+            پنل مدیریت
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-brand-navy tracking-tight mb-2">ورود به حساب کاربری</h1>
+          <p class="text-sm text-gray-600 leading-relaxed">برای دسترسی به بخش مدیریت املاک امتیاز، اطلاعات حساب خود را وارد کنید.</p>
+        </div>
+
+        {% if form.non_field_errors %}
+        <div class="mb-6 p-3.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2.5">
+          <span>{{ form.non_field_errors|striptags }}</span>
+        </div>
+        {% endif %}
+
+        {% if messages %}
+          {% for message in messages %}
+          <div class="mb-6 p-3.5 rounded-lg {% if message.tags == 'error' %}bg-red-50 border border-red-200 text-red-700{% else %}bg-green-50 border border-green-200 text-green-700{% endif %} text-xs">
+            {{ message }}
+          </div>
+          {% endfor %}
+        {% endif %}
+
+        <form method="post" action="{% url 'accounts:login' %}" class="space-y-5" novalidate>
+          {% csrf_token %}
+          {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
+          <div>
+            <label for="id_username" class="block text-xs font-semibold text-brand-charcoal mb-2">ایمیل <span class="text-red-500">*</span></label>
+            {{ form.username }}
+            {% if form.username.errors %}
+            <p class="mt-1.5 text-[11px] text-red-600 font-medium">{{ form.username.errors|striptags }}</p>
+            {% endif %}
+          </div>
+
+          <div>
+            <label for="id_password" class="block text-xs font-semibold text-brand-charcoal mb-2">رمز عبور <span class="text-red-500">*</span></label>
+            <div class="relative">
+              {{ form.password }}
+              <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 hover:text-primary" title="نمایش رمز">
+                <svg id="eye-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                <svg id="eye-slash-icon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" /></svg>
+              </button>
+            </div>
+            {% if form.password.errors %}
+            <p class="mt-1.5 text-[11px] text-red-600 font-medium">{{ form.password.errors|striptags }}</p>
+            {% endif %}
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+            <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+              {{ form.remember_me }}
+              <span class="text-xs text-brand-charcoal font-medium">مرا به خاطر بسپار</span>
+            </label>
+            <a href="#" class="text-xs font-semibold text-primary hover:text-primary-container transition-colors">رمز عبور را فراموش کرده‌اید؟</a>
+          </div>
+
+          <div class="pt-2">
+            <button type="submit" id="submit-btn" class="w-full h-12 flex items-center justify-center gap-2 rounded-lg bg-primary hover:bg-primary-container active:scale-[0.99] text-white font-medium text-sm shadow-md hover:shadow-lg transition-all duration-200">
+              <span id="submit-btn-text">ورود به پنل مدیریت</span>
+            </button>
+          </div>
+        </form>
+
+        <div class="mt-6 text-center text-xs text-gray-500">
+          حساب ندارید؟
+          <a href="{% url 'accounts:register' %}" class="font-semibold text-primary hover:underline">ثبت‌نام</a>
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-brand-border/60 flex items-center justify-center gap-2 text-xs text-gray-500">
+          <span class="font-normal">این بخش مخصوص کاربران مجاز است.</span>
+        </div>
+      </div>
+
+      <div class="w-full max-w-md mx-auto pt-6 text-center text-xs text-gray-400">
+        <p>© ۱۴۰۵ املاک امتیاز | تمامی حقوق محفوظ است.</p>
+      </div>
+    </div>
+
+    <div class="hidden lg:flex lg:w-[45%] relative bg-tertiary overflow-hidden order-2">
+      <div class="absolute inset-0 bg-gradient-to-t from-tertiary/95 via-tertiary/60 to-primary/40"></div>
+      <div class="relative z-10 flex flex-col justify-center w-full h-full p-12 xl:p-16 text-white">
+        <h2 class="text-3xl font-bold mb-4">مجتمع تخصصی املاک امتیاز</h2>
+        <p class="text-white/80 leading-relaxed">مرجع معاملات لوکس شمیرانات</p>
+      </div>
+    </div>
+  </div>
+  <script src="{% static 'js/login.js' %}"></script>
+</body>
+</html>
