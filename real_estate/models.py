@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
+from django.utils.translation import get_language
 
 
 class Property(models.Model):
@@ -126,7 +127,6 @@ class Property(models.Model):
         return ''
 
     def gallery_urls(self):
-        """لیست URL تصاویر گالری (کاور + تصاویر فرعی)."""
         urls = []
         if self.cover_image:
             urls.append(self.cover_image.url)
@@ -142,14 +142,22 @@ class Property(models.Model):
         n = len(self.gallery_urls())
         return max(n, self.image_count or 0)
 
-    def formatted_price(self, lang='fa'):
+    def formatted_price(self, lang=None):
+        if lang is None:
+            lang = (get_language() or 'fa')[:2]
         if lang == 'en' and self.price_label_en:
             return self.price_label_en
-        if self.price_label:
+        if self.price_label and lang != 'en':
+            return self.price_label
+        if lang == 'en' and self.price_label and not self.price_label_en:
             return self.price_label
         if not self.price:
             return '—'
         return f'{self.price:,}'
+
+    @property
+    def formatted_price_en(self):
+        return self.formatted_price(lang='en')
 
     def transaction_label_en(self):
         mapping = {
@@ -172,8 +180,6 @@ class Property(models.Model):
 
 
 class PropertyImage(models.Model):
-    """تصاویر گالری هر ملک."""
-
     property = models.ForeignKey(
         Property,
         on_delete=models.CASCADE,
