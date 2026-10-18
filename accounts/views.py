@@ -1,15 +1,15 @@
 from django.contrib import messages
-from django.contrib.auth import login, logout, update_session_auth_hash
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, TemplateView, UpdateView
 
 from .forms import (
     CustomPasswordChangeForm,
-    EmailAuthenticationForm,
+    PhoneAuthenticationForm,
     ProfileForm,
     RegisterForm,
 )
@@ -33,30 +33,29 @@ class ApprovedRequiredMixin:
 
 class CustomLoginView(LoginView):
     template_name = 'accounts/login.html'
-    authentication_form = EmailAuthenticationForm
+    authentication_form = PhoneAuthenticationForm
     redirect_authenticated_user = True
 
     def form_valid(self, form):
         remember = form.cleaned_data.get('remember_me')
         if not remember:
-            self.request.session.set_expiry(0)  # browser session
+            self.request.session.set_expiry(0)
         else:
-            self.request.session.set_expiry(60 * 60 * 24 * 14)  # 14 days
+            self.request.session.set_expiry(60 * 60 * 24 * 14)
         return super().form_valid(form)
 
     def get_success_url(self):
-        # Prefer next param, then dashboard, then home
         next_url = self.get_redirect_url()
         if next_url:
             return next_url
         try:
-            return reverse_lazy('dashboard:index')
+            return str(reverse_lazy('dashboard:index'))
         except Exception:
-            return reverse_lazy('core:home')
+            return str(reverse_lazy('core:home'))
 
 
 class CustomLogoutView(LogoutView):
-    """Logout only via POST (CSRF protected by Django)."""
+    """Logout only via POST (CSRF protected)."""
     next_page = reverse_lazy('accounts:login')
     http_method_names = ['post', 'options']
 
@@ -86,7 +85,6 @@ class RegisterDoneView(TemplateView):
 
 
 class PendingView(TemplateView):
-    """Shown when user is logged-in but not yet approved / rejected."""
     template_name = 'accounts/pending.html'
 
     def dispatch(self, request, *args, **kwargs):
