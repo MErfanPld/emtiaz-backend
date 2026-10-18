@@ -1,8 +1,9 @@
 from django.urls import path
-from django.views.generic import TemplateView
+
+from .views import DashboardIndexView
 
 app_name = 'dashboard'
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='dashboard/index.html'), name='index'),
+    path('', DashboardIndexView.as_view(), name='index'),
 ]
