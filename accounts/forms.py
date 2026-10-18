@@ -5,6 +5,11 @@ from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
 
+INPUT_CLASS = (
+    'w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface-container-lowest '
+    'text-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-secondary/40'
+)
+
 
 class PhoneAuthenticationForm(AuthenticationForm):
     """Login with phone number + password."""
@@ -18,6 +23,7 @@ class PhoneAuthenticationForm(AuthenticationForm):
             'dir': 'ltr',
             'id': 'username',
             'inputmode': 'tel',
+            'name': 'username',
         }),
     )
     password = forms.CharField(
@@ -32,10 +38,11 @@ class PhoneAuthenticationForm(AuthenticationForm):
     )
     remember_me = forms.BooleanField(
         required=False,
+        initial=False,
         label=_('مرا به خاطر بسپار'),
         widget=forms.CheckboxInput(attrs={
-            'class': 'custom-checkbox w-4 h-4 rounded border-gray-300 text-primary',
-            'id': 'remember',
+            'class': 'w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary',
+            'id': 'id_remember_me',
         }),
     )
 
@@ -79,8 +86,6 @@ class PhoneAuthenticationForm(AuthenticationForm):
 
 
 class RegisterForm(forms.ModelForm):
-    """ثبت‌نام عمومی — فقط موبایل، نام، نام خانوادگی، عنوان شغلی، رمز."""
-
     password1 = forms.CharField(
         label=_('رمز عبور'),
         widget=forms.PasswordInput(attrs={
@@ -132,10 +137,8 @@ class RegisterForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['phone_number'].required = True
-        self.fields['first_name'].required = True
-        self.fields['last_name'].required = True
-        self.fields['job_title'].required = True
+        for name in ('phone_number', 'first_name', 'last_name', 'job_title'):
+            self.fields[name].required = True
 
     def clean_phone_number(self):
         phone = User.objects.normalize_phone(self.cleaned_data.get('phone_number', ''))
@@ -190,11 +193,11 @@ class ProfileForm(forms.ModelForm):
         model = User
         fields = ('first_name', 'last_name', 'email', 'job_title', 'avatar', 'date_of_birth')
         widgets = {
-            'first_name': forms.TextInput(attrs={'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm'}),
-            'last_name': forms.TextInput(attrs={'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm'}),
-            'email': forms.EmailInput(attrs={'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm', 'dir': 'ltr'}),
-            'job_title': forms.TextInput(attrs={'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm'}),
-            'date_of_birth': forms.DateInput(attrs={'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm', 'type': 'date'}),
+            'first_name': forms.TextInput(attrs={'class': INPUT_CLASS}),
+            'last_name': forms.TextInput(attrs={'class': INPUT_CLASS}),
+            'email': forms.EmailInput(attrs={'class': INPUT_CLASS, 'dir': 'ltr'}),
+            'job_title': forms.TextInput(attrs={'class': INPUT_CLASS}),
+            'date_of_birth': forms.DateInput(attrs={'class': INPUT_CLASS, 'type': 'date'}),
             'avatar': forms.ClearableFileInput(attrs={'class': 'text-sm'}),
         }
         labels = {
@@ -210,7 +213,95 @@ class ProfileForm(forms.ModelForm):
 class CustomPasswordChangeForm(PasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        labels = {
+            'old_password': _('رمز عبور فعلی'),
+            'new_password1': _('رمز عبور جدید'),
+            'new_password2': _('تکرار رمز عبور جدید'),
+        }
         for name, field in self.fields.items():
-            field.widget.attrs.update({
-                'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm',
-            })
+            field.widget.attrs.update({'class': INPUT_CLASS})
+            if name in labels:
+                field.label = labels[name]
+
+
+class PasswordResetRequestForm(forms.Form):
+    """درخواست کد بازیابی با شماره موبایل."""
+
+    phone_number = forms.CharField(
+        label=_('شماره موبایل'),
+        max_length=15,
+        widget=forms.TextInput(attrs={
+            'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm',
+            'placeholder': '09123456789',
+            'dir': 'ltr',
+            'inputmode': 'tel',
+        }),
+    )
+
+    def clean_phone_number(self):
+        phone = User.objects.normalize_phone(self.cleaned_data.get('phone_number', ''))
+        if not (phone.startswith('09') and len(phone) == 11 and phone.isdigit()):
+            raise forms.ValidationError(_('شماره موبایل معتبر نیست.'))
+        if not User.objects.filter(phone_number=phone, is_active=True).exists():
+            # برای امنیت هم پیام کلی می‌دهیم
+            raise forms.ValidationError(_('اگر این شماره ثبت شده باشد، کد ارسال می‌شود.'))
+        return phone
+
+
+class PasswordResetConfirmForm(forms.Form):
+    """تأیید کد SMS و تنظیم رمز جدید."""
+
+    phone_number = forms.CharField(
+        label=_('شماره موبایل'),
+        max_length=15,
+        widget=forms.TextInput(attrs={
+            'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm',
+            'placeholder': '09123456789',
+            'dir': 'ltr',
+            'inputmode': 'tel',
+        }),
+    )
+    code = forms.CharField(
+        label=_('کد تأیید'),
+        max_length=6,
+        min_length=6,
+        widget=forms.TextInput(attrs={
+            'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm tracking-widest',
+            'placeholder': '۱۲۳۴۵۶',
+            'dir': 'ltr',
+            'inputmode': 'numeric',
+            'autocomplete': 'one-time-code',
+        }),
+    )
+    password1 = forms.CharField(
+        label=_('رمز عبور جدید'),
+        strip=False,
+        widget=forms.PasswordInput(attrs={
+            'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm',
+            'placeholder': 'رمز عبور جدید',
+            'autocomplete': 'new-password',
+        }),
+    )
+    password2 = forms.CharField(
+        label=_('تکرار رمز عبور جدید'),
+        strip=False,
+        widget=forms.PasswordInput(attrs={
+            'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm',
+            'placeholder': 'تکرار رمز عبور جدید',
+            'autocomplete': 'new-password',
+        }),
+    )
+
+    def clean_phone_number(self):
+        return User.objects.normalize_phone(self.cleaned_data.get('phone_number', ''))
+
+    def clean_code(self):
+        return (self.cleaned_data.get('code') or '').strip()
+
+    def clean(self):
+        cleaned = super().clean()
+        p1 = cleaned.get('password1')
+        p2 = cleaned.get('password2')
+        if p1 and p2 and p1 != p2:
+            self.add_error('password2', _('رمزهای عبور یکسان نیستند.'))
+        return cleaned
