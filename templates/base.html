@@ -1,26 +1,16 @@
-{% load static %}
-
+{% load static i18n %}
 <!doctype html>
-<html class="scroll-smooth" dir="rtl" lang="fa">
+<html class="scroll-smooth" dir="{% if LANGUAGE_CODE == 'en' %}ltr{% else %}rtl{% endif %}" lang="{{ LANGUAGE_CODE|default:'fa' }}">
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>مجموعه تخصصی املاک امتیاز | مرجع معاملات لوکس شمیرانات</title>
-    <!-- Persian Typography (Vazirmatn) -->
+    <title>{% if LANGUAGE_CODE == 'en' %}Emtiaz Real Estate | Luxury Property Hub{% else %}مجموعه تخصصی املاک امتیاز | مرجع معاملات لوکس شمیرانات{% endif %}</title>
     {% include "./_header.html" %}
   </head>
-  <body
-    class="bg-surface text-on-surface antialiased selection:bg-white-dim selection:text-primary"
-  >
-    <!-- ==================== 1. TOP APP BAR (Shared Component: TopNavBar) ==================== -->
+  <body class="bg-surface text-on-surface antialiased selection:bg-white-dim selection:text-primary">
     {% include "./includes/navbar.html" %}
-
-    <!-- ==================== CONTENT ==================== -->
     {% block content %}{% endblock content %}
-
-   <!-- ==================== 9. FOOTER (Shared Component: Footer) ==================== -->
-
-   {% include "./includes/footer.html" %}
+    {% include "./includes/footer.html" %}
     {% include "./_footer.html" %}
   </body>
 </html>
