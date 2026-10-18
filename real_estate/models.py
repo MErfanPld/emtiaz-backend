@@ -180,7 +180,13 @@ class Property(models.Model):
 
 
 class PropertyImage(models.Model):
-    property = models.ForeignKey(
+    """تصاویر گالری هر ملک.
+
+    توجه: فیلد FK را listing نام‌گذاری کردیم تا با decorator داخلی
+    @property تداخل نداشته باشد.
+    """
+
+    listing = models.ForeignKey(
         Property,
         on_delete=models.CASCADE,
         related_name='images',
@@ -198,7 +204,7 @@ class PropertyImage(models.Model):
         ordering = ['sort_order', 'id']
 
     def __str__(self):
-        return f'{self.property.code} — image {self.pk}'
+        return f'{self.listing.code} — image {self.pk}'
 
     @property
     def url(self):

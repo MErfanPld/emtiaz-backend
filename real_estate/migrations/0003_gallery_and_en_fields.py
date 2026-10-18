@@ -58,7 +58,7 @@ class Migration(migrations.Migration):
                 ('caption', models.CharField(blank=True, max_length=120, verbose_name='عنوان (فارسی)')),
                 ('caption_en', models.CharField(blank=True, max_length=120, verbose_name='عنوان (انگلیسی)')),
                 ('sort_order', models.PositiveIntegerField(default=0, verbose_name='ترتیب')),
-                ('property', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='images', to='real_estate.property', verbose_name='ملک')),
+                ('listing', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='images', to='real_estate.property', verbose_name='ملک')),
             ],
             options={
                 'verbose_name': 'تصویر ملک',

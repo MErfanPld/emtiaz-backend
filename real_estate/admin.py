@@ -8,6 +8,7 @@ class PropertyImageInline(admin.TabularInline):
     extra = 3
     fields = ('image', 'image_url', 'caption', 'caption_en', 'sort_order')
     ordering = ('sort_order', 'id')
+    fk_name = 'listing'
 
 
 @admin.register(Property)
@@ -110,7 +111,7 @@ class PropertyAdmin(admin.ModelAdmin):
 
 @admin.register(PropertyImage)
 class PropertyImageAdmin(admin.ModelAdmin):
-    list_display = ('property', 'caption', 'sort_order', 'image', 'image_url')
-    list_filter = ('property',)
-    search_fields = ('property__code', 'caption', 'caption_en')
-    ordering = ('property', 'sort_order')
+    list_display = ('listing', 'caption', 'sort_order', 'image', 'image_url')
+    list_filter = ('listing',)
+    search_fields = ('listing__code', 'caption', 'caption_en')
+    ordering = ('listing', 'sort_order')
