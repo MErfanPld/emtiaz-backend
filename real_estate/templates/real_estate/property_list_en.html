@@ -16,9 +16,7 @@
             <span class="text-sm font-semibold text-secondary">Official archive of resident agencies</span>
           </div>
           <h1 class="text-2xl md:text-4xl font-extrabold text-primary tracking-tight mb-3">Luxury property showcase</h1>
-          <p class="text-base md:text-lg text-on-surface-variant max-w-3xl leading-relaxed">
-            Listings registered by agencies based in the Emtiaz specialized real-estate complex.
-          </p>
+          <p class="text-base md:text-lg text-on-surface-variant max-w-3xl leading-relaxed">Listings registered by agencies based in the Emtiaz specialized real-estate complex.</p>
         </div>
         <div class="bg-surface-container-lowest border border-[#c1c8c4] rounded-xl p-4 flex items-center gap-4 shadow-sm min-w-0 sm:min-w-[220px]">
           <div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-primary border border-secondary/20 shrink-0">
@@ -36,7 +34,7 @@
   <section class="max-w-[1320px] mx-auto px-4 sm:px-6 md:px-12 -mt-6">
     <form method="get" class="bg-surface-container-lowest rounded-xl border border-[#c1c8c4] shadow-lg p-4 sm:p-6 lg:p-8">
       <div class="flex flex-wrap items-center gap-2 pb-6 border-b border-[#c1c8c4]">
-        <a href="?" class="px-4 sm:px-6 py-2.5 rounded-full text-sm font-semibold {% if not current_tx %}bg-primary text-on-primary{% else %}border border-[#c1c8c4] text-on-surface-variant hover:bg-surface-container{% endif %}">All</a>
+        <a href="?" class="px-4 sm:px-6 py-2.5 rounded-full text-sm font-semibold {% if not current_tx %}bg-primary text-on-primary{% else %}border border-[#c1c8c4] text-on-surface-variant{% endif %}">All</a>
         <a href="?tx=sale" class="px-4 sm:px-6 py-2.5 rounded-full text-sm font-semibold {% if current_tx == 'sale' %}bg-primary text-on-primary{% else %}border border-[#c1c8c4] text-on-surface-variant{% endif %}">Sale</a>
         <a href="?tx=rent" class="px-4 sm:px-6 py-2.5 rounded-full text-sm font-semibold {% if current_tx == 'rent' %}bg-primary text-on-primary{% else %}border border-[#c1c8c4] text-on-surface-variant{% endif %}">Rent</a>
         <a href="?tx=presale" class="px-4 sm:px-6 py-2.5 rounded-full text-sm font-semibold {% if current_tx == 'presale' %}bg-primary text-on-primary{% else %}border border-[#c1c8c4] text-on-surface-variant{% endif %}">Pre-sale</a>
@@ -78,25 +76,19 @@
 
   <section class="max-w-[1320px] mx-auto px-4 sm:px-6 md:px-12 py-10 sm:py-12">
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-6 mb-6 border-b border-[#c1c8c4]">
-      <span class="text-sm text-on-surface-variant">
-        {% if page_obj %}Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }}{% else %}{{ properties|length }} listings{% endif %}
-      </span>
+      <span class="text-sm text-on-surface-variant">{% if page_obj %}Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }}{% else %}{{ properties|length }} listings{% endif %}</span>
     </div>
 
     {% if properties %}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
       {% for p in properties %}
-      <article class="bg-surface-container-lowest rounded-lg border border-[#c1c8c4] overflow-hidden flex flex-col group text-left">
+      <a href="{% url 'real_estate:detail' p.slug %}" class="bg-surface-container-lowest rounded-lg border border-[#c1c8c4] overflow-hidden flex flex-col group text-left hover:shadow-md transition-shadow">
         <div class="relative aspect-[16/10] overflow-hidden bg-surface-container">
           {% if p.display_image %}
           <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ p.display_image }}" alt="{{ p.title_en|default:p.title }}"/>
           {% else %}
           <div class="w-full h-full flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined text-5xl">apartment</span></div>
           {% endif %}
-          <div class="absolute top-3 left-3 flex flex-col gap-1.5">
-            {% if p.badge_primary %}<span class="bg-primary text-on-primary text-xs px-2.5 py-1 rounded-full font-bold">{{ p.badge_primary }}</span>{% endif %}
-            {% if p.badge_secondary %}<span class="bg-[#f7faf7] border border-secondary text-secondary text-xs px-2.5 py-0.5 rounded-full font-bold">{{ p.badge_secondary }}</span>{% endif %}
-          </div>
         </div>
         <div class="p-4 sm:p-5 flex flex-col flex-grow">
           <div class="flex items-center justify-between text-xs text-on-surface-variant mb-1.5 gap-2">
@@ -113,51 +105,20 @@
             <div class="border-x border-[#c1c8c4]"><span class="block text-on-surface-variant">Beds</span><span class="font-bold text-primary">{{ p.bedrooms }}</span></div>
             <div><span class="block text-on-surface-variant">Parking</span><span class="font-bold text-primary">{{ p.parking }}</span></div>
           </div>
-          <div class="mt-auto mb-1">
+          <div class="mt-auto">
             <span class="text-xs text-on-surface-variant block">Appraisal value</span>
             <span class="text-lg font-black text-primary">{{ p.formatted_price }} <span class="text-xs font-normal">Toman</span></span>
           </div>
         </div>
-      </article>
+      </a>
       {% endfor %}
     </div>
-
-    {% if page_obj.has_other_pages %}
-    <div class="flex flex-wrap items-center justify-center gap-2 mt-10 pt-8 border-t border-[#c1c8c4]">
-      {% if page_obj.has_previous %}
-      <a class="w-10 h-10 rounded-lg border border-[#c1c8c4] flex items-center justify-center" href="?page={{ page_obj.previous_page_number }}{% if current_tx %}&tx={{ current_tx }}{% endif %}&sort={{ current_sort }}"><span class="material-symbols-outlined text-sm">chevron_left</span></a>
-      {% endif %}
-      <span class="px-3 text-sm">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-      {% if page_obj.has_next %}
-      <a class="w-10 h-10 rounded-lg border border-[#c1c8c4] flex items-center justify-center" href="?page={{ page_obj.next_page_number }}{% if current_tx %}&tx={{ current_tx }}{% endif %}&sort={{ current_sort }}"><span class="material-symbols-outlined text-sm">chevron_right</span></a>
-      {% endif %}
-    </div>
-    {% endif %}
     {% else %}
     <div class="text-center py-16 text-on-surface-variant">
-      <span class="material-symbols-outlined text-5xl mb-4 block">search_off</span>
       <p class="text-lg font-semibold text-primary mb-2">No properties found</p>
-      <p class="text-sm">Add listings in Django admin or clear filters.</p>
       <a href="{% url 'real_estate:list' %}" class="inline-block mt-4 text-secondary font-bold">Clear filters</a>
     </div>
     {% endif %}
-  </section>
-
-  <section class="max-w-[1320px] mx-auto px-4 sm:px-6 md:px-12 pb-16" id="inquiry">
-    <div class="bg-primary text-on-primary rounded-xl p-6 sm:p-8 lg:p-12 border border-secondary/40 shadow-xl">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
-        <div class="lg:col-span-8 text-left">
-          <span class="text-white text-xs font-bold tracking-wider mb-2 block">Complex reception desk</span>
-          <h2 class="text-xl sm:text-2xl lg:text-3xl font-extrabold mb-3 leading-tight">Didn’t find the right listing?</h2>
-          <p class="text-sm sm:text-base text-white/80 max-w-2xl leading-relaxed">Some exclusive homes are not published publicly. Contact reception for private introductions.</p>
-        </div>
-        <div class="lg:col-span-4">
-          <a class="border border-white/40 hover:bg-primary-container text-on-primary px-6 py-3.5 rounded-lg font-semibold flex items-center justify-center gap-2 w-full" href="tel:02122008890">
-            <span class="material-symbols-outlined">call</span> Call reception
-          </a>
-        </div>
-      </div>
-    </div>
   </section>
 </main>
 {% endblock %}
