@@ -52,9 +52,6 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'کاربران',
                 'ordering': ['-created_at'],
             },
-            managers=[
-                ('objects', django.contrib.auth.models.UserManager()),
-            ],
         ),
         migrations.AddIndex(
             model_name='user',
