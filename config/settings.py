@@ -93,5 +93,10 @@ LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'dashboard:index'
 LOGOUT_REDIRECT_URL = 'accounts:login'
 
+# Session / مرا به خاطر بسپار
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 14  # حداکثر ۱۴ روز وقتی remember_me فعال است
+SESSION_SAVE_EVERY_REQUEST = False
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
 # Email (console for development)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
