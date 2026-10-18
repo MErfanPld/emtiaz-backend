@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 class UserManager(BaseUserManager):
-    """Manager with phone_number as the primary identifier."""
+    """مدیر با شناسه اصلی شماره موبایل."""
 
     use_in_migrations = True
 
@@ -20,7 +20,6 @@ class UserManager(BaseUserManager):
     @staticmethod
     def normalize_phone(phone):
         phone = (phone or '').strip().replace(' ', '').replace('-', '')
-        # convert Persian/Arabic digits to English
         trans = str.maketrans('۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩', '01234567890123456789')
         phone = phone.translate(trans)
         if phone.startswith('+98'):
@@ -43,18 +42,17 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('approval_status', User.ApprovalStatus.APPROVED)
 
         if extra_fields.get('is_staff') is not True:
-            raise ValueError(_('Superuser must have is_staff=True.'))
+            raise ValueError(_('سوپریوزر باید is_staff=True داشته باشد.'))
         if extra_fields.get('is_superuser') is not True:
-            raise ValueError(_('Superuser must have is_superuser=True.'))
+            raise ValueError(_('سوپریوزر باید is_superuser=True داشته باشد.'))
 
         return self._create_user(phone_number, password, **extra_fields)
 
 
 class User(AbstractUser):
     """
-    Custom user for Emtiaz.
-    Login identifier: phone_number (Iranian mobile).
-    approval_status is independent from is_active.
+    کاربر سفارشی املاک امتیاز.
+    ورود با شماره موبایل؛ وضعیت تأیید جدا از is_active.
     """
 
     class ApprovalStatus(models.TextChoices):
@@ -62,14 +60,29 @@ class User(AbstractUser):
         APPROVED = 'approved', _('تأیید شده')
         REJECTED = 'rejected', _('رد شده')
 
-    # username kept optional for admin compatibility; not used for login
-    username = models.CharField(
-        _('username'),
-        max_length=150,
-        unique=True,
-        blank=True,
-        null=True,
+    # حذف کامل فیلد username برای جلوگیری از خطای NoneType در ادمین
+    username = None
+
+    # فیلدهای ارثی AbstractUser با برچسب فارسی
+    first_name = models.CharField(_('نام'), max_length=150, blank=True)
+    last_name = models.CharField(_('نام خانوادگی'), max_length=150, blank=True)
+    is_staff = models.BooleanField(
+        _('دسترسی به پنل ادمین'),
+        default=False,
+        help_text=_('تعیین می‌کند کاربر بتواند وارد پنل مدیریت جنگو شود.'),
     )
+    is_active = models.BooleanField(
+        _('فعال'),
+        default=True,
+        help_text=_('به‌جای حذف حساب، آن را غیرفعال کنید.'),
+    )
+    is_superuser = models.BooleanField(
+        _('مدیر کل'),
+        default=False,
+        help_text=_('تمام مجوزها را بدون محدودیت دارد.'),
+    )
+    last_login = models.DateTimeField(_('آخرین ورود'), blank=True, null=True)
+    date_joined = models.DateTimeField(_('تاریخ عضویت'), auto_now_add=True)
 
     phone_number = models.CharField(
         _('شماره موبایل'),
@@ -132,6 +145,7 @@ class User(AbstractUser):
         _('یادداشت داخلی'),
         blank=True,
         default='',
+        help_text=_('فقط برای مدیران قابل مشاهده است.'),
     )
 
     approval_status = models.CharField(
@@ -165,7 +179,7 @@ class User(AbstractUser):
         default='',
     )
 
-    created_at = models.DateTimeField(_('ایجاد'), auto_now_add=True)
+    created_at = models.DateTimeField(_('تاریخ ایجاد'), auto_now_add=True)
     updated_at = models.DateTimeField(_('آخرین ویرایش'), auto_now=True)
 
     objects = UserManager()
@@ -184,7 +198,7 @@ class User(AbstractUser):
 
     def __str__(self):
         full_name = self.get_full_name()
-        return full_name if full_name else self.phone_number
+        return full_name if full_name else (self.phone_number or str(self.pk))
 
     def save(self, *args, **kwargs):
         if self.phone_number:

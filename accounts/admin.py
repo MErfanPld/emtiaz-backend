@@ -1,70 +1,139 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _
 
 from .models import User
 
 
+class CustomUserCreationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ('phone_number', 'first_name', 'last_name', 'email')
+
+
+class CustomUserChangeForm(UserChangeForm):
+    class Meta:
+        model = User
+        fields = '__all__'
+
+
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
+    form = CustomUserChangeForm
+    add_form = CustomUserCreationForm
+    change_password_form = AdminPasswordChangeForm
+
     ordering = ('-created_at',)
     list_display = (
-        'phone_number', 'get_full_name', 'email', 'approval_status_badge',
-        'is_active', 'is_staff', 'job_title', 'created_at',
+        'phone_number',
+        'get_full_name_display',
+        'email',
+        'approval_status_badge',
+        'is_active',
+        'is_staff',
+        'job_title',
+        'created_at',
     )
+    list_display_links = ('phone_number',)
     list_filter = (
-        'approval_status', 'is_active', 'is_staff', 'is_superuser',
-        'groups', 'created_at',
+        'approval_status',
+        'is_active',
+        'is_staff',
+        'is_superuser',
+        'groups',
+        'created_at',
     )
-    search_fields = ('phone_number', 'email', 'first_name', 'last_name', 'personnel_code')
+    search_fields = (
+        'phone_number',
+        'email',
+        'first_name',
+        'last_name',
+        'personnel_code',
+    )
     readonly_fields = (
-        'requested_at', 'approved_at', 'last_login', 'date_joined',
-        'created_at', 'updated_at',
+        'requested_at',
+        'approved_at',
+        'last_login',
+        'date_joined',
+        'created_at',
+        'updated_at',
     )
+    filter_horizontal = ('groups', 'user_permissions')
 
     fieldsets = (
-        (None, {'fields': ('phone_number', 'password')}),
+        (_('اطلاعات ورود'), {
+            'fields': ('phone_number', 'password'),
+        }),
         (_('اطلاعات شخصی'), {
             'fields': (
-                'first_name', 'last_name', 'email', 'avatar',
-                'date_of_birth', 'username',
-            )
+                'first_name',
+                'last_name',
+                'email',
+                'avatar',
+                'date_of_birth',
+            ),
         }),
         (_('سازمانی'), {
             'fields': (
-                'personnel_code', 'job_title', 'branch', 'manager', 'internal_notes',
-            )
+                'personnel_code',
+                'job_title',
+                'branch',
+                'manager',
+                'internal_notes',
+            ),
         }),
-        (_('تأیید'), {
+        (_('تأیید عضویت'), {
             'fields': (
-                'approval_status', 'requested_at', 'approved_by',
-                'approved_at', 'rejection_reason',
-            )
+                'approval_status',
+                'requested_at',
+                'approved_by',
+                'approved_at',
+                'rejection_reason',
+            ),
         }),
         (_('دسترسی‌ها'), {
             'fields': (
-                'is_active', 'is_staff', 'is_superuser',
-                'groups', 'user_permissions',
-            )
+                'is_active',
+                'is_staff',
+                'is_superuser',
+                'groups',
+                'user_permissions',
+            ),
         }),
         (_('تاریخ‌ها'), {
-            'fields': ('last_login', 'date_joined', 'created_at', 'updated_at')
+            'fields': ('last_login', 'date_joined', 'created_at', 'updated_at'),
         }),
     )
 
     add_fieldsets = (
-        (None, {
+        (_('ایجاد کاربر جدید'), {
             'classes': ('wide',),
             'fields': (
-                'phone_number', 'first_name', 'last_name', 'email',
-                'password1', 'password2', 'is_staff', 'is_superuser',
+                'phone_number',
+                'first_name',
+                'last_name',
+                'email',
+                'password1',
+                'password2',
+                'is_staff',
+                'is_superuser',
                 'approval_status',
             ),
         }),
     )
 
-    actions = ['approve_selected', 'reject_selected', 'activate_selected', 'deactivate_selected']
+    actions = [
+        'approve_selected',
+        'reject_selected',
+        'activate_selected',
+        'deactivate_selected',
+    ]
+
+    @admin.display(description=_('نام کامل'), ordering='first_name')
+    def get_full_name_display(self, obj):
+        return obj.get_full_name() or '—'
 
     @admin.display(description=_('وضعیت تأیید'), ordering='approval_status')
     def approval_status_badge(self, obj):
