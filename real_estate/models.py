@@ -48,27 +48,38 @@ class Property(models.Model):
     bedrooms = models.PositiveSmallIntegerField('تعداد خواب', default=0)
     parking = models.PositiveSmallIntegerField('پارکینگ', default=0)
     floor = models.CharField('طبقه', max_length=40, blank=True)
+    floor_en = models.CharField('طبقه (انگلیسی)', max_length=40, blank=True)
     year_built = models.CharField('سال ساخت', max_length=40, blank=True)
+    year_built_en = models.CharField('سال ساخت (انگلیسی)', max_length=40, blank=True)
 
     price = models.BigIntegerField('قیمت (تومان)', default=0, help_text='عدد خام به تومان')
     price_label = models.CharField(
-        'برچسب قیمت سفارشی',
+        'برچسب قیمت (فارسی)',
         max_length=80,
         blank=True,
-        help_text='در صورت پر بودن به‌جای عدد نمایش داده می‌شود',
+        help_text='مثلاً توافقی — در صورت پر بودن به‌جای عدد',
+    )
+    price_label_en = models.CharField(
+        'برچسب قیمت (انگلیسی)',
+        max_length=80,
+        blank=True,
+        help_text='e.g. Negotiable',
     )
 
     agency_name = models.CharField('نام دفتر املاک', max_length=120, blank=True)
     agency_name_en = models.CharField('نام دفتر (انگلیسی)', max_length=120, blank=True)
     consultant_name = models.CharField('نام مشاور', max_length=120, blank=True)
+    consultant_name_en = models.CharField('نام مشاور (انگلیسی)', max_length=120, blank=True)
     consultant_phone = models.CharField('تلفن مشاور', max_length=40, blank=True)
 
-    badge_primary = models.CharField('نشان اصلی', max_length=60, blank=True, help_text='مثلاً فروش انحصاری')
+    badge_primary = models.CharField('نشان اصلی', max_length=60, blank=True)
+    badge_primary_en = models.CharField('نشان اصلی (انگلیسی)', max_length=60, blank=True)
     badge_secondary = models.CharField('نشان فرعی', max_length=60, blank=True)
+    badge_secondary_en = models.CharField('نشان فرعی (انگلیسی)', max_length=60, blank=True)
 
     cover_image = models.ImageField('تصویر اصلی', upload_to='properties/%Y/%m/', blank=True, null=True)
-    cover_image_url = models.URLField('لینک تصویر جایگزین', blank=True, help_text='اگر فایل آپلود نشد')
-    image_count = models.PositiveSmallIntegerField('تعداد تصاویر', default=1)
+    cover_image_url = models.URLField('لینک تصویر جایگزین', blank=True)
+    image_count = models.PositiveSmallIntegerField('تعداد تصاویر (دستی)', default=0)
 
     has_deed = models.BooleanField('سند تک‌برگ', default=True)
     is_complex_office = models.BooleanField('مستقر در مجتمع امتیاز', default=True)
@@ -107,9 +118,33 @@ class Property(models.Model):
     def display_image(self):
         if self.cover_image:
             return self.cover_image.url
-        return self.cover_image_url or ''
+        if self.cover_image_url:
+            return self.cover_image_url
+        first = self.images.first()
+        if first:
+            return first.url
+        return ''
 
-    def formatted_price(self):
+    def gallery_urls(self):
+        """لیست URL تصاویر گالری (کاور + تصاویر فرعی)."""
+        urls = []
+        if self.cover_image:
+            urls.append(self.cover_image.url)
+        elif self.cover_image_url:
+            urls.append(self.cover_image_url)
+        for img in self.images.all():
+            u = img.url
+            if u and u not in urls:
+                urls.append(u)
+        return urls
+
+    def gallery_count(self):
+        n = len(self.gallery_urls())
+        return max(n, self.image_count or 0)
+
+    def formatted_price(self, lang='fa'):
+        if lang == 'en' and self.price_label_en:
+            return self.price_label_en
         if self.price_label:
             return self.price_label
         if not self.price:
@@ -124,3 +159,43 @@ class Property(models.Model):
             'partnership': 'Partnership',
         }
         return mapping.get(self.transaction_type, self.get_transaction_type_display())
+
+    def property_type_label_en(self):
+        mapping = {
+            'penthouse': 'Penthouse / Super-luxury',
+            'apartment': 'Residential apartment',
+            'villa': 'Villa / Mansion',
+            'office': 'Office',
+            'commercial': 'Commercial',
+        }
+        return mapping.get(self.property_type, self.get_property_type_display())
+
+
+class PropertyImage(models.Model):
+    """تصاویر گالری هر ملک."""
+
+    property = models.ForeignKey(
+        Property,
+        on_delete=models.CASCADE,
+        related_name='images',
+        verbose_name='ملک',
+    )
+    image = models.ImageField('فایل تصویر', upload_to='properties/gallery/%Y/%m/', blank=True, null=True)
+    image_url = models.URLField('لینک تصویر', blank=True, help_text='اگر فایل آپلود نشد')
+    caption = models.CharField('عنوان (فارسی)', max_length=120, blank=True)
+    caption_en = models.CharField('عنوان (انگلیسی)', max_length=120, blank=True)
+    sort_order = models.PositiveIntegerField('ترتیب', default=0)
+
+    class Meta:
+        verbose_name = 'تصویر ملک'
+        verbose_name_plural = 'تصاویر ملک'
+        ordering = ['sort_order', 'id']
+
+    def __str__(self):
+        return f'{self.property.code} — image {self.pk}'
+
+    @property
+    def url(self):
+        if self.image:
+            return self.image.url
+        return self.image_url or ''

@@ -1,6 +1,13 @@
 from django.contrib import admin
 
-from .models import Property
+from .models import Property, PropertyImage
+
+
+class PropertyImageInline(admin.TabularInline):
+    model = PropertyImage
+    extra = 3
+    fields = ('image', 'image_url', 'caption', 'caption_en', 'sort_order')
+    ordering = ('sort_order', 'id')
 
 
 @admin.register(Property)
@@ -33,6 +40,7 @@ class PropertyAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at', 'updated_at')
     ordering = ('-created_at',)
     save_on_top = True
+    inlines = [PropertyImageInline]
 
     fieldsets = (
         ('شناسه و عنوان', {
@@ -49,23 +57,35 @@ class PropertyAdmin(admin.ModelAdmin):
             ),
         }),
         ('مشخصات فنی', {
-            'fields': ('area_sqm', 'bedrooms', 'parking', 'floor', 'year_built'),
+            'fields': (
+                'area_sqm',
+                'bedrooms',
+                'parking',
+                'floor',
+                'floor_en',
+                'year_built',
+                'year_built_en',
+            ),
         }),
         ('قیمت', {
-            'fields': ('price', 'price_label'),
+            'fields': ('price', 'price_label', 'price_label_en'),
         }),
         ('دفتر و مشاور', {
             'fields': (
                 'agency_name',
                 'agency_name_en',
                 'consultant_name',
+                'consultant_name_en',
                 'consultant_phone',
                 'badge_primary',
+                'badge_primary_en',
                 'badge_secondary',
+                'badge_secondary_en',
             ),
         }),
-        ('تصاویر', {
+        ('تصویر کاور', {
             'fields': ('cover_image', 'cover_image_url', 'image_count'),
+            'description': 'گالری چندتصویری را از بخش «تصاویر ملک» پایین فرم اضافه کنید.',
         }),
         ('فیلترهای اعتباری', {
             'fields': (
@@ -81,9 +101,16 @@ class PropertyAdmin(admin.ModelAdmin):
         }),
         ('توضیحات', {
             'fields': ('description', 'description_en'),
-            'classes': ('collapse',),
         }),
         ('زمان‌ها', {
             'fields': ('created_at', 'updated_at'),
         }),
     )
+
+
+@admin.register(PropertyImage)
+class PropertyImageAdmin(admin.ModelAdmin):
+    list_display = ('property', 'caption', 'sort_order', 'image', 'image_url')
+    list_filter = ('property',)
+    search_fields = ('property__code', 'caption', 'caption_en')
+    ordering = ('property', 'sort_order')

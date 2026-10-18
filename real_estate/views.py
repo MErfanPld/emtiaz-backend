@@ -1,8 +1,8 @@
-from django.db.models import Q
+from django.db.models import Prefetch, Q
 from django.utils.translation import get_language
 from django.views.generic import DetailView, ListView
 
-from .models import Property
+from .models import Property, PropertyImage
 
 
 def _lang_is_en():
@@ -10,8 +10,6 @@ def _lang_is_en():
 
 
 class PropertyListView(ListView):
-    """لیست املاک با فیلتر ساده روی query string."""
-
     model = Property
     context_object_name = 'properties'
     paginate_by = 12
@@ -67,7 +65,9 @@ class PropertyDetailView(DetailView):
     slug_url_kwarg = 'slug'
 
     def get_queryset(self):
-        return Property.objects.filter(is_active=True)
+        return Property.objects.filter(is_active=True).prefetch_related(
+            Prefetch('images', queryset=PropertyImage.objects.order_by('sort_order', 'id'))
+        )
 
     def get_template_names(self):
         if _lang_is_en():
@@ -77,6 +77,8 @@ class PropertyDetailView(DetailView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         obj = self.object
+        ctx['gallery'] = obj.gallery_urls()
+        ctx['gallery_count'] = obj.gallery_count()
         ctx['similar'] = (
             Property.objects.filter(is_active=True)
             .filter(Q(area_name=obj.area_name) | Q(property_type=obj.property_type))
