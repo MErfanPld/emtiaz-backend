@@ -79,7 +79,7 @@ class PhoneAuthenticationForm(AuthenticationForm):
 
 
 class RegisterForm(forms.ModelForm):
-    """Public registration – always pending."""
+    """ثبت‌نام عمومی — فقط موبایل، نام، نام خانوادگی، عنوان شغلی، رمز."""
 
     password1 = forms.CharField(
         label=_('رمز عبور'),
@@ -102,7 +102,7 @@ class RegisterForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('phone_number', 'first_name', 'last_name', 'email', 'job_title')
+        fields = ('phone_number', 'first_name', 'last_name', 'job_title')
         widgets = {
             'phone_number': forms.TextInput(attrs={
                 'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm',
@@ -118,23 +118,24 @@ class RegisterForm(forms.ModelForm):
                 'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm',
                 'placeholder': 'نام خانوادگی',
             }),
-            'email': forms.EmailInput(attrs={
-                'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm',
-                'placeholder': 'ایمیل (اختیاری)',
-                'dir': 'ltr',
-            }),
             'job_title': forms.TextInput(attrs={
                 'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm',
-                'placeholder': 'عنوان شغلی (اختیاری)',
+                'placeholder': 'عنوان شغلی',
             }),
         }
         labels = {
             'phone_number': _('شماره موبایل'),
             'first_name': _('نام'),
             'last_name': _('نام خانوادگی'),
-            'email': _('ایمیل'),
             'job_title': _('عنوان شغلی'),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['phone_number'].required = True
+        self.fields['first_name'].required = True
+        self.fields['last_name'].required = True
+        self.fields['job_title'].required = True
 
     def clean_phone_number(self):
         phone = User.objects.normalize_phone(self.cleaned_data.get('phone_number', ''))
@@ -145,6 +146,24 @@ class RegisterForm(forms.ModelForm):
         if User.objects.filter(phone_number=phone).exists():
             raise forms.ValidationError(_('این شماره موبایل قبلاً ثبت شده است.'))
         return phone
+
+    def clean_first_name(self):
+        value = (self.cleaned_data.get('first_name') or '').strip()
+        if not value:
+            raise forms.ValidationError(_('نام الزامی است.'))
+        return value
+
+    def clean_last_name(self):
+        value = (self.cleaned_data.get('last_name') or '').strip()
+        if not value:
+            raise forms.ValidationError(_('نام خانوادگی الزامی است.'))
+        return value
+
+    def clean_job_title(self):
+        value = (self.cleaned_data.get('job_title') or '').strip()
+        if not value:
+            raise forms.ValidationError(_('عنوان شغلی الزامی است.'))
+        return value
 
     def clean(self):
         cleaned = super().clean()
@@ -177,6 +196,14 @@ class ProfileForm(forms.ModelForm):
             'job_title': forms.TextInput(attrs={'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm'}),
             'date_of_birth': forms.DateInput(attrs={'class': 'field-input w-full px-4 py-3 rounded-lg border border-brand-border bg-white text-sm', 'type': 'date'}),
             'avatar': forms.ClearableFileInput(attrs={'class': 'text-sm'}),
+        }
+        labels = {
+            'first_name': _('نام'),
+            'last_name': _('نام خانوادگی'),
+            'email': _('ایمیل'),
+            'job_title': _('عنوان شغلی'),
+            'avatar': _('تصویر پروفایل'),
+            'date_of_birth': _('تاریخ تولد'),
         }
 
 
