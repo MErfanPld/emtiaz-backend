@@ -1,41 +1,37 @@
 # Emtiaz Backend
 
-Backend سیستم املاک امتیاز — Django + DRF + SimpleJWT
+Backend و سایت املاک امتیاز — Django Templates + Session Authentication
 
-## راه‌اندازی سریع
+## راه‌اندازی
 
 ```bash
 python -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
+source venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env
-# ویرایش .env در صورت نیاز
 python manage.py migrate
-python manage.py createsuperuser
+python manage.py createsuperuser   # با ایمیل
 python manage.py runserver
 ```
 
-## API Accounts (نسخه v1)
+## احراز هویت (کلاسیک / Session)
 
-Base: `/api/v1/accounts/`
+| مسیر | توضیح |
+|------|--------|
+| `/accounts/login/` | ورود (فقط حساب تأییدشده و فعال) |
+| `/accounts/logout/` | خروج امن (فقط POST + CSRF) |
+| `/accounts/register/` | ثبت‌نام (حساب همیشه pending) |
+| `/accounts/register/done/` | پیام موفقیت ثبت‌نام |
+| `/accounts/pending/` | صفحه انتظار تأیید / رد |
+| `/accounts/profile/` | مشاهده و ویرایش پروفایل |
+| `/accounts/password/change/` | تغییر رمز عبور |
+| `/dashboard/` | داشبورد (نیاز به ورود + تأیید) |
+| `/admin/` | پنل ادمین Django |
 
-| Method | Endpoint | دسترسی | توضیح |
-|--------|----------|--------|-------|
-| POST | `/register/` | Public | ثبت‌نام (حساب pending) |
-| POST | `/login/` | Public | ورود (فقط approved + active) |
-| POST | `/logout/` | Auth | ابطال refresh token |
-| POST | `/token/refresh/` | Public | تمدید access token |
-| GET/PATCH | `/me/` | Approved | پروفایل کاربر جاری |
-| POST | `/change-password/` | Approved | تغییر رمز |
-| GET | `/users/` | Admin/Manager | فهرست کاربران |
-| GET | `/users/pending/` | Admin/Manager | حساب‌های در انتظار تأیید |
-| POST | `/users/{id}/approve/` | Admin | تأیید حساب |
-| POST | `/users/{id}/reject/` | Admin | رد حساب (با reason) |
-| POST | `/users/{id}/activate/` | Admin | فعال‌سازی |
-| POST | `/users/{id}/deactivate/` | Admin | غیرفعال‌سازی |
+## قوانین امنیتی
 
-## نکات امنیتی
-
-- ثبت‌نام هرگز `is_staff` / `is_superuser` / `approval_status` را از ورودی قبول نمی‌کند.
-- حساب pending یا inactive حتی با توکن معتبر به endpointهای محافظت‌شده دسترسی ندارد (`IsApproved`).
-- تغییر وضعیت حساب (approve / deactivate) بلافاصله روی درخواست‌های بعدی اعمال می‌شود.
+- ثبت‌نام هرگز حساب را خودکار تأیید نمی‌کند.
+- `approval_status` از `is_active` جدا است.
+- کاربر pending / rejected / inactive وارد صفحات محافظت‌شده نمی‌شود.
+- خروج فقط با POST و CSRF.
+- کاربر نمی‌تواند نقش یا وضعیت تأیید خود را تغییر دهد.
+- تأیید/رد حساب فقط از طریق Django Admin.
