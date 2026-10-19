@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.db.models import Q, Sum
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -94,14 +95,16 @@ class PropertyDashboardListView(ApprovedRequiredMixin, ListView):
 
 
 class PropertyFormsetMixin:
-    def get_formset(self):
+    def get_formset(self, instance=None):
+        if instance is None:
+            instance = getattr(self, 'object', None)
         if self.request.method == 'POST':
             return PropertyImageFormSet(
                 self.request.POST,
                 self.request.FILES,
-                instance=getattr(self, 'object', None),
+                instance=instance,
             )
-        return PropertyImageFormSet(instance=getattr(self, 'object', None))
+        return PropertyImageFormSet(instance=instance)
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -110,19 +113,37 @@ class PropertyFormsetMixin:
         return ctx
 
     def form_valid(self, form):
-        self.object = form.save()
+        # ابتدا formset را با instance موقت بساز تا هر دو با هم validate شوند
+        # و فقط در صورت معتبر بودن هر دو، ذخیره شود (بدون ملک یتیم).
         formset = PropertyImageFormSet(
             self.request.POST,
             self.request.FILES,
-            instance=self.object,
+            instance=form.instance if form.instance.pk else None,
         )
-        if formset.is_valid():
+        # برای create، instance هنوز pk ندارد؛ formset را بعد از save چک می‌کنیم
+        # اما اول خود form باید valid باشد (که هست چون اینجا form_valid هستیم).
+
+        with transaction.atomic():
+            self.object = form.save()
+            formset = PropertyImageFormSet(
+                self.request.POST,
+                self.request.FILES,
+                instance=self.object,
+            )
+            if not formset.is_valid():
+                # rollback با raise — یا دستی
+                transaction.set_rollback(True)
+                messages.error(
+                    self.request,
+                    'خطا در گالری تصاویر. ردیف‌های خالی را خالی بگذارید یا فیلدها را کامل کنید.',
+                )
+                return self.render_to_response(
+                    self.get_context_data(form=form, formset=formset)
+                )
             formset.save()
-            messages.success(self.request, self.success_message)
-            return redirect(self.get_success_url())
-        return self.render_to_response(
-            self.get_context_data(form=form, formset=formset)
-        )
+
+        messages.success(self.request, self.success_message)
+        return redirect(self.get_success_url())
 
 
 @method_decorator(login_required, name='dispatch')
