@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Blog & Guides | Emtiaz Real Estate{% endblock %}
+{% block content %}
+<main class="flex-grow">
+  <div class="w-full max-w-[1320px] mx-auto px-4 sm:px-6 md:px-12 pt-6 pb-2">
+    <nav class="flex items-center gap-2 text-sm text-on-surface-variant">
+      <a class="hover:text-primary" href="{% url 'core:home' %}">Home</a>
+      <span>/</span>
+      <span class="text-primary font-semibold">Blog</span>
+    </nav>
+  </div>
+
+  <section class="py-10 md:py-14">
+    <div class="max-w-[1320px] mx-auto px-4 sm:px-6 md:px-12 text-center space-y-4">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded bg-white border border-secondary/40 text-sm font-semibold text-primary">Emtiaz Magazine</div>
+      <h1 class="text-3xl md:text-4xl font-extrabold text-primary">Smarter knowledge, <span class="text-secondary">better choices</span></h1>
+      <form method="get" class="pt-2 max-w-xl mx-auto flex items-center bg-white p-1.5 rounded border shadow-sm">
+        <i class="fa-solid fa-magnifying-glass pl-3 text-on-surface-variant"></i>
+        <input class="w-full border-none text-sm focus:ring-0" name="q" value="{{ q }}" placeholder="Search articles..." type="search"/>
+        <button class="bg-primary text-white px-5 py-2.5 rounded text-sm font-semibold" type="submit">Search</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="max-w-[1320px] mx-auto px-4 sm:px-6 md:px-12 pb-4 space-y-4">
+    <div class="bg-white p-5 rounded border shadow-sm">
+      <h3 class="font-bold text-primary mb-3 text-sm">Categories</h3>
+      <div class="flex flex-wrap gap-2">
+        <a href="{% url 'blog:list' %}" class="px-4 py-2 rounded-full text-sm border {% if not active_category %}bg-primary text-white border-primary{% else %}border-outline{% endif %}">All</a>
+        {% for c in categories %}
+        <a href="?category={{ c.slug }}" class="px-4 py-2 rounded-full text-sm border {% if active_category == c.slug %}bg-primary text-white border-primary{% else %}border-outline{% endif %}">{{ c.display_name }}</a>
+        {% endfor %}
+      </div>
+    </div>
+    {% if tags %}
+    <div class="bg-white p-5 rounded border shadow-sm">
+      <h3 class="font-bold text-primary mb-3 text-sm">Tags</h3>
+      <div class="flex flex-wrap gap-2">
+        {% for t in tags %}
+        <a href="?tag={{ t.slug }}" class="px-3 py-1.5 rounded-full text-xs border {% if active_tag == t.slug %}bg-secondary text-primary border-secondary{% else %}border-outline{% endif %}">#{{ t.display_name }}</a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </section>
+
+  <section class="max-w-[1320px] mx-auto px-4 sm:px-6 md:px-12 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for post in posts %}
+      <article class="bg-white rounded border shadow-sm overflow-hidden flex flex-col group">
+        <a href="{{ post.get_absolute_url }}" class="aspect-[16/10] bg-[#ecefeb] block overflow-hidden">
+          {% if post.display_image %}<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ post.display_image }}" alt=""/>{% endif %}
+        </a>
+        <div class="p-5 flex flex-col flex-grow">
+          <div class="text-xs text-on-surface-variant mb-2">
+            {% if post.published_at %}{{ post.published_at|date:"M j, Y" }}{% endif %}
+            · {{ post.reading_minutes }} min read
+          </div>
+          <h3 class="font-bold text-primary mb-2"><a href="{{ post.get_absolute_url }}">{{ post.display_title }}</a></h3>
+          <p class="text-sm text-on-surface-variant line-clamp-3 flex-grow">{{ post.display_excerpt|truncatewords:25 }}</p>
+          <div class="mt-3 flex flex-wrap gap-1">
+            {% for t in post.tags.all %}<span class="text-[11px] px-2 py-0.5 rounded-full bg-[#f7faf7]">#{{ t.display_name }}</span>{% endfor %}
+          </div>
+        </div>
+      </article>
+      {% empty %}
+      <div class="col-span-full py-16 text-center text-on-surface-variant">No articles found.</div>
+      {% endfor %}
+    </div>
+    {% if page_obj.has_other_pages %}
+    <nav class="flex justify-center gap-2 mt-10 text-sm">
+      {% if page_obj.has_previous %}<a class="px-4 py-2 border rounded" href="?page={{ page_obj.previous_page_number }}">Prev</a>{% endif %}
+      <span class="px-3 py-2">{{ page_obj.number }}/{{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}<a class="px-4 py-2 border rounded" href="?page={{ page_obj.next_page_number }}">Next</a>{% endif %}
+    </nav>
+    {% endif %}
+  </section>
+</main>
+{% endblock %}

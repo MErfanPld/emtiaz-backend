@@ -1,27 +1,61 @@
 {% extends "dashboard/base_dashboard.html" %}
+{% load static %}
 {% block title %}{{ page_title }}{% endblock %}
 {% block breadcrumb %}<a href="{% url 'dashboard:blog_list' %}">مقالات</a> / <span class="text-primary font-bold">{{ page_title }}</span>{% endblock %}
+{% block extra_head %}
+{{ form.media }}
+<style>
+  .django-ckeditor-widget { width: 100% !important; }
+  .cke { width: 100% !important; }
+</style>
+{% endblock %}
 {% block content %}
 <form method="post" enctype="multipart/form-data" class="bg-white rounded-xl border p-5 sm:p-6 space-y-5 shadow-sm max-w-4xl">
   {% csrf_token %}
   {% if form.non_field_errors %}<div class="text-red-600 text-sm">{{ form.non_field_errors }}</div>{% endif %}
+
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div class="md:col-span-2"><label class="block text-xs font-semibold mb-1">عنوان *</label>{{ form.title }}{% if form.title.errors %}<p class="text-red-600 text-xs">{{ form.title.errors.0 }}</p>{% endif %}</div>
+    <div class="md:col-span-2"><label class="block text-xs font-semibold mb-1">عنوان فارسی *</label>{{ form.title }}</div>
+    <div class="md:col-span-2"><label class="block text-xs font-semibold mb-1">عنوان انگلیسی</label>{{ form.title_en }}</div>
     <div><label class="block text-xs font-semibold mb-1">اسلاگ</label>{{ form.slug }}</div>
     <div><label class="block text-xs font-semibold mb-1">دسته‌بندی</label>{{ form.category }}</div>
-    <div class="md:col-span-2"><label class="block text-xs font-semibold mb-1">خلاصه</label>{{ form.excerpt }}</div>
-    <div class="md:col-span-2"><label class="block text-xs font-semibold mb-1">متن کامل *</label>{{ form.body }}{% if form.body.errors %}<p class="text-red-600 text-xs">{{ form.body.errors.0 }}</p>{% endif %}</div>
+
+    <div class="md:col-span-2">
+      <label class="block text-xs font-semibold mb-2">برچسب‌ها</label>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm border rounded-lg p-3 max-h-40 overflow-y-auto">
+        {% for checkbox in form.tags %}
+        <label class="inline-flex items-center gap-2">{{ checkbox.tag }} {{ checkbox.choice_label }}</label>
+        {% empty %}
+        <span class="text-on-surface-variant text-xs">ابتدا از منوی برچسب‌ها، برچسب بسازید. <a class="text-primary" href="{% url 'dashboard:blog_tag_list' %}">مدیریت برچسب‌ها</a></span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="md:col-span-2"><label class="block text-xs font-semibold mb-1">خلاصه فارسی</label>{{ form.excerpt }}</div>
+    <div class="md:col-span-2"><label class="block text-xs font-semibold mb-1">خلاصه انگلیسی</label>{{ form.excerpt_en }}</div>
+
+    <div class="md:col-span-2">
+      <label class="block text-xs font-semibold mb-1">متن کامل فارسی (CKEditor)</label>
+      {{ form.body }}
+      {% if form.body.errors %}<p class="text-red-600 text-xs">{{ form.body.errors.0 }}</p>{% endif %}
+    </div>
+    <div class="md:col-span-2">
+      <label class="block text-xs font-semibold mb-1">متن کامل انگلیسی (CKEditor)</label>
+      {{ form.body_en }}
+    </div>
+
     <div><label class="block text-xs font-semibold mb-1">تصویر کاور</label>{{ form.cover_image }}</div>
-    <div><label class="block text-xs font-semibold mb-1">یا URL تصویر</label>{{ form.cover_image_url }}</div>
-    <div><label class="block text-xs font-semibold mb-1">نویسنده</label>{{ form.author_name }}</div>
-    <div><label class="block text-xs font-semibold mb-1">زمان مطالعه (دقیقه)</label>{{ form.reading_minutes }}</div>
-    <div class="md:col-span-2"><label class="block text-xs font-semibold mb-1">برچسب‌ها</label>{{ form.tags }}</div>
+    <div><label class="block text-xs font-semibold mb-1">URL تصویر</label>{{ form.cover_image_url }}</div>
+    <div><label class="block text-xs font-semibold mb-1">نویسنده FA</label>{{ form.author_name }}</div>
+    <div><label class="block text-xs font-semibold mb-1">نویسنده EN</label>{{ form.author_name_en }}</div>
+    <div><label class="block text-xs font-semibold mb-1">زمان مطالعه</label>{{ form.reading_minutes }}</div>
     <div><label class="block text-xs font-semibold mb-1">تاریخ انتشار</label>{{ form.published_at }}</div>
-    <div class="flex flex-wrap gap-4 items-center text-sm pt-6">
+    <div class="flex flex-wrap gap-4 items-center text-sm pt-4 md:col-span-2">
       <label class="inline-flex items-center gap-2">{{ form.is_published }} منتشر شود</label>
       <label class="inline-flex items-center gap-2">{{ form.is_featured }} ویژه</label>
     </div>
   </div>
+
   <div class="flex gap-3 border-t pt-4">
     <button type="submit" class="px-6 py-2.5 rounded-lg bg-primary text-white font-bold text-sm">{{ submit_label }}</button>
     <a href="{% url 'dashboard:blog_list' %}" class="px-6 py-2.5 rounded-lg border text-sm">انصراف</a>

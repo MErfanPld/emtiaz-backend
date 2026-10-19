@@ -1,0 +1,29 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}برچسب‌ها{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard:blog_list' %}">مقالات</a> / <span class="text-primary font-bold">برچسب‌ها</span>{% endblock %}
+{% block header_actions %}
+<a href="{% url 'dashboard:blog_tag_create' %}" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary text-white text-sm font-bold"><i class="fa-solid fa-plus"></i> برچسب جدید</a>
+{% endblock %}
+{% block content %}
+<div class="bg-white rounded-xl border overflow-hidden">
+  <table class="w-full text-sm text-right">
+    <thead class="bg-[#f7faf7]"><tr><th class="py-3 px-4">نام</th><th class="py-3 px-4">انگلیسی</th><th class="py-3 px-4">اسلاگ</th><th class="py-3 px-4">فعال</th><th class="py-3 px-4"></th></tr></thead>
+    <tbody class="divide-y">
+      {% for t in tags %}
+      <tr>
+        <td class="py-3 px-4 font-bold">{{ t.name }}</td>
+        <td class="py-3 px-4">{{ t.name_en|default:"—" }}</td>
+        <td class="py-3 px-4 font-mono text-xs" dir="ltr">{{ t.slug }}</td>
+        <td class="py-3 px-4">{% if t.is_active %}بله{% else %}خیر{% endif %}</td>
+        <td class="py-3 px-4">
+          <a href="{% url 'dashboard:blog_tag_edit' t.pk %}" class="text-primary ml-2"><i class="fa-solid fa-pen"></i></a>
+          <a href="{% url 'dashboard:blog_tag_delete' t.pk %}" class="text-red-600"><i class="fa-solid fa-trash"></i></a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" class="py-10 text-center">برچسبی نیست. <a href="{% url 'dashboard:blog_tag_create' %}" class="text-primary font-bold">ایجاد</a></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

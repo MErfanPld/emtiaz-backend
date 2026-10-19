@@ -1,91 +1,67 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static jalali_tags %}
 {% block title %}{{ post.title }} | مجموعه املاک امتیاز{% endblock %}
 {% block content %}
 <main class="w-full max-w-[1320px] mx-auto px-4 sm:px-6 md:px-12 py-8 md:py-12">
-  <nav class="mb-8 flex flex-wrap items-center gap-2 text-sm text-outline" aria-label="breadcrumb">
+  <nav class="mb-8 flex flex-wrap items-center gap-2 text-sm text-outline">
     <a class="hover:text-primary" href="{% url 'core:home' %}">صفحه اصلی</a>
-    <i class="fa-solid fa-chevron-left text-xs"></i>
+    <span>/</span>
     <a class="hover:text-primary" href="{% url 'blog:list' %}">مقالات</a>
-    <i class="fa-solid fa-chevron-left text-xs"></i>
+    <span>/</span>
     <span class="text-on-surface font-semibold line-clamp-1">{{ post.title }}</span>
   </nav>
 
   <header class="max-w-4xl mx-auto mb-10 text-center md:text-right">
     {% if post.category %}
-    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f7faf7] border text-secondary text-sm mb-4">
-      <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>{{ post.category.name }}
-    </div>
+    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f7faf7] border text-secondary text-sm mb-4">{{ post.category.name }}</div>
     {% endif %}
-    <h1 class="text-2xl md:text-4xl font-extrabold text-primary tracking-tight mb-5">{{ post.title }}</h1>
-    {% if post.excerpt %}<p class="text-lg text-on-surface-variant leading-relaxed mb-6 max-w-3xl">{{ post.excerpt }}</p>{% endif %}
+    <h1 class="text-2xl md:text-4xl font-extrabold text-primary mb-5">{{ post.title }}</h1>
+    {% if post.excerpt %}<p class="text-lg text-on-surface-variant leading-relaxed mb-6">{{ post.excerpt }}</p>{% endif %}
     <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 pt-5 border-t text-sm text-outline">
-      <span><i class="fa-solid fa-pen-to-square text-secondary ml-1"></i>{{ post.author_name }}</span>
-      <span><i class="fa-regular fa-calendar text-secondary ml-1"></i>{% if post.published_at %}{{ post.published_at|date:"j F Y" }}{% endif %}</span>
-      <span><i class="fa-regular fa-clock text-secondary ml-1"></i>{{ post.reading_minutes }} دقیقه مطالعه</span>
-      <span><i class="fa-solid fa-eye text-secondary ml-1"></i>{{ post.views_count }} بازدید</span>
+      <span>{{ post.author_name }}</span>
+      <span><i class="fa-regular fa-calendar text-secondary ml-1"></i>{{ post.published_at|jalali:"j F Y" }}</span>
+      <span>{{ post.reading_minutes }} دقیقه مطالعه</span>
+      <span>{{ post.views_count }} بازدید</span>
     </div>
   </header>
 
   {% if post.display_image %}
-  <div class="relative w-full rounded-xl overflow-hidden mb-12 border">
-    <div class="aspect-[16/9] w-full bg-[#ecefeb]">
-      <img alt="{{ post.title }}" class="w-full h-full object-cover" src="{{ post.display_image }}"/>
-    </div>
+  <div class="rounded-xl overflow-hidden mb-12 border aspect-[16/9] bg-[#ecefeb]">
+    <img class="w-full h-full object-cover" src="{{ post.display_image }}" alt="{{ post.title }}"/>
   </div>
   {% endif %}
 
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
     <article class="lg:col-span-8 prose prose-lg max-w-none text-on-surface-variant leading-relaxed">
-      <div class="space-y-4 text-base md:text-lg [&_h2]:text-primary [&_h2]:font-bold [&_h2]:text-xl [&_h2]:mt-8 [&_h3]:text-primary [&_h3]:font-bold [&_p]:leading-relaxed [&_ul]:list-disc [&_ul]:pr-6 [&_blockquote]:border-r-4 [&_blockquote]:border-secondary [&_blockquote]:pr-4 [&_blockquote]:italic">
-        {{ post.body|linebreaks }}
-      </div>
-
-      {% if post.tag_list %}
-      <div class="mt-10 pt-6 border-t flex flex-wrap gap-2">
-        {% for t in post.tag_list %}
-        <span class="px-3 py-1 bg-[#f7faf7] rounded-full text-sm text-on-surface-variant">{{ t }}</span>
+      <div class="ck-content space-y-4 text-base md:text-lg">{{ post.body|safe }}</div>
+      {% if post.tags.all %}
+      <div class="mt-10 pt-6 border-t flex flex-wrap gap-2 not-prose">
+        {% for t in post.tags.all %}
+        <a href="{% url 'blog:list' %}?tag={{ t.slug }}" class="px-3 py-1 bg-[#f7faf7] rounded-full text-sm hover:bg-primary hover:text-white transition-colors">#{{ t.name }}</a>
         {% endfor %}
       </div>
       {% endif %}
-
-      <div class="mt-8 p-6 bg-[#f7faf7] rounded-xl border flex items-center gap-4">
-        <div class="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center shrink-0"><i class="fa-solid fa-building"></i></div>
-        <div>
-          <h4 class="font-bold text-primary mb-1">{{ post.author_name }}</h4>
-          <p class="text-sm text-on-surface-variant">محتوای تخصصی و راهنماهای ملکی با نظارت کارشناسان مجموعه املاک امتیاز.</p>
-        </div>
-      </div>
     </article>
-
     <aside class="lg:col-span-4 space-y-6 lg:sticky lg:top-28">
       <div class="p-6 bg-white rounded-xl border shadow-sm space-y-4">
-        <div class="w-12 h-12 rounded-lg bg-primary text-white flex items-center justify-center"><i class="fa-solid fa-headset text-xl"></i></div>
-        <h3 class="font-bold text-primary">نیاز به راهنمایی بیشتر دارید؟</h3>
-        <p class="text-sm text-on-surface-variant leading-relaxed">مشاوران مجموعه املاک امتیاز آماده‌اند.</p>
+        <h3 class="font-bold text-primary">نیاز به راهنمایی؟</h3>
+        <p class="text-sm text-on-surface-variant">مشاوران مجموعه املاک امتیاز آماده‌اند.</p>
         <a class="block text-center w-full bg-primary text-white py-3 rounded-lg text-sm font-semibold" href="{% url 'real_estate:list' %}">مشاهده املاک</a>
-        <a class="block text-center w-full border border-secondary text-primary py-2.5 rounded-lg text-sm" href="tel:02122000000">۰۲۱-۲۲۰۰۰۰۰۰</a>
       </div>
-      <a href="{% url 'blog:list' %}" class="block text-center text-sm font-semibold text-primary">← بازگشت به لیست مقالات</a>
+      <a href="{% url 'blog:list' %}" class="block text-center text-sm font-semibold text-primary">← بازگشت به مقالات</a>
     </aside>
   </div>
 
   {% if related_posts %}
   <section class="mt-20 pt-10 border-t">
-    <div class="flex items-center justify-between mb-6">
-      <h2 class="text-xl font-bold text-primary">مطالب مرتبط</h2>
-      <a class="text-secondary text-sm font-semibold" href="{% url 'blog:list' %}">همه مقالات</a>
-    </div>
+    <h2 class="text-xl font-bold text-primary mb-6">مطالب مرتبط</h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       {% for r in related_posts %}
-      <article class="bg-white rounded-xl border overflow-hidden shadow-sm flex flex-col">
-        <a href="{{ r.get_absolute_url }}" class="aspect-[16/10] bg-[#ecefeb] overflow-hidden block">
-          {% if r.display_image %}<img class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" src="{{ r.display_image }}" alt=""/>{% endif %}
-        </a>
-        <div class="p-4 flex flex-col flex-1">
-          <div class="text-xs text-outline mb-1">{% if r.category %}{{ r.category.name }} · {% endif %}{{ r.reading_minutes }} دقیقه</div>
-          <h3 class="font-bold text-primary mb-2"><a href="{{ r.get_absolute_url }}">{{ r.title }}</a></h3>
-          <p class="text-sm text-on-surface-variant line-clamp-2 mt-auto">{{ r.excerpt|truncatewords:18 }}</p>
+      <article class="bg-white rounded-xl border overflow-hidden shadow-sm">
+        <a href="{{ r.get_absolute_url }}" class="aspect-[16/10] bg-[#ecefeb] block">{% if r.display_image %}<img class="w-full h-full object-cover" src="{{ r.display_image }}" alt=""/>{% endif %}</a>
+        <div class="p-4">
+          <div class="text-xs text-outline mb-1">{{ r.published_at|jalali:"j F Y" }}</div>
+          <h3 class="font-bold text-primary"><a href="{{ r.get_absolute_url }}">{{ r.title }}</a></h3>
         </div>
       </article>
       {% endfor %}

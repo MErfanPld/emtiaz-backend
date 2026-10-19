@@ -2,7 +2,8 @@
 {% block title %}{{ page_title }}{% endblock %}
 {% block content %}
 <form method="post" class="bg-white rounded-xl border p-6 max-w-lg space-y-4">{% csrf_token %}
-  <div><label class="block text-xs font-semibold mb-1">نام</label>{{ form.name }}</div>
+  <div><label class="block text-xs font-semibold mb-1">نام فارسی</label>{{ form.name }}</div>
+  <div><label class="block text-xs font-semibold mb-1">نام انگلیسی</label>{{ form.name_en }}</div>
   <div><label class="block text-xs font-semibold mb-1">اسلاگ</label>{{ form.slug }}</div>
   <div><label class="block text-xs font-semibold mb-1">ترتیب</label>{{ form.sort_order }}</div>
   <label class="inline-flex items-center gap-2 text-sm">{{ form.is_active }} فعال</label>

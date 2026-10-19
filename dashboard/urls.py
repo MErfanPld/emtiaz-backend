@@ -16,6 +16,10 @@ from .views_blog import (
     BlogPostDeleteView,
     BlogPostListView,
     BlogPostUpdateView,
+    BlogTagCreateView,
+    BlogTagDeleteView,
+    BlogTagListView,
+    BlogTagUpdateView,
 )
 from .views_users import (
     GroupCreateView,
@@ -33,12 +37,10 @@ app_name = 'dashboard'
 
 urlpatterns = [
     path('', DashboardIndexView.as_view(), name='index'),
-    # املاک
     path('properties/', PropertyDashboardListView.as_view(), name='property_list'),
     path('properties/new/', PropertyCreateView.as_view(), name='property_create'),
     path('properties/<slug:slug>/edit/', PropertyUpdateView.as_view(), name='property_edit'),
     path('properties/<slug:slug>/delete/', PropertyDeleteView.as_view(), name='property_delete'),
-    # وبلاگ
     path('blog/', BlogPostListView.as_view(), name='blog_list'),
     path('blog/new/', BlogPostCreateView.as_view(), name='blog_create'),
     path('blog/<slug:slug>/edit/', BlogPostUpdateView.as_view(), name='blog_edit'),
@@ -47,7 +49,10 @@ urlpatterns = [
     path('blog/categories/new/', BlogCategoryCreateView.as_view(), name='blog_category_create'),
     path('blog/categories/<int:pk>/edit/', BlogCategoryUpdateView.as_view(), name='blog_category_edit'),
     path('blog/categories/<int:pk>/delete/', BlogCategoryDeleteView.as_view(), name='blog_category_delete'),
-    # کاربران و دسترسی
+    path('blog/tags/', BlogTagListView.as_view(), name='blog_tag_list'),
+    path('blog/tags/new/', BlogTagCreateView.as_view(), name='blog_tag_create'),
+    path('blog/tags/<int:pk>/edit/', BlogTagUpdateView.as_view(), name='blog_tag_edit'),
+    path('blog/tags/<int:pk>/delete/', BlogTagDeleteView.as_view(), name='blog_tag_delete'),
     path('users/', UserListView.as_view(), name='user_list'),
     path('users/new/', UserCreateView.as_view(), name='user_create'),
     path('users/<int:pk>/edit/', UserUpdateView.as_view(), name='user_edit'),
