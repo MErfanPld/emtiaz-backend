@@ -9,36 +9,48 @@ from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView, View
 
 from .user_forms import DashboardUserCreateForm, DashboardUserForm, GroupForm
-from .views import ApprovedRequiredMixin
 
 User = get_user_model()
 
 
-class StaffRequiredMixin(ApprovedRequiredMixin):
-    """فقط staff یا superuser."""
+class StaffRequiredMixin:
+    """تأییدشده + staff یا superuser — قبل از اجرای ویو چک می‌شود."""
 
     def dispatch(self, request, *args, **kwargs):
-        resp = super().dispatch(request, *args, **kwargs)
-        if getattr(resp, 'status_code', 200) in (301, 302):
-            return resp
+        if not request.user.is_authenticated:
+            return redirect('accounts:login')
+        if not request.user.is_active:
+            return redirect('accounts:login')
+        if not getattr(request.user, 'is_approved', False):
+            return redirect('accounts:pending')
         if not (request.user.is_staff or request.user.is_superuser):
             messages.error(request, 'دسترسی به این بخش فقط برای مدیران است.')
             return redirect('dashboard:index')
-        return resp
+        return super().dispatch(request, *args, **kwargs)
 
 
-class SuperuserRequiredMixin(ApprovedRequiredMixin):
+class SuperuserRequiredMixin:
     def dispatch(self, request, *args, **kwargs):
-        resp = super().dispatch(request, *args, **kwargs)
-        if getattr(resp, 'status_code', 200) in (301, 302):
-            return resp
+        if not request.user.is_authenticated:
+            return redirect('accounts:login')
+        if not request.user.is_active or not getattr(request.user, 'is_approved', False):
+            return redirect('accounts:pending')
         if not request.user.is_superuser:
             messages.error(request, 'فقط مدیر کل به این بخش دسترسی دارد.')
             return redirect('dashboard:index')
-        return resp
+        return super().dispatch(request, *args, **kwargs)
 
 
-# ─── کاربران ───────────────────────────────────────────────
+def _permissions_by_app():
+    perms = Permission.objects.select_related('content_type').order_by(
+        'content_type__app_label', 'codename'
+    )
+    grouped = {}
+    for p in perms:
+        key = f'{p.content_type.app_label}.{p.content_type.model}'
+        grouped.setdefault(key, []).append(p)
+    return grouped
+
 
 @method_decorator(login_required, name='dispatch')
 class UserListView(StaffRequiredMixin, ListView):
@@ -115,7 +127,6 @@ class UserUpdateView(StaffRequiredMixin, UpdateView):
         return kw
 
     def form_valid(self, form):
-        # جلوگیری از برداشتن سوپر از خود
         if self.object.pk == self.request.user.pk:
             form.instance.is_active = True
             if self.request.user.is_superuser:
@@ -145,8 +156,6 @@ class UserApproveView(StaffRequiredMixin, View):
             messages.warning(request, f'«{user}» رد شد.')
         return redirect(request.POST.get('next') or 'dashboard:user_list')
 
-
-# ─── گروه‌ها ───────────────────────────────────────────────
 
 @method_decorator(login_required, name='dispatch')
 class GroupListView(StaffRequiredMixin, ListView):
@@ -210,8 +219,6 @@ class GroupDeleteView(SuperuserRequiredMixin, DeleteView):
         return super().form_valid(form)
 
 
-# ─── مجوزها (فقط مشاهده) ───────────────────────────────────
-
 @method_decorator(login_required, name='dispatch')
 class PermissionListView(StaffRequiredMixin, ListView):
     model = Permission
@@ -227,14 +234,3 @@ class PermissionListView(StaffRequiredMixin, ListView):
         ctx = super().get_context_data(**kwargs)
         ctx['perm_groups'] = _permissions_by_app()
         return ctx
-
-
-def _permissions_by_app():
-    perms = Permission.objects.select_related('content_type').order_by(
-        'content_type__app_label', 'codename'
-    )
-    grouped = {}
-    for p in perms:
-        key = f"{p.content_type.app_label}.{p.content_type.model}"
-        grouped.setdefault(key, []).append(p)
-    return grouped

@@ -1,0 +1,41 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard:group_list' %}">گروه‌ها</a> / <span class="text-primary font-bold">{{ page_title }}</span>{% endblock %}
+{% block content %}
+<form method="post" class="bg-white rounded-xl border border-[#c1c8c4] p-5 sm:p-6 space-y-6 shadow-sm max-w-4xl">
+  {% csrf_token %}
+  <div>
+    <label class="block text-xs font-semibold mb-1">{{ form.name.label }}</label>
+    {{ form.name }}
+    {% if form.name.errors %}<p class="text-red-600 text-xs">{{ form.name.errors.0 }}</p>{% endif %}
+  </div>
+
+  <div>
+    <h3 class="font-bold text-primary mb-2"><i class="fa-solid fa-key ml-1"></i> مجوزهای گروه</h3>
+    <p class="text-xs text-on-surface-variant mb-3">مجوزهای مورد نیاز این نقش را انتخاب کنید.</p>
+    <div class="space-y-4 max-h-[28rem] overflow-y-auto border rounded-lg p-4">
+      {% for app_model, perms in perm_groups.items %}
+      <div>
+        <div class="text-xs font-bold text-primary mb-1 sticky top-0 bg-white py-1">{{ app_model }}</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs">
+          {% for p in perms %}
+          <label class="inline-flex items-start gap-2 py-0.5">
+            <input type="checkbox" name="permissions" value="{{ p.id }}" class="mt-0.5 rounded"
+              {% if form.instance.pk %}{% if p in form.instance.permissions.all %}checked{% endif %}{% endif %}
+              {% if not form.instance.pk and p.id in form.permissions.value %}checked{% endif %}
+            />
+            <span>{{ p.name }} <span class="text-on-surface-variant">({{ p.codename }})</span></span>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="flex gap-3 border-t pt-4">
+    <button type="submit" class="px-6 py-2.5 rounded-lg bg-primary text-white font-bold text-sm">{{ submit_label }}</button>
+    <a href="{% url 'dashboard:group_list' %}" class="px-6 py-2.5 rounded-lg border text-sm font-semibold">انصراف</a>
+  </div>
+</form>
+{% endblock %}

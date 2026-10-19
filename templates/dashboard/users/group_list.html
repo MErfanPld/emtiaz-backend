@@ -1,0 +1,44 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}گروه‌ها{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard:index' %}">داشبورد</a> / <span class="text-primary font-bold">گروه‌ها</span>{% endblock %}
+{% block header_actions %}
+{% if user.is_superuser %}
+<a href="{% url 'dashboard:group_create' %}" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary text-white text-sm font-bold"><i class="fa-solid fa-plus"></i> گروه جدید</a>
+{% endif %}
+{% endblock %}
+{% block content %}
+<div class="bg-white rounded-xl border border-[#c1c8c4] overflow-hidden shadow-sm">
+  <table class="w-full text-sm text-right">
+    <thead class="bg-[#f7faf7] text-on-surface-variant">
+      <tr>
+        <th class="py-3 px-4">نام گروه</th>
+        <th class="py-3 px-4">تعداد کاربران</th>
+        <th class="py-3 px-4">تعداد مجوز</th>
+        <th class="py-3 px-4">عملیات</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y">
+      {% for g in groups %}
+      <tr class="hover:bg-[#f7faf7]/50">
+        <td class="py-3 px-4 font-bold text-primary">{{ g.name }}</td>
+        <td class="py-3 px-4">{{ g.user_count }}</td>
+        <td class="py-3 px-4">{{ g.perm_count }}</td>
+        <td class="py-3 px-4">
+          {% if user.is_superuser %}
+          <a href="{% url 'dashboard:group_edit' g.pk %}" class="text-primary ml-2"><i class="fa-solid fa-pen"></i></a>
+          <a href="{% url 'dashboard:group_delete' g.pk %}" class="text-red-600"><i class="fa-solid fa-trash"></i></a>
+          {% else %}
+          <span class="text-xs text-on-surface-variant">فقط مشاهده</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4" class="py-10 text-center text-on-surface-variant">گروهی تعریف نشده.
+        {% if user.is_superuser %}<a href="{% url 'dashboard:group_create' %}" class="text-primary font-bold">ایجاد گروه</a>{% endif %}
+      </td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="text-xs text-on-surface-variant mt-3">گروه‌ها مجموعه‌ای از مجوزها هستند؛ با اختصاص گروه به کاربر، سطح دسترسی او مشخص می‌شود.</p>
+{% endblock %}

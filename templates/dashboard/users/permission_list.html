@@ -1,0 +1,27 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}سطح دسترسی‌ها{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard:index' %}">داشبورد</a> / <span class="text-primary font-bold">مجوزها</span>{% endblock %}
+{% block content %}
+<p class="text-sm text-on-surface-variant mb-4">
+  لیست تمام مجوزهای سیستم. برای اختصاص دسترسی، از بخش
+  <a href="{% url 'dashboard:group_list' %}" class="text-primary font-bold">گروه‌ها</a>
+  استفاده کنید و سپس گروه را به کاربر بدهید.
+</p>
+<div class="space-y-4">
+  {% for app_model, perms in perm_groups.items %}
+  <div class="bg-white rounded-xl border border-[#c1c8c4] overflow-hidden shadow-sm">
+    <div class="px-4 py-3 bg-[#f7faf7] border-b font-bold text-primary text-sm">{{ app_model }}</div>
+    <ul class="divide-y text-sm">
+      {% for p in perms %}
+      <li class="px-4 py-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+        <span>{{ p.name }}</span>
+        <code class="text-xs text-on-surface-variant font-mono" dir="ltr">{{ p.content_type.app_label }}.{{ p.codename }}</code>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% empty %}
+  <p class="text-center text-on-surface-variant py-8">مجوزی ثبت نشده. یک‌بار <code>migrate</code> را اجرا کنید.</p>
+  {% endfor %}
+</div>
+{% endblock %}

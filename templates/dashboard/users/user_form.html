@@ -1,0 +1,77 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard:user_list' %}">کاربران</a> / <span class="text-primary font-bold">{{ page_title }}</span>{% endblock %}
+{% block content %}
+<form method="post" class="bg-white rounded-xl border border-[#c1c8c4] p-5 sm:p-6 space-y-6 shadow-sm max-w-3xl">
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="text-red-600 text-sm">{{ form.non_field_errors }}</div>{% endif %}
+
+  <section>
+    <h3 class="font-bold text-primary mb-3"><i class="fa-solid fa-id-card ml-1"></i> اطلاعات پایه</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {% for field in form %}
+        {% if field.name in 'phone_number first_name last_name email job_title branch personnel_code password1 password2 new_password' %}
+        <div class="{% if field.name in 'email job_title' %}md:col-span-2{% endif %}">
+          <label class="block text-xs font-semibold mb-1">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<p class="text-[11px] text-on-surface-variant mt-0.5">{{ field.help_text }}</p>{% endif %}
+          {% if field.errors %}<p class="text-red-600 text-xs">{{ field.errors.0 }}</p>{% endif %}
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <h3 class="font-bold text-primary mb-3"><i class="fa-solid fa-shield-halved ml-1"></i> وضعیت و نقش</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {% if form.approval_status %}
+      <div><label class="block text-xs font-semibold mb-1">{{ form.approval_status.label }}</label>{{ form.approval_status }}{% if form.approval_status.errors %}<p class="text-red-600 text-xs">{{ form.approval_status.errors.0 }}</p>{% endif %}</div>
+      {% endif %}
+      {% if form.rejection_reason %}
+      <div class="md:col-span-2"><label class="block text-xs font-semibold mb-1">{{ form.rejection_reason.label }}</label>{{ form.rejection_reason }}</div>
+      {% endif %}
+      <div class="flex flex-wrap gap-4 text-sm md:col-span-2">
+        {% if form.is_active %}<label class="inline-flex items-center gap-2">{{ form.is_active }} فعال</label>{% endif %}
+        {% if form.is_staff %}<label class="inline-flex items-center gap-2">{{ form.is_staff }} Staff (مدیر پنل)</label>{% endif %}
+        {% if form.is_superuser %}<label class="inline-flex items-center gap-2">{{ form.is_superuser }} مدیر کل</label>{% endif %}
+      </div>
+    </div>
+  </section>
+
+  {% if form.groups %}
+  <section>
+    <h3 class="font-bold text-primary mb-3"><i class="fa-solid fa-layer-group ml-1"></i> گروه‌ها</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm max-h-48 overflow-y-auto border rounded-lg p-3">
+      {% for checkbox in form.groups %}
+      <label class="inline-flex items-center gap-2">{{ checkbox.tag }} {{ checkbox.choice_label }}</label>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if form.user_permissions %}
+  <section>
+    <h3 class="font-bold text-primary mb-2"><i class="fa-solid fa-key ml-1"></i> مجوزهای مستقیم</h3>
+    <p class="text-xs text-on-surface-variant mb-2">معمولاً بهتر است مجوزها از طریق گروه داده شوند.</p>
+    <div class="max-h-64 overflow-y-auto border rounded-lg p-3 text-xs space-y-1">
+      {% for checkbox in form.user_permissions %}
+      <label class="flex items-start gap-2 py-0.5">{{ checkbox.tag }} <span>{{ checkbox.choice_label }}</span></label>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if form.internal_notes %}
+  <section>
+    <label class="block text-xs font-semibold mb-1">{{ form.internal_notes.label }}</label>
+    {{ form.internal_notes }}
+  </section>
+  {% endif %}
+
+  <div class="flex gap-3 border-t pt-4">
+    <button type="submit" class="px-6 py-2.5 rounded-lg bg-primary text-white font-bold text-sm">{{ submit_label }}</button>
+    <a href="{% url 'dashboard:user_list' %}" class="px-6 py-2.5 rounded-lg border text-sm font-semibold">انصراف</a>
+  </div>
+</form>
+{% endblock %}
