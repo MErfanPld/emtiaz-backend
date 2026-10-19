@@ -8,10 +8,11 @@
       </a>
     </div>
 
-    <nav class="hidden lg:flex items-center gap-6 xl:gap-8 flex-1 justify-center">
+    <nav class="hidden lg:flex items-center gap-5 xl:gap-7 flex-1 justify-center">
       <a class="{% if request.resolver_match.namespace == 'core' and request.resolver_match.url_name == 'home' %}text-primary font-semibold border-b-2 border-secondary pb-1{% else %}text-on-surface-variant hover:text-primary{% endif %} text-sm xl:text-base transition-colors" href="{% url 'core:home' %}">{% if LANGUAGE_CODE == 'en' %}Home{% else %}صفحه اصلی{% endif %}</a>
       <a class="{% if request.resolver_match.url_name == 'about' %}text-primary font-semibold border-b-2 border-secondary pb-1{% else %}text-on-surface-variant hover:text-primary{% endif %} text-sm xl:text-base transition-colors" href="{% url 'core:about' %}">{% if LANGUAGE_CODE == 'en' %}About{% else %}معرفی مجموعه{% endif %}</a>
       <a class="{% if request.resolver_match.namespace == 'real_estate' %}text-primary font-semibold border-b-2 border-secondary pb-1{% else %}text-on-surface-variant hover:text-primary{% endif %} text-sm xl:text-base transition-colors" href="{% url 'real_estate:list' %}">{% if LANGUAGE_CODE == 'en' %}Properties{% else %}املاک{% endif %}</a>
+      <a class="{% if request.resolver_match.namespace == 'blog' %}text-primary font-semibold border-b-2 border-secondary pb-1{% else %}text-on-surface-variant hover:text-primary{% endif %} text-sm xl:text-base transition-colors" href="{% url 'blog:list' %}">{% if LANGUAGE_CODE == 'en' %}Blog{% else %}مقالات{% endif %}</a>
       <a class="text-on-surface-variant hover:text-primary transition-colors text-sm xl:text-base" href="{% url 'core:about' %}#visit">{% if LANGUAGE_CODE == 'en' %}Contact{% else %}تماس با ما{% endif %}</a>
     </nav>
 
@@ -20,6 +21,9 @@
         {% if request.resolver_match.namespace == 'real_estate' %}
         <a href="/real_estate/" class="px-2 py-1 rounded text-[11px] sm:text-xs font-bold {% if LANGUAGE_CODE != 'en' %}bg-primary text-on-primary{% else %}text-on-surface-variant{% endif %}" hreflang="fa">FA</a>
         <a href="/en/real_estate/" class="px-2 py-1 rounded text-[11px] sm:text-xs font-bold {% if LANGUAGE_CODE == 'en' %}bg-primary text-on-primary{% else %}text-on-surface-variant{% endif %}" hreflang="en">EN</a>
+        {% elif request.resolver_match.namespace == 'blog' %}
+        <a href="/blog/" class="px-2 py-1 rounded text-[11px] sm:text-xs font-bold {% if LANGUAGE_CODE != 'en' %}bg-primary text-on-primary{% else %}text-on-surface-variant{% endif %}" hreflang="fa">FA</a>
+        <a href="/en/blog/" class="px-2 py-1 rounded text-[11px] sm:text-xs font-bold {% if LANGUAGE_CODE == 'en' %}bg-primary text-on-primary{% else %}text-on-surface-variant{% endif %}" hreflang="en">EN</a>
         {% elif request.resolver_match.url_name == 'about' %}
         <a href="/about/" class="px-2 py-1 rounded text-[11px] sm:text-xs font-bold {% if LANGUAGE_CODE != 'en' %}bg-primary text-on-primary{% else %}text-on-surface-variant{% endif %}" hreflang="fa">FA</a>
         <a href="/en/about/" class="px-2 py-1 rounded text-[11px] sm:text-xs font-bold {% if LANGUAGE_CODE == 'en' %}bg-primary text-on-primary{% else %}text-on-surface-variant{% endif %}" hreflang="en">EN</a>
@@ -60,6 +64,7 @@
     <a class="block py-3 px-2 border-b border-outline-variant/30 hover:text-primary" href="{% url 'core:home' %}">{% if LANGUAGE_CODE == 'en' %}Home{% else %}صفحه اصلی{% endif %}</a>
     <a class="block py-3 px-2 border-b border-outline-variant/30 hover:text-primary" href="{% url 'core:about' %}">{% if LANGUAGE_CODE == 'en' %}About{% else %}معرفی مجموعه{% endif %}</a>
     <a class="block py-3 px-2 border-b border-outline-variant/30 hover:text-primary" href="{% url 'real_estate:list' %}">{% if LANGUAGE_CODE == 'en' %}Properties{% else %}املاک{% endif %}</a>
+    <a class="block py-3 px-2 border-b border-outline-variant/30 hover:text-primary" href="{% url 'blog:list' %}">{% if LANGUAGE_CODE == 'en' %}Blog{% else %}مقالات{% endif %}</a>
     <a class="block py-3 px-2 border-b border-outline-variant/30 hover:text-primary" href="{% url 'core:about' %}#visit">{% if LANGUAGE_CODE == 'en' %}Contact{% else %}تماس{% endif %}</a>
     {% if user.is_authenticated and user.is_active and user.is_approved %}
     <a class="block py-3 px-2 border-b border-outline-variant/30 text-secondary font-semibold" href="{% url 'dashboard:index' %}">{% if LANGUAGE_CODE == 'en' %}Dashboard{% else %}داشبورد{% endif %}</a>

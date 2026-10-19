@@ -1,0 +1,12 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}حذف مقاله{% endblock %}
+{% block content %}
+<div class="bg-white rounded-xl border p-8 max-w-md mx-auto text-center">
+  <h1 class="text-xl font-bold mb-2">حذف «{{ object.title }}»</h1>
+  <p class="text-sm text-on-surface-variant mb-6">این عمل قابل بازگشت نیست.</p>
+  <form method="post" class="flex gap-3 justify-center">{% csrf_token %}
+    <button type="submit" class="px-5 py-2.5 rounded-lg bg-red-600 text-white font-bold text-sm">حذف</button>
+    <a href="{% url 'dashboard:blog_list' %}" class="px-5 py-2.5 rounded-lg border text-sm">انصراف</a>
+  </form>
+</div>
+{% endblock %}

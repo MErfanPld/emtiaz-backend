@@ -1,0 +1,43 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}مقالات{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard:index' %}">داشبورد</a> / <span class="text-primary font-bold">مقالات</span>{% endblock %}
+{% block header_actions %}
+<a href="{% url 'dashboard:blog_create' %}" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary text-white text-sm font-bold"><i class="fa-solid fa-plus"></i> مقاله جدید</a>
+{% endblock %}
+{% block content %}
+<form method="get" class="flex flex-col sm:flex-row gap-2 mb-4">
+  <input type="text" name="q" value="{{ request.GET.q }}" placeholder="جستجو عنوان..." class="flex-1 border rounded-lg px-3 py-2 text-sm"/>
+  <select name="status" class="border rounded-lg px-3 py-2 text-sm">
+    <option value="">همه</option>
+    <option value="published" {% if request.GET.status == 'published' %}selected{% endif %}>منتشر</option>
+    <option value="draft" {% if request.GET.status == 'draft' %}selected{% endif %}>پیش‌نویس</option>
+  </select>
+  <button class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-bold">فیلتر</button>
+</form>
+<div class="bg-white rounded-xl border overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm text-right">
+      <thead class="bg-[#f7faf7]"><tr>
+        <th class="py-3 px-3">عنوان</th><th class="py-3 px-3">دسته</th><th class="py-3 px-3">وضعیت</th><th class="py-3 px-3">بازدید</th><th class="py-3 px-3">عملیات</th>
+      </tr></thead>
+      <tbody class="divide-y">
+        {% for p in posts %}
+        <tr class="hover:bg-[#f7faf7]/50">
+          <td class="py-3 px-3 font-bold text-primary">{{ p.title }}</td>
+          <td class="py-3 px-3">{{ p.category|default:"—" }}</td>
+          <td class="py-3 px-3">{% if p.is_published %}<span class="text-xs px-2 py-0.5 rounded-full bg-green-100">منتشر</span>{% else %}<span class="text-xs px-2 py-0.5 rounded-full bg-gray-100">پیش‌نویس</span>{% endif %}</td>
+          <td class="py-3 px-3">{{ p.views_count }}</td>
+          <td class="py-3 px-3">
+            <a href="{% url 'blog:detail' p.slug %}" target="_blank" class="text-gray-500 ml-2"><i class="fa-solid fa-eye"></i></a>
+            <a href="{% url 'dashboard:blog_edit' p.slug %}" class="text-primary ml-2"><i class="fa-solid fa-pen"></i></a>
+            <a href="{% url 'dashboard:blog_delete' p.slug %}" class="text-red-600"><i class="fa-solid fa-trash"></i></a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="py-10 text-center text-on-surface-variant">مقاله‌ای نیست. <a href="{% url 'dashboard:blog_create' %}" class="text-primary font-bold">ایجاد</a></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
