@@ -13,9 +13,7 @@
 <script src="{% static 'js/tailwind-config.js' %}"></script>
 <style>
   body { font-family: Vazirmatn, system-ui, sans-serif; }
-  .dash-side {
-    transition: transform .25s ease;
-  }
+  .dash-side { transition: transform .25s ease; }
   @media (max-width: 1023px) {
     .dash-side { transform: translateX(100%); }
     .dash-side.is-open { transform: translateX(0); }
@@ -23,7 +21,7 @@
   }
   .nav-link { display: flex; align-items: center; gap: .75rem; padding: .75rem 1rem; border-radius: .5rem; color: #5c635f; transition: .15s; }
   .nav-link:hover { background: #ecefeb; color: #181c1b; }
-  .nav-link.active { background: var(--tw-color-primary, #1a1a1a); color: #fff; font-weight: 700; }
+  .nav-link.active { background: #1a1a1a; color: #fff; font-weight: 700; }
   .nav-link i { width: 1.25rem; text-align: center; }
 </style>
 {% block extra_head %}{% endblock %}
@@ -46,7 +44,6 @@
       <i class="fa-solid fa-gauge-high"></i><span>داشبورد</span>
     </a>
 
-    {# املاک — همه کاربران تأییدشده #}
     <p class="px-4 pt-4 pb-1 text-[11px] font-bold text-on-surface-variant/80">املاک</p>
     <a class="nav-link {% if url_name == 'property_list' or url_name == 'property_edit' or url_name == 'property_delete' %}active{% endif %}" href="{% url 'dashboard:property_list' %}">
       <i class="fa-solid fa-house-chimney"></i><span>لیست املاک</span>
@@ -56,28 +53,22 @@
     </a>
 
     {% if user.is_staff or user.is_superuser %}
-    <p class="px-4 pt-4 pb-1 text-[11px] font-bold text-on-surface-variant/80">مدیریت پیشرفته</p>
-    <a class="nav-link" href="/admin/" target="_blank">
-      <i class="fa-solid fa-screwdriver-wrench"></i><span>پنل ادمین Django</span>
+    <p class="px-4 pt-4 pb-1 text-[11px] font-bold text-on-surface-variant/80">کاربران و دسترسی</p>
+    <a class="nav-link {% if url_name == 'user_list' or url_name == 'user_edit' or url_name == 'user_create' %}active{% endif %}" href="{% url 'dashboard:user_list' %}">
+      <i class="fa-solid fa-users"></i><span>کاربران</span>
     </a>
-    <a class="nav-link opacity-60 cursor-not-allowed" href="#" title="به‌زودی">
-      <i class="fa-solid fa-store"></i><span>دفاتر املاک</span>
+    <a class="nav-link {% if url_name == 'group_list' or url_name == 'group_edit' or url_name == 'group_create' %}active{% endif %}" href="{% url 'dashboard:group_list' %}">
+      <i class="fa-solid fa-layer-group"></i><span>گروه‌ها</span>
     </a>
-    <a class="nav-link opacity-60 cursor-not-allowed" href="#" title="به‌زودی">
-      <i class="fa-solid fa-newspaper"></i><span>مقالات</span>
-    </a>
-    <a class="nav-link opacity-60 cursor-not-allowed" href="#" title="به‌زودی">
-      <i class="fa-solid fa-inbox"></i><span>درخواست‌ها</span>
+    <a class="nav-link {% if url_name == 'permission_list' %}active{% endif %}" href="{% url 'dashboard:permission_list' %}">
+      <i class="fa-solid fa-key"></i><span>سطح دسترسی‌ها</span>
     </a>
     {% endif %}
 
-    {% if user.is_superuser %}
-    <p class="px-4 pt-4 pb-1 text-[11px] font-bold text-on-surface-variant/80">مدیر کل</p>
-    <a class="nav-link" href="/admin/accounts/user/" target="_blank">
-      <i class="fa-solid fa-users"></i><span>مدیریت کاربران</span>
-    </a>
-    <a class="nav-link opacity-60 cursor-not-allowed" href="#" title="به‌زودی">
-      <i class="fa-solid fa-gear"></i><span>تنظیمات سایت</span>
+    {% if user.is_staff or user.is_superuser %}
+    <p class="px-4 pt-4 pb-1 text-[11px] font-bold text-on-surface-variant/80">سایر</p>
+    <a class="nav-link" href="/admin/" target="_blank">
+      <i class="fa-solid fa-screwdriver-wrench"></i><span>پنل Django</span>
     </a>
     {% endif %}
 
@@ -99,7 +90,7 @@
         <p class="font-medium text-sm truncate">{{ user.get_full_name|default:user.phone_number }}</p>
         <p class="text-[11px] text-secondary">
           {% if user.is_superuser %}مدیر کل مجموعه
-          {% elif user.is_staff %}کارمند / مدیر
+          {% elif user.is_staff %}مدیر / کارمند
           {% else %}{{ user.job_title|default:"کاربر تأییدشده" }}{% endif %}
         </p>
       </div>
@@ -129,7 +120,7 @@
   {% if messages %}
   <div class="mb-4 space-y-2">
     {% for message in messages %}
-    <div class="rounded-lg border px-4 py-3 text-sm {% if message.tags == 'error' %}border-red-300 bg-red-50 text-red-800{% else %}border-secondary/40 bg-[#f7faf7] text-primary{% endif %}">{{ message }}</div>
+    <div class="rounded-lg border px-4 py-3 text-sm {% if message.tags == 'error' %}border-red-300 bg-red-50 text-red-800{% elif message.tags == 'warning' %}border-amber-300 bg-amber-50 text-amber-900{% else %}border-secondary/40 bg-[#f7faf7] text-primary{% endif %}">{{ message }}</div>
     {% endfor %}
   </div>
   {% endif %}
