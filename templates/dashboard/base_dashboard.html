@@ -38,119 +38,61 @@
       </div>
     </div>
   </div>
-
   <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1 text-sm">
-    <a class="nav-link {% if url_name == 'index' %}active{% endif %}" href="{% url 'dashboard:index' %}">
-      <i class="fa-solid fa-gauge-high"></i><span>داشبورد</span>
-    </a>
-
+    <a class="nav-link {% if url_name == 'index' %}active{% endif %}" href="{% url 'dashboard:index' %}"><i class="fa-solid fa-gauge-high"></i><span>داشبورد</span></a>
     <p class="px-4 pt-4 pb-1 text-[11px] font-bold text-on-surface-variant/80">املاک</p>
-    <a class="nav-link {% if url_name == 'property_list' or url_name == 'property_edit' or url_name == 'property_delete' %}active{% endif %}" href="{% url 'dashboard:property_list' %}">
-      <i class="fa-solid fa-house-chimney"></i><span>لیست املاک</span>
-    </a>
-    <a class="nav-link {% if url_name == 'property_create' %}active{% endif %}" href="{% url 'dashboard:property_create' %}">
-      <i class="fa-solid fa-plus"></i><span>افزودن ملک</span>
-    </a>
-
+    <a class="nav-link {% if url_name == 'property_list' or url_name == 'property_edit' or url_name == 'property_delete' %}active{% endif %}" href="{% url 'dashboard:property_list' %}"><i class="fa-solid fa-house-chimney"></i><span>لیست املاک</span></a>
+    <a class="nav-link {% if url_name == 'property_create' %}active{% endif %}" href="{% url 'dashboard:property_create' %}"><i class="fa-solid fa-plus"></i><span>افزودن ملک</span></a>
     <p class="px-4 pt-4 pb-1 text-[11px] font-bold text-on-surface-variant/80">مقالات</p>
-    <a class="nav-link {% if url_name == 'blog_list' or url_name == 'blog_edit' or url_name == 'blog_delete' %}active{% endif %}" href="{% url 'dashboard:blog_list' %}">
-      <i class="fa-solid fa-newspaper"></i><span>لیست مقالات</span>
-    </a>
-    <a class="nav-link {% if url_name == 'blog_create' %}active{% endif %}" href="{% url 'dashboard:blog_create' %}">
-      <i class="fa-solid fa-pen-to-square"></i><span>مقاله جدید</span>
-    </a>
-    <a class="nav-link {% if 'blog_category' in url_name %}active{% endif %}" href="{% url 'dashboard:blog_category_list' %}">
-      <i class="fa-solid fa-folder"></i><span>دسته‌بندی‌ها</span>
-    </a>
-    <a class="nav-link {% if 'blog_tag' in url_name %}active{% endif %}" href="{% url 'dashboard:blog_tag_list' %}">
-      <i class="fa-solid fa-tags"></i><span>برچسب‌ها</span>
-    </a>
-
+    <a class="nav-link {% if url_name == 'blog_list' or url_name == 'blog_edit' or url_name == 'blog_delete' %}active{% endif %}" href="{% url 'dashboard:blog_list' %}"><i class="fa-solid fa-newspaper"></i><span>لیست مقالات</span></a>
+    <a class="nav-link {% if url_name == 'blog_create' %}active{% endif %}" href="{% url 'dashboard:blog_create' %}"><i class="fa-solid fa-pen-to-square"></i><span>مقاله جدید</span></a>
+    <a class="nav-link {% if 'blog_category' in url_name %}active{% endif %}" href="{% url 'dashboard:blog_category_list' %}"><i class="fa-solid fa-folder"></i><span>دسته‌بندی‌ها</span></a>
+    <a class="nav-link {% if 'blog_tag' in url_name %}active{% endif %}" href="{% url 'dashboard:blog_tag_list' %}"><i class="fa-solid fa-tags"></i><span>برچسب‌ها</span></a>
+    <p class="px-4 pt-4 pb-1 text-[11px] font-bold text-on-surface-variant/80">ارتباط با مشتریان</p>
+    <a class="nav-link {% if 'consultation' in url_name %}active{% endif %}" href="{% url 'dashboard:consultation_list' %}"><i class="fa-solid fa-headset"></i><span>درخواست‌های مشاوره</span></a>
     {% if user.is_staff or user.is_superuser %}
     <p class="px-4 pt-4 pb-1 text-[11px] font-bold text-on-surface-variant/80">کاربران و دسترسی</p>
-    <a class="nav-link {% if url_name == 'user_list' or url_name == 'user_edit' or url_name == 'user_create' %}active{% endif %}" href="{% url 'dashboard:user_list' %}">
-      <i class="fa-solid fa-users"></i><span>کاربران</span>
-    </a>
-    <a class="nav-link {% if url_name == 'group_list' or url_name == 'group_edit' or url_name == 'group_create' %}active{% endif %}" href="{% url 'dashboard:group_list' %}">
-      <i class="fa-solid fa-layer-group"></i><span>گروه‌ها</span>
-    </a>
-    <a class="nav-link {% if url_name == 'permission_list' %}active{% endif %}" href="{% url 'dashboard:permission_list' %}">
-      <i class="fa-solid fa-key"></i><span>سطح دسترسی‌ها</span>
-    </a>
-    {% endif %}
-
-    {% if user.is_staff or user.is_superuser %}
+    <a class="nav-link {% if url_name == 'user_list' or url_name == 'user_edit' or url_name == 'user_create' %}active{% endif %}" href="{% url 'dashboard:user_list' %}"><i class="fa-solid fa-users"></i><span>کاربران</span></a>
+    <a class="nav-link {% if url_name == 'group_list' or url_name == 'group_edit' or url_name == 'group_create' %}active{% endif %}" href="{% url 'dashboard:group_list' %}"><i class="fa-solid fa-layer-group"></i><span>گروه‌ها</span></a>
+    <a class="nav-link {% if url_name == 'permission_list' %}active{% endif %}" href="{% url 'dashboard:permission_list' %}"><i class="fa-solid fa-key"></i><span>سطح دسترسی‌ها</span></a>
     <p class="px-4 pt-4 pb-1 text-[11px] font-bold text-on-surface-variant/80">سایر</p>
-    <a class="nav-link" href="/admin/" target="_blank">
-      <i class="fa-solid fa-screwdriver-wrench"></i><span>پنل Django</span>
-    </a>
+    <a class="nav-link" href="/admin/" target="_blank"><i class="fa-solid fa-screwdriver-wrench"></i><span>پنل Django</span></a>
     {% endif %}
-
     <p class="px-4 pt-4 pb-1 text-[11px] font-bold text-on-surface-variant/80">حساب</p>
-    <a class="nav-link" href="{% url 'accounts:profile' %}">
-      <i class="fa-solid fa-user"></i><span>پروفایل</span>
-    </a>
-    <a class="nav-link" href="{% url 'core:home' %}" target="_blank">
-      <i class="fa-solid fa-globe"></i><span>مشاهده سایت</span>
-    </a>
+    <a class="nav-link" href="{% url 'accounts:profile' %}"><i class="fa-solid fa-user"></i><span>پروفایل</span></a>
+    <a class="nav-link" href="{% url 'core:home' %}" target="_blank"><i class="fa-solid fa-globe"></i><span>مشاهده سایت</span></a>
   </nav>
-
   <div class="p-4 border-t border-[#c1c8c4]">
     <div class="flex items-center gap-3 mb-3 p-2 rounded-lg border bg-[#f7faf7]">
-      <div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
-        {{ user.first_name|slice:":1"|default:"ک" }}
-      </div>
+      <div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">{{ user.first_name|slice:":1"|default:"ک" }}</div>
       <div class="min-w-0 flex-1">
         <p class="font-medium text-sm truncate">{{ user.get_full_name|default:user.phone_number }}</p>
-        <p class="text-[11px] text-secondary">
-          {% if user.is_superuser %}مدیر کل مجموعه
-          {% elif user.is_staff %}مدیر / کارمند
-          {% else %}{{ user.job_title|default:"کاربر تأییدشده" }}{% endif %}
-        </p>
+        <p class="text-[11px] text-secondary">{% if user.is_superuser %}مدیر کل مجموعه{% elif user.is_staff %}مدیر / کارمند{% else %}{{ user.job_title|default:"کاربر تأییدشده" }}{% endif %}</p>
       </div>
     </div>
     <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}
-      <button type="submit" class="w-full flex items-center justify-center gap-2 py-2 text-sm text-red-600 rounded-lg hover:bg-red-50">
-        <i class="fa-solid fa-right-from-bracket"></i> خروج
-      </button>
+      <button type="submit" class="w-full flex items-center justify-center gap-2 py-2 text-sm text-red-600 rounded-lg hover:bg-red-50"><i class="fa-solid fa-right-from-bracket"></i> خروج</button>
     </form>
   </div>
 </aside>
 {% endwith %}
-
 <div id="dash-backdrop" class="fixed inset-0 z-40 bg-black/40 lg:hidden hidden"></div>
-
 <header class="dash-top sticky top-0 z-30 bg-white border-b border-[#c1c8c4] mr-72 h-14 px-4 flex items-center justify-between max-w-[calc(100%-18rem)]">
   <div class="flex items-center gap-3">
-    <button type="button" id="dash-menu-btn" class="lg:hidden w-10 h-10 rounded-lg border flex items-center justify-center">
-      <i class="fa-solid fa-bars"></i>
-    </button>
+    <button type="button" id="dash-menu-btn" class="lg:hidden w-10 h-10 rounded-lg border flex items-center justify-center"><i class="fa-solid fa-bars"></i></button>
     <div class="text-sm text-on-surface-variant">{% block breadcrumb %}داشبورد{% endblock %}</div>
   </div>
   <div class="flex items-center gap-2">{% block header_actions %}{% endblock %}</div>
 </header>
-
 <main class="dash-main mr-72 flex-1 p-4 sm:p-6 max-w-[calc(100%-18rem)] min-h-[calc(100vh-3.5rem)]">
-  {% if messages %}
-  <div class="mb-4 space-y-2">
-    {% for message in messages %}
-    <div class="rounded-lg border px-4 py-3 text-sm {% if message.tags == 'error' %}border-red-300 bg-red-50 text-red-800{% elif message.tags == 'warning' %}border-amber-300 bg-amber-50 text-amber-900{% else %}border-secondary/40 bg-[#f7faf7] text-primary{% endif %}">{{ message }}</div>
-    {% endfor %}
-  </div>
-  {% endif %}
+  {% if messages %}<div class="mb-4 space-y-2">{% for message in messages %}<div class="rounded-lg border px-4 py-3 text-sm {% if message.tags == 'error' %}border-red-300 bg-red-50 text-red-800{% elif message.tags == 'warning' %}border-amber-300 bg-amber-50 text-amber-900{% else %}border-secondary/40 bg-[#f7faf7] text-primary{% endif %}">{{ message }}</div>{% endfor %}</div>{% endif %}
   {% block content %}{% endblock %}
 </main>
-
 <script>
-(function(){
-  var side = document.getElementById('dash-side');
-  var btn = document.getElementById('dash-menu-btn');
-  var bd = document.getElementById('dash-backdrop');
-  function open(){ side.classList.add('is-open'); bd.classList.remove('hidden'); document.body.style.overflow='hidden'; }
-  function close(){ side.classList.remove('is-open'); bd.classList.add('hidden'); document.body.style.overflow=''; }
-  if(btn) btn.addEventListener('click', function(){ side.classList.contains('is-open') ? close() : open(); });
-  if(bd) bd.addEventListener('click', close);
-})();
+(function(){var side=document.getElementById('dash-side');var btn=document.getElementById('dash-menu-btn');var bd=document.getElementById('dash-backdrop');
+function open(){side.classList.add('is-open');bd.classList.remove('hidden');document.body.style.overflow='hidden';}
+function close(){side.classList.remove('is-open');bd.classList.add('hidden');document.body.style.overflow='';}
+if(btn)btn.addEventListener('click',function(){side.classList.contains('is-open')?close():open();});if(bd)bd.addEventListener('click',close);})();
 </script>
 <script src="{% static 'js/persian-digits.js' %}"></script>
 {% block extra_js %}{% endblock %}

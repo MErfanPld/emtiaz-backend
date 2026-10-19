@@ -1,7 +1,28 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-{% include "core/_home_a.html" %}
-{% include "core/_home_b.html" %}
+<section class="relative min-h-[420px] flex items-center justify-center overflow-hidden">
+  <div class="absolute inset-0 z-0">
+    <img class="w-full h-full object-cover" src="{% static 'banner.png' %}" alt=""/>
+    <div class="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/65 to-primary/30"></div>
+  </div>
+  <div class="relative z-10 max-w-[1320px] mx-auto px-6 py-16 text-center text-white">
+    <h1 class="text-3xl md:text-5xl font-extrabold mb-4">انتخابی مطمئن برای تصمیم‌های بزرگ ملکی</h1>
+    <p class="max-w-2xl mx-auto mb-8 text-white/90">مجموعه امتیاز؛ مرکز معاملات ملکی شمال تهران</p>
+    <div class="flex flex-wrap justify-center gap-3">
+      <a href="{% url 'real_estate:list' %}" class="px-6 py-3 rounded-lg bg-white text-primary font-bold">مشاهده املاک</a>
+      <a href="#contact" class="px-6 py-3 rounded-lg border border-white/50 text-white font-bold">درخواست مشاوره</a>
+    </div>
+  </div>
+</section>
+
+{% if messages %}
+<div class="max-w-[1320px] mx-auto px-6 pt-6">
+  {% for message in messages %}
+  <div class="rounded-lg border px-4 py-3 text-sm mb-2 {% if message.tags == 'error' %}border-red-300 bg-red-50 text-red-800{% else %}border-green-300 bg-green-50 text-green-800{% endif %}">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+
 {% include "core/_home_c.html" %}
-{% endblock content %}
+{% endblock %}
