@@ -4,12 +4,13 @@
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>{% if LANGUAGE_CODE == 'en' %}Emtiaz Real Estate | Luxury Property Hub{% else %}مجموعه تخصصی املاک امتیاز | مرجع معاملات لوکس شمیرانات{% endif %}</title>
+    <title>{% block title %}{% if LANGUAGE_CODE == 'en' %}Emtiaz Real Estate | Luxury Property Hub{% else %}مجموعه تخصصی املاک امتیاز | مرجع معاملات لوکس شمیرانات{% endif %}{% endblock %}</title>
     {% include "./_header.html" %}
+    {% block extra_head %}{% endblock %}
   </head>
-  <body class="bg-surface text-on-surface antialiased selection:bg-white-dim selection:text-primary">
+  <body class="bg-surface text-on-surface antialiased selection:bg-white-dim selection:text-primary min-h-screen flex flex-col">
     {% include "./includes/navbar.html" %}
-    {% block content %}{% endblock content %}
+    <div class="flex-1 w-full">{% block content %}{% endblock content %}</div>
     {% include "./includes/footer.html" %}
     {% include "./_footer.html" %}
   </body>

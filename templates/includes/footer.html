@@ -4,100 +4,91 @@
   class="bg-tertiary dark:bg-surface-container-lowest text-on-tertiary dark:text-on-surface full-width bottom-0 border-t border-secondary/20 dark:border-outline-variant/30"
   style="background-color: rgb(10, 10, 10)"
 >
-  <div class="w-full max-w-[1320px] mx-auto px-6 md:px-12 py-16 {% if LANGUAGE_CODE == 'en' %}ltr{% else %}rtl{% endif %}">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 mb-12">
+  <div class="w-full max-w-[1320px] mx-auto px-4 sm:px-6 md:px-12 py-12 md:py-16 {% if LANGUAGE_CODE == 'en' %}ltr{% else %}rtl{% endif %}">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 md:gap-12 mb-10 md:mb-12">
       <div class="lg:col-span-5 {% if LANGUAGE_CODE == 'en' %}text-left{% else %}text-right{% endif %}">
         <div class="flex items-center gap-3 mb-6">
           <a href="{% url 'core:home' %}" class="inline-flex items-center gap-3 group">
             <img
               src="{% static 'logo.svg' %}"
               alt="{% if LANGUAGE_CODE == 'en' %}Emtiaz Real Estate{% else %}املاک امتیاز{% endif %}"
-              class="h-16 md:h-20 w-auto object-contain brightness-0 invert"
+              class="h-14 sm:h-16 md:h-20 w-auto object-contain brightness-0 invert"
               width="80"
               height="80"
             />
             <div class="flex flex-col {% if LANGUAGE_CODE == 'en' %}text-left{% else %}text-right{% endif %}">
-              <span class="text-headline-md font-headline-md font-bold text-white tracking-tight">
-                {% if LANGUAGE_CODE == 'en' %}Emtiaz Real Estate Complex{% else %}مجموعه املاک امتیاز{% endif %}
+              <span class="text-lg sm:text-xl font-bold text-white tracking-tight">
+                {% if LANGUAGE_CODE == 'en' %}Emtiaz Real Estate{% else %}مجموعه املاک امتیاز{% endif %}
               </span>
-              <span class="text-label-sm font-label-sm text-white/70 mt-0.5">
+              <span class="text-xs text-white/70 mt-0.5">
                 {% if LANGUAGE_CODE == 'en' %}Credibility in northern Tehran property deals{% else %}توسعه و اعتبار معاملات ملکی در شمال تهران{% endif %}
               </span>
             </div>
           </a>
         </div>
-        <p class="text-white/70 text-body-sm font-body-sm leading-relaxed max-w-md mb-6">
+        <p class="text-white/70 text-sm leading-relaxed max-w-md mb-6">
           {% if LANGUAGE_CODE == 'en' %}
-            Emtiaz is the first concentrated real-estate complex in Shemiranat—uniting top advisory offices for transparency, peace of mind, and lasting investment protection.
+            Emtiaz is a focused real-estate collection in Shemiranat—uniting top advisory offices for transparency, peace of mind, and lasting investment protection.
           {% else %}
             املاک امتیاز، نخستین مجموعه متمرکز ملکی در شمیرانات؛ گردهم‌آورنده برترین دفاتر کارشناسی و مشاوره‌ای با هدف شفافیت، آرامش و صیانت از سرمایه‌گذاری‌های پایدار.
           {% endif %}
         </p>
         <div class="flex items-center gap-3">
           <a class="w-9 h-9 rounded-lg flex items-center justify-center text-white/70 hover:text-white transition-all" href="#" title="Instagram" style="background-color: rgb(31, 31, 31); border: 1px solid rgba(255, 255, 255, 0.1);">
-            <span class="material-symbols-outlined" style="font-size: 20px">photo_camera</span>
+            <i class="fa-brands fa-instagram"></i>
           </a>
           <a class="w-9 h-9 rounded-lg flex items-center justify-center text-white/70 hover:text-white transition-all" href="#" title="Telegram" style="background-color: rgb(31, 31, 31); border: 1px solid rgba(255, 255, 255, 0.1);">
-            <span class="material-symbols-outlined" style="font-size: 20px">send</span>
+            <i class="fa-brands fa-telegram"></i>
           </a>
           <a class="w-9 h-9 rounded-lg flex items-center justify-center text-white/70 hover:text-white transition-all" href="#" title="Email" style="background-color: rgb(31, 31, 31); border: 1px solid rgba(255, 255, 255, 0.1);">
-            <span class="material-symbols-outlined" style="font-size: 20px">alternate_email</span>
+            <i class="fa-solid fa-envelope"></i>
           </a>
         </div>
       </div>
 
       <div class="lg:col-span-4 {% if LANGUAGE_CODE == 'en' %}text-left{% else %}text-right{% endif %}">
-        <h4 class="text-title-md font-title-md font-bold text-white mb-4">
+        <h4 class="text-base font-bold text-white mb-4">
           {% if LANGUAGE_CODE == 'en' %}Quick links{% else %}دسترسی سریع{% endif %}
         </h4>
         <ul class="space-y-3">
-          <li><a class="text-white/70 hover:text-white transition-colors text-body-sm" href="#about-complex">{% if LANGUAGE_CODE == 'en' %}About &amp; approach{% else %}معرفی مجموعه و رویکردها{% endif %}</a></li>
-          <li><a class="text-white/70 hover:text-white transition-colors text-body-sm" href="#offices">{% if LANGUAGE_CODE == 'en' %}Resident agencies{% else %}دفاتر املاک مستقر{% endif %}</a></li>
-          <li><a class="text-white/70 hover:text-white transition-colors text-body-sm" href="#">{% if LANGUAGE_CODE == 'en' %}Investment opportunities{% else %}فرصت‌های سرمایه‌گذاری{% endif %}</a></li>
-          <li><a class="text-white/70 hover:text-white transition-colors text-body-sm" href="#properties">{% if LANGUAGE_CODE == 'en' %}Luxury homes &amp; penthouses{% else %}املاک لوکس و پنت‌هاوس‌ها{% endif %}</a></li>
-          <li><a class="text-white/70 hover:text-white transition-colors text-body-sm" href="#">{% if LANGUAGE_CODE == 'en' %}Terms &amp; privacy{% else %}قوانین و حریم خصوصی{% endif %}</a></li>
-          <li><a class="text-white/70 hover:text-white transition-colors text-body-sm" href="#contact">{% if LANGUAGE_CODE == 'en' %}Contact management{% else %}تماس با مدیریت و پذیرش{% endif %}</a></li>
+          <li><a class="text-white/70 hover:text-white transition-colors text-sm" href="{% url 'core:about' %}">{% if LANGUAGE_CODE == 'en' %}About{% else %}معرفی مجموعه{% endif %}</a></li>
+          <li><a class="text-white/70 hover:text-white transition-colors text-sm" href="{% url 'real_estate:list' %}">{% if LANGUAGE_CODE == 'en' %}Properties{% else %}املاک{% endif %}</a></li>
+          <li><a class="text-white/70 hover:text-white transition-colors text-sm" href="{% url 'core:about' %}#visit">{% if LANGUAGE_CODE == 'en' %}Contact{% else %}تماس با ما{% endif %}</a></li>
         </ul>
       </div>
 
       <div class="lg:col-span-3 {% if LANGUAGE_CODE == 'en' %}text-left{% else %}text-right{% endif %}">
-        <h4 class="text-title-md font-title-md font-bold text-white mb-4">
+        <h4 class="text-base font-bold text-white mb-4">
           {% if LANGUAGE_CODE == 'en' %}Direct contact{% else %}ارتباط مستقیم{% endif %}
         </h4>
-        <div class="space-y-4 text-body-sm font-body-sm text-white/70">
+        <div class="space-y-4 text-sm text-white/70">
           <div>
-            <span class="block text-white/60 font-medium mb-1">{% if LANGUAGE_CODE == 'en' %}24/7 hotline:{% else %}خط ویژه شبانه‌روزی:{% endif %}</span>
-            <span class="text-headline-sm font-headline-sm text-white font-bold font-mono" dir="ltr">{% if LANGUAGE_CODE == 'en' %}+98 21 2200 8890{% else %}۰۲۱-۲۲۰۰۸۸۹۰{% endif %}</span>
+            <span class="block text-white/60 font-medium mb-1">{% if LANGUAGE_CODE == 'en' %}Hotline:{% else %}خط ویژه:{% endif %}</span>
+            <span class="text-lg text-white font-bold font-mono" dir="ltr">{% if LANGUAGE_CODE == 'en' %}+98 21 2200 8890{% else %}۰۲۱-۲۲۰۰۸۸۹۰{% endif %}</span>
           </div>
           <div>
-            <span class="block text-white/60 font-medium mb-1">{% if LANGUAGE_CODE == 'en' %}Reception address:{% else %}آدرس پذیرش:{% endif %}</span>
+            <span class="block text-white/60 font-medium mb-1">{% if LANGUAGE_CODE == 'en' %}Address:{% else %}آدرس:{% endif %}</span>
             <span class="leading-relaxed">
               {% if LANGUAGE_CODE == 'en' %}
-                Tehran, Fereshteh St., No. 120, ground-floor lobby
+                Tehran, Fereshteh St., No. 120
               {% else %}
-                تهران، خ فرشته، پلاک ۱۲۰، طبقه همکف، لابی اصلی
+                تهران، خ فرشته، پلاک ۱۲۰
               {% endif %}
-            </span>
-          </div>
-          <div class="pt-2">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded text-white text-label-sm" style="background-color: rgb(31, 31, 31); border: 1px solid rgba(255, 255, 255, 0.1);">
-              <span class="w-2 h-2 rounded-full bg-white"></span>
-              <span>{% if LANGUAGE_CODE == 'en' %}Reception open until 21:00{% else %}پذیرش فعال تا ۲۱:۰۰{% endif %}</span>
             </span>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="pt-8 border-t border-secondary/20 flex flex-col sm:flex-row items-center justify-between text-body-sm text-white/70 gap-4">
+    <div class="pt-8 border-t border-secondary/20 flex flex-col sm:flex-row items-center justify-between text-sm text-white/70 gap-4">
       <p class="text-center {% if LANGUAGE_CODE == 'en' %}sm:text-left{% else %}sm:text-right{% endif %}">
         {% if LANGUAGE_CODE == 'en' %}
-          All rights reserved for Emtiaz Specialized Real Estate Complex.
+          All rights reserved for Emtiaz Real Estate.
         {% else %}
           تمامی حقوق مادی و معنوی این وب‌سایت متعلق به مجموعه تخصصی املاک امتیاز می‌باشد.
         {% endif %}
       </p>
-      <span class="text-label-sm text-white/60 font-mono">EMTIAZ REAL ESTATE COMPLEX © 2025</span>
+      <span class="text-xs text-white/60 font-mono">EMTIAZ REAL ESTATE © 2025</span>
     </div>
   </div>
 </footer>
