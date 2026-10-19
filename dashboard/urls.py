@@ -21,6 +21,11 @@ from .views_blog import (
     BlogTagListView,
     BlogTagUpdateView,
 )
+from .views_consultation import (
+    ConsultationDetailView,
+    ConsultationListView,
+    ConsultationStatusView,
+)
 from .views_users import (
     GroupCreateView,
     GroupDeleteView,
@@ -53,6 +58,9 @@ urlpatterns = [
     path('blog/tags/new/', BlogTagCreateView.as_view(), name='blog_tag_create'),
     path('blog/tags/<int:pk>/edit/', BlogTagUpdateView.as_view(), name='blog_tag_edit'),
     path('blog/tags/<int:pk>/delete/', BlogTagDeleteView.as_view(), name='blog_tag_delete'),
+    path('consultations/', ConsultationListView.as_view(), name='consultation_list'),
+    path('consultations/<int:pk>/', ConsultationDetailView.as_view(), name='consultation_detail'),
+    path('consultations/<int:pk>/status/', ConsultationStatusView.as_view(), name='consultation_status'),
     path('users/', UserListView.as_view(), name='user_list'),
     path('users/new/', UserCreateView.as_view(), name='user_create'),
     path('users/<int:pk>/edit/', UserUpdateView.as_view(), name='user_edit'),

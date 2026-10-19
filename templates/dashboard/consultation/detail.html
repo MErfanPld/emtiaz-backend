@@ -1,0 +1,36 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load persian %}
+{% block title %}درخواست {{ item.full_name }}{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard:consultation_list' %}">مشاوره</a> / <span class="text-primary font-bold">{{ item.full_name }}</span>{% endblock %}
+{% block content %}
+<div class="max-w-2xl space-y-4">
+  <div class="bg-white rounded-xl border p-6 space-y-3 text-sm">
+    <div class="flex justify-between"><span class="text-on-surface-variant">نام</span><strong>{{ item.full_name }}</strong></div>
+    <div class="flex justify-between"><span class="text-on-surface-variant">موبایل</span><strong dir="ltr">{{ item.phone|fa_num }}</strong></div>
+    <div class="flex justify-between"><span class="text-on-surface-variant">موضوع</span><strong>{{ item.get_request_type_display }}</strong></div>
+    <div class="flex justify-between"><span class="text-on-surface-variant">زمان ثبت</span><strong>{{ item.created_at|jalali:"j F Y — H:i" }}</strong></div>
+    <div class="flex justify-between"><span class="text-on-surface-variant">پیامک مدیر</span><strong>{% if item.sms_sent %}ارسال شد{% else %}خیر{% endif %}</strong></div>
+    {% if item.message %}
+    <div class="pt-3 border-t"><span class="text-on-surface-variant block mb-1">توضیح کاربر</span><p>{{ item.message }}</p></div>
+    {% endif %}
+  </div>
+  <form method="post" action="{% url 'dashboard:consultation_status' item.pk %}" class="bg-white rounded-xl border p-6 space-y-4">
+    {% csrf_token %}
+    <div>
+      <label class="block text-xs font-semibold mb-1">وضعیت</label>
+      <select name="status" class="w-full border rounded-lg px-3 py-2 text-sm">
+        {% for val, label in item.Status.choices %}
+        <option value="{{ val }}" {% if item.status == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="block text-xs font-semibold mb-1">یادداشت مدیر</label>
+      <textarea name="admin_note" rows="3" class="w-full border rounded-lg px-3 py-2 text-sm">{{ item.admin_note }}</textarea>
+    </div>
+    <button class="px-5 py-2.5 rounded-lg bg-primary text-white text-sm font-bold">ذخیره</button>
+    <a href="{% url 'dashboard:consultation_list' %}" class="px-5 py-2.5 rounded-lg border text-sm mr-2">بازگشت</a>
+  </form>
+  <a href="tel:{{ item.phone }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-bold"><i class="fa-solid fa-phone"></i> تماس با {{ item.phone|fa_num }}</a>
+</div>
+{% endblock %}
