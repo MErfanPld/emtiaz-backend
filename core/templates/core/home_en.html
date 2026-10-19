@@ -1,351 +1,142 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-    <section class="relative min-h-[520px] sm:min-h-[600px] md:min-h-[720px] flex items-center justify-center overflow-hidden">
-      <div class="absolute inset-0 z-0">
-        <img class="w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000 ease-out" alt="Luxury real estate complex in Northern Tehran" src="{% static 'banner.png' %}" />
-        <div class="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/65 to-primary/30 mix-blend-multiply"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-primary/80 via-transparent to-primary/70"></div>
-      </div>
-      <div class="relative z-10 w-full max-w-[1320px] mx-auto px-6 md:px-12 py-20 text-center flex flex-col items-center">
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container-lowest/15 backdrop-blur-md border border-secondary/40 text-white mb-6">
-          <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-          <span class="text-label-md font-label-md tracking-wide">Specialized property services in northern Tehran</span>
-        </div>
-        <h1 class="text-on-primary font-display-hero text-display-hero md:text-display-hero text-display-hero-mobile max-w-4xl tracking-tight mb-6 leading-tight">
-          A confident choice for major property decisions
-        </h1>
-        <p class="text-surface-container-highest/90 text-body-lg font-body-lg max-w-2xl mx-auto mb-10 leading-relaxed font-normal">
-          Emtiaz brings together leading real-estate agencies and legal and investment advisors in a focused modern complex—for a secure, refined buying experience.
-        </p>
-        <div class="flex flex-wrap items-center justify-center gap-4">
-          <a class="h-12 px-8 rounded-lg bg-primary-container text-on-primary hover:bg-[#8B1E2A] border border-secondary transition-all duration-200 flex items-center justify-center gap-2 text-label-lg font-label-lg shadow-lg active:scale-95" href="#properties">
-            <span class="material-symbols-outlined text-white">apartment</span>
-            <span>Browse properties</span>
-          </a>
-          <a class="h-12 px-8 rounded-lg bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 backdrop-blur-md text-on-primary border border-outline-variant/50 transition-all duration-200 flex items-center justify-center gap-2 text-label-lg font-label-lg active:scale-95" href="#about-complex">
-            <span class="material-symbols-outlined">info</span>
-            <span>About the complex</span>
-          </a>
-        </div>
-        <div class="mt-14 pt-8 border-t border-outline-variant/20 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-12 w-full max-w-3xl">
-          <div class="text-left border-l-2 border-secondary pl-4">
-            <div class="text-headline-md font-headline-md text-white font-bold">24+</div>
-            <div class="text-body-sm font-body-sm text-surface-container-highest/80">Resident trusted agencies</div>
-          </div>
-          <div class="text-left border-l-2 border-secondary pl-4">
-            <div class="text-headline-md font-headline-md text-white font-bold">100%</div>
-            <div class="text-body-sm font-body-sm text-surface-container-highest/80">Legal document verification</div>
-          </div>
-          <div class="text-left border-l-2 border-secondary pl-4">
-            <div class="text-headline-md font-headline-md text-white font-bold">350+</div>
-            <div class="text-body-sm font-body-sm text-surface-container-highest/80">Active luxury listings</div>
-          </div>
-          <div class="text-left border-l-2 border-secondary pl-4">
-            <div class="text-headline-md font-headline-md text-white font-bold">VIP</div>
-            <div class="text-body-sm font-body-sm text-surface-container-highest/80">Private negotiation rooms</div>
-          </div>
-        </div>
-      </div>
-    </section>
+{% if messages %}
+<div class="max-w-[1320px] mx-auto px-6 pt-4 space-y-2">
+  {% for message in messages %}
+  <div class="rounded-lg border px-4 py-3 text-sm {% if message.tags == 'error' %}border-red-300 bg-red-50 text-red-800{% else %}border-green-300 bg-green-50 text-green-800{% endif %}">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %}
 
-    <section class="relative z-20 -mt-10 max-w-[1240px] mx-auto px-6">
-      <div class="bg-surface-container-lowest rounded-xl p-6 md:p-8 architectural-shadow border border-outline-variant/40">
-        <div class="flex items-center gap-4 mb-6 border-b border-outline-variant/30 pb-3">
-          <button type="button" class="flex items-center gap-2 pb-3 -mb-3 text-primary font-bold border-b-2 border-secondary text-label-lg font-label-lg">
-            <span class="material-symbols-outlined text-secondary" style="font-size:18px">sell</span><span>Buy</span>
-          </button>
-          <button type="button" class="flex items-center gap-2 pb-3 -mb-3 text-on-surface-variant hover:text-primary text-label-lg font-label-lg">
-            <span class="material-symbols-outlined" style="font-size:18px">key</span><span>Rent</span>
-          </button>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div>
-            <label class="block text-label-md text-on-surface-variant mb-1.5 text-left font-medium">Transaction type</label>
-            <div class="relative">
-              <select class="w-full h-12 bg-surface rounded-lg border border-outline-variant/60 pl-4 pr-10 appearance-none">
-                <option>Cash purchase</option><option>Off-plan / pre-sale</option><option>Full deposit rent</option>
-              </select>
-              <span class="material-symbols-outlined absolute right-3 top-3 text-outline pointer-events-none">expand_more</span>
-            </div>
-          </div>
-          <div>
-            <label class="block text-label-md text-on-surface-variant mb-1.5 text-left font-medium">Property type</label>
-            <div class="relative">
-              <select class="w-full h-12 bg-surface rounded-lg border border-outline-variant/60 pl-4 pr-10 appearance-none">
-                <option>Residential apartment</option><option>Penthouse &amp; villa</option><option>Office &amp; commercial</option><option>Land &amp; older properties</option>
-              </select>
-              <span class="material-symbols-outlined absolute right-3 top-3 text-outline pointer-events-none">domain</span>
-            </div>
-          </div>
-          <div>
-            <label class="block text-label-md text-on-surface-variant mb-1.5 text-left font-medium">Area / neighborhood</label>
-            <div class="relative">
-              <input class="w-full h-12 bg-surface rounded-lg border border-outline-variant/60 pl-10 pr-4" placeholder="e.g. Fereshteh, Zaferanieh, Niavaran" type="text" />
-              <span class="material-symbols-outlined absolute left-3 top-3 text-secondary">location_on</span>
-            </div>
-          </div>
-          <div>
-            <label class="block text-label-md text-on-surface-variant mb-1.5 text-left font-medium">Budget range (Toman)</label>
-            <div class="relative">
-              <select class="w-full h-12 bg-surface rounded-lg border border-outline-variant/60 pl-4 pr-10 appearance-none">
-                <option>All budgets</option><option>20–50 billion Toman</option><option>50–100 billion Toman</option><option>100+ billion Toman (luxury)</option>
-              </select>
-              <span class="material-symbols-outlined absolute right-3 top-3 text-outline pointer-events-none">payments</span>
-            </div>
-          </div>
-        </div>
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-outline-variant/20">
-          <div class="flex flex-wrap items-center gap-2 text-label-md text-on-surface-variant">
-            <span class="text-outline">Popular searches:</span>
-            <a class="px-2.5 py-1 rounded bg-surface hover:bg-surface-container-high text-primary font-medium" href="#">Fereshteh penthouse</a>
-            <a class="px-2.5 py-1 rounded bg-surface hover:bg-surface-container-high text-primary font-medium" href="#">Zaferanieh garden tower</a>
-            <a class="px-2.5 py-1 rounded bg-surface hover:bg-surface-container-high text-primary font-medium" href="#">Elahieh office flat</a>
-          </div>
-          <button type="button" class="w-full sm:w-auto h-12 px-8 rounded-lg bg-primary-container text-on-primary border border-secondary flex items-center justify-center gap-2 text-label-lg shadow">
-            <span class="material-symbols-outlined text-white">search</span><span>Search properties</span>
-          </button>
-        </div>
-      </div>
-    </section>
+<section class="relative min-h-[520px] sm:min-h-[600px] md:min-h-[720px] flex items-center justify-center overflow-hidden">
+  <div class="absolute inset-0 z-0">
+    <img class="w-full h-full object-cover object-center scale-105" src="{% static 'banner.png' %}" alt=""/>
+    <div class="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/65 to-primary/30 mix-blend-multiply"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-primary/80 via-transparent to-primary/70"></div>
+  </div>
+  <div class="relative z-10 w-full max-w-[1320px] mx-auto px-6 md:px-12 py-20 text-center flex flex-col items-center">
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-secondary/40 text-white mb-6">
+      <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+      <span class="text-sm tracking-wide">Specialized property services in northern Tehran</span>
+    </div>
+    <h1 class="text-white text-3xl md:text-5xl font-extrabold max-w-4xl tracking-tight mb-6 leading-tight">A confident choice for major property decisions</h1>
+    <p class="text-white/90 text-base md:text-lg max-w-2xl mx-auto mb-10 leading-relaxed">Emtiaz brings together leading real-estate agencies and legal and investment advisors in a focused modern complex—for a secure, refined buying experience.</p>
+    <div class="flex flex-wrap items-center justify-center gap-4">
+      <a class="h-12 px-8 rounded-lg bg-primary-container text-white border border-secondary flex items-center gap-2 font-semibold shadow-lg" href="#properties">
+        <span class="material-symbols-outlined text-white">apartment</span> Browse properties
+      </a>
+      <a class="h-12 px-8 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/40 flex items-center gap-2 font-semibold" href="#about-complex">
+        <span class="material-symbols-outlined">info</span> About the complex
+      </a>
+    </div>
+    <div class="mt-14 pt-8 border-t border-white/20 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-12 w-full max-w-3xl">
+      <div class="text-left border-l-2 border-secondary pl-4"><div class="text-2xl font-bold text-white">24+</div><div class="text-sm text-white/80">Resident trusted agencies</div></div>
+      <div class="text-left border-l-2 border-secondary pl-4"><div class="text-2xl font-bold text-white">100%</div><div class="text-sm text-white/80">Legal document verification</div></div>
+      <div class="text-left border-l-2 border-secondary pl-4"><div class="text-2xl font-bold text-white">{% if property_count %}{{ property_count }}+{% else %}350+{% endif %}</div><div class="text-sm text-white/80">Active luxury listings</div></div>
+      <div class="text-left border-l-2 border-secondary pl-4"><div class="text-2xl font-bold text-white">VIP</div><div class="text-sm text-white/80">Private negotiation rooms</div></div>
+    </div>
+  </div>
+</section>
 
-    <section class="py-24 max-w-[1320px] mx-auto px-6 md:px-12" id="about-complex">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-        <div class="lg:col-span-6 relative">
-          <div class="relative rounded-xl overflow-hidden architectural-shadow border border-outline-variant/40">
-            <img class="w-full h-[460px] md:h-[540px] object-cover" alt="Central lobby" src="{% static 'img_1.png' %}" />
-            <div class="absolute bottom-4 right-4 left-4 bg-surface-container-lowest/95 backdrop-blur-md p-4 rounded-lg border border-secondary/30 flex items-center justify-between">
-              <div class="text-left">
-                <span class="text-label-sm text-secondary font-bold uppercase tracking-wider block">Public space</span>
-                <span class="text-title-md text-primary font-bold">Central lobby &amp; reception</span>
-              </div>
-              <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center"><span class="material-symbols-outlined text-secondary">meeting_room</span></div>
-            </div>
-          </div>
-          <div class="hidden sm:flex absolute -top-5 -left-5 bg-primary-container text-on-primary px-4 py-2 rounded-lg border border-secondary items-center gap-2 shadow-lg">
-            <span class="material-symbols-outlined text-white">verified</span>
-            <span class="text-label-md font-semibold">Secure &amp; centralized</span>
-          </div>
-        </div>
-        <div class="lg:col-span-6 text-left">
-          <div class="inline-flex items-center gap-2 text-secondary mb-3">
-            <span class="w-6 h-[2px] bg-secondary"></span>
-            <span class="text-label-lg font-bold">Expertise &amp; credibility</span>
-          </div>
-          <h2 class="text-headline-lg text-primary tracking-tight mb-6">One complex, many property opportunities</h2>
-          <p class="text-on-surface-variant text-body-lg leading-relaxed mb-8">At Emtiaz you step into the hub of top-tier capital property deals—not scattered agencies. Dozens of independent offices and legal specialists serve you in a secure, professional setting.</p>
-          <div class="space-y-6">
-            <div class="flex items-start gap-4 p-4 rounded-lg bg-surface-container-lowest border border-outline-variant/30">
-              <div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center shrink-0 text-secondary"><span class="material-symbols-outlined">handshake</span></div>
-              <div><h3 class="text-title-md text-primary font-bold mb-1">Easy access to advisors</h3><p class="text-body-md text-on-surface-variant">Multi-disciplinary advice without commuting across the city.</p></div>
-            </div>
-            <div class="flex items-start gap-4 p-4 rounded-lg bg-surface-container-lowest border border-outline-variant/30">
-              <div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center shrink-0 text-secondary"><span class="material-symbols-outlined">domain_add</span></div>
-              <div><h3 class="text-title-md text-primary font-bold mb-1">Full range of services</h3><p class="text-body-md text-on-surface-variant">From residential purchase and pre-sale to commercial and luxury investment.</p></div>
-            </div>
-            <div class="flex items-start gap-4 p-4 rounded-lg bg-surface-container-lowest border border-outline-variant/30">
-              <div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center shrink-0 text-secondary"><span class="material-symbols-outlined">corporate_fare</span></div>
-              <div><h3 class="text-title-md text-primary font-bold mb-1">Direct agency contact</h3><p class="text-body-md text-on-surface-variant">Negotiate directly with resident agencies with legal support.</p></div>
-            </div>
-          </div>
-        </div>
+<section class="relative z-20 -mt-10 max-w-[1240px] mx-auto px-6">
+  <form method="get" action="{% url 'real_estate:list' %}" class="bg-white rounded-xl p-6 md:p-8 shadow-lg border border-[#c1c8c4]">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-2">
+      <div>
+        <label class="block text-sm text-on-surface-variant mb-1.5 font-medium text-left">Transaction type</label>
+        <select name="transaction" class="w-full h-12 bg-surface rounded-lg border border-[#c1c8c4] px-3">
+          <option value="">All</option>
+          <option value="sale">For sale</option>
+          <option value="rent">For rent</option>
+          <option value="presale">Pre-sale</option>
+        </select>
       </div>
-    </section>
+      <div>
+        <label class="block text-sm text-on-surface-variant mb-1.5 font-medium text-left">Property type</label>
+        <select name="type" class="w-full h-12 bg-surface rounded-lg border border-[#c1c8c4] px-3">
+          <option value="">All</option>
+          <option value="apartment">Apartment</option>
+          <option value="penthouse">Penthouse</option>
+          <option value="villa">Villa</option>
+          <option value="office">Office</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm text-on-surface-variant mb-1.5 font-medium text-left">Area</label>
+        <input name="q" class="w-full h-12 bg-surface rounded-lg border border-[#c1c8c4] px-3" placeholder="Fereshteh, Zaferanieh..." type="text"/>
+      </div>
+      <div class="flex items-end">
+        <button type="submit" class="w-full h-12 rounded-lg bg-primary text-white font-semibold flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-white text-sm">search</span> Search properties
+        </button>
+      </div>
+    </div>
+  </form>
+</section>
 
-    <section class="py-20 bg-surface-container-low border-y border-outline-variant/30" id="offices">
-      <div class="max-w-[1320px] mx-auto px-6 md:px-12">
-        <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+<section class="py-24 max-w-[1320px] mx-auto px-6 md:px-12" id="about-complex">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+    <div class="lg:col-span-6 relative">
+      <div class="relative rounded-xl overflow-hidden border border-[#c1c8c4] shadow-sm">
+        <img class="w-full h-[420px] md:h-[520px] object-cover" src="{% static 'img_1.png' %}" alt="Lobby"/>
+        <div class="absolute bottom-4 right-4 left-4 bg-white/95 backdrop-blur-md p-4 rounded-lg border border-secondary/30 flex items-center justify-between">
           <div class="text-left">
-            <div class="inline-flex items-center gap-2 text-secondary mb-2"><span class="w-6 h-[2px] bg-secondary"></span><span class="text-label-lg font-bold">Resident members</span></div>
-            <h2 class="text-headline-lg text-primary">Agencies in the complex</h2>
-            <p class="text-on-surface-variant text-body-md mt-2">Top specialized agencies under one address</p>
+            <span class="text-xs text-secondary font-bold block uppercase">Public space</span>
+            <span class="font-bold text-primary">Central lobby &amp; reception</span>
           </div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div class="bg-surface-container-lowest rounded-xl p-8 border border-outline-variant/40 architectural-shadow flex flex-col justify-between">
-            <div>
-              <div class="flex items-center justify-between mb-6 pb-4 border-b border-outline-variant/20">
-                <div class="w-14 h-14 rounded-lg bg-surface-container flex items-center justify-center border border-secondary/40 text-secondary font-bold text-headline-sm">A</div>
-                <div class="text-left"><span class="text-label-sm text-outline block">Unit code</span><span class="text-title-md font-bold text-primary font-mono">B-104</span></div>
-              </div>
-              <div class="text-left">
-                <h3 class="text-headline-sm text-primary font-bold mb-2">Aftab Realty</h3>
-                <p class="text-body-md text-on-surface-variant mb-4">Specialty: <span class="font-semibold text-primary">Penthouses &amp; luxury garden towers</span></p>
-                <div class="flex flex-wrap gap-2 mb-6">
-                  <span class="text-label-sm bg-surface px-2.5 py-1 rounded border border-outline-variant/30">Zaferanieh</span>
-                  <span class="text-label-sm bg-surface px-2.5 py-1 rounded border border-outline-variant/30">Mahmoudieh</span>
-                  <span class="text-label-sm bg-surface px-2.5 py-1 rounded border border-outline-variant/30">Niavaran</span>
-                </div>
-              </div>
-            </div>
-            <a class="w-full h-11 rounded-lg border border-secondary text-primary hover:bg-surface-container flex items-center justify-center gap-2 text-label-lg font-semibold mt-4" href="#contact">View office &amp; listings <span class="material-symbols-outlined text-secondary" style="font-size:18px">arrow_forward</span></a>
-          </div>
-          <div class="bg-surface-container-lowest rounded-xl p-8 border border-secondary/50 architectural-shadow flex flex-col justify-between relative">
-            <div class="absolute -top-3 right-6 bg-secondary text-on-secondary text-label-sm px-3 py-0.5 rounded-full font-bold">Office of the month</div>
-            <div>
-              <div class="flex items-center justify-between mb-6 pb-4 border-b border-outline-variant/20">
-                <div class="w-14 h-14 rounded-lg bg-surface-container flex items-center justify-center border border-secondary/40 text-secondary font-bold text-headline-sm">S</div>
-                <div class="text-left"><span class="text-label-sm text-outline block">Unit code</span><span class="text-title-md font-bold text-primary font-mono">A-208</span></div>
-              </div>
-              <div class="text-left">
-                <h3 class="text-headline-sm text-primary font-bold mb-2">Sepehr Realty</h3>
-                <p class="text-body-md text-on-surface-variant mb-4">Specialty: <span class="font-semibold text-primary">Commercial, office &amp; investment</span></p>
-                <div class="flex flex-wrap gap-2 mb-6">
-                  <span class="text-label-sm bg-surface px-2.5 py-1 rounded border border-outline-variant/30">Elahieh</span>
-                  <span class="text-label-sm bg-surface px-2.5 py-1 rounded border border-outline-variant/30">Fereshteh</span>
-                  <span class="text-label-sm bg-surface px-2.5 py-1 rounded border border-outline-variant/30">Jordan</span>
-                </div>
-              </div>
-            </div>
-            <a class="w-full h-11 rounded-lg bg-primary-container text-on-primary hover:bg-[#8B1E2A] flex items-center justify-center gap-2 text-label-lg font-semibold mt-4 border border-secondary/40" href="#contact">View office &amp; listings <span class="material-symbols-outlined text-white" style="font-size:18px">arrow_forward</span></a>
-          </div>
-          <div class="bg-surface-container-lowest rounded-xl p-8 border border-outline-variant/40 architectural-shadow flex flex-col justify-between">
-            <div>
-              <div class="flex items-center justify-between mb-6 pb-4 border-b border-outline-variant/20">
-                <div class="w-14 h-14 rounded-lg bg-surface-container flex items-center justify-center border border-secondary/40 text-secondary font-bold text-headline-sm">M</div>
-                <div class="text-left"><span class="text-label-sm text-outline block">Unit code</span><span class="text-title-md font-bold text-primary font-mono">C-112</span></div>
-              </div>
-              <div class="text-left">
-                <h3 class="text-headline-sm text-primary font-bold mb-2">Mana Realty</h3>
-                <p class="text-body-md text-on-surface-variant mb-4">Specialty: <span class="font-semibold text-primary">Classic villas &amp; independent land</span></p>
-                <div class="flex flex-wrap gap-2 mb-6">
-                  <span class="text-label-sm bg-surface px-2.5 py-1 rounded border border-outline-variant/30">Farmanieh</span>
-                  <span class="text-label-sm bg-surface px-2.5 py-1 rounded border border-outline-variant/30">Kamranieh</span>
-                  <span class="text-label-sm bg-surface px-2.5 py-1 rounded border border-outline-variant/30">Lavasan</span>
-                </div>
-              </div>
-            </div>
-            <a class="w-full h-11 rounded-lg border border-secondary text-primary hover:bg-surface-container flex items-center justify-center gap-2 text-label-lg font-semibold mt-4" href="#contact">View office &amp; listings <span class="material-symbols-outlined text-secondary" style="font-size:18px">arrow_forward</span></a>
-          </div>
+          <span class="material-symbols-outlined text-secondary">meeting_room</span>
         </div>
       </div>
-    </section>
+    </div>
+    <div class="lg:col-span-6 text-left">
+      <div class="inline-flex items-center gap-2 text-secondary mb-3"><span class="w-6 h-[2px] bg-secondary"></span><span class="font-bold">Expertise &amp; credibility</span></div>
+      <h2 class="text-2xl md:text-3xl font-extrabold text-primary mb-6">One complex, many property opportunities</h2>
+      <p class="text-on-surface-variant leading-relaxed mb-8">At Emtiaz you step into the hub of top-tier capital property deals—not scattered agencies. Independent offices and legal specialists serve you in a secure, professional setting.</p>
+      <a href="{% url 'core:about' %}" class="inline-flex items-center gap-2 text-primary font-bold border-b border-secondary pb-1">More about the complex <span class="material-symbols-outlined text-sm">arrow_forward</span></a>
+    </div>
+  </div>
+</section>
 
-    <section class="py-24 max-w-[1320px] mx-auto px-6 md:px-12" id="properties">
-      <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
-        <div class="text-left">
-          <div class="inline-flex items-center gap-2 text-secondary mb-2"><span class="w-6 h-[2px] bg-secondary"></span><span class="text-label-lg font-bold">Featured showcase</span></div>
-          <h2 class="text-headline-lg text-primary">Signature listings</h2>
-          <p class="text-on-surface-variant text-body-md mt-1">Verified, ready-to-transfer listings in Shemiranat</p>
-        </div>
-        <div class="flex flex-wrap items-center gap-2 mt-6 md:mt-0">
-          <button type="button" class="px-4 py-2 rounded-lg bg-primary text-on-primary text-label-md font-semibold">All</button>
-          <button type="button" class="px-4 py-2 rounded-lg bg-surface-container text-on-surface-variant text-label-md">Luxury residential</button>
-          <button type="button" class="px-4 py-2 rounded-lg bg-surface-container text-on-surface-variant text-label-md">Penthouse</button>
-          <button type="button" class="px-4 py-2 rounded-lg bg-surface-container text-on-surface-variant text-label-md">Modern office</button>
+{% include "core/_home_properties_en.html" %}
+
+<section class="py-24 max-w-[1320px] mx-auto px-6 md:px-12" id="contact">
+  <div class="relative rounded-2xl text-white p-8 md:p-14 overflow-hidden border border-secondary/50" style="background-color: rgb(153, 27, 27)">
+    <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+      <div class="lg:col-span-7 text-left">
+        <h2 class="text-2xl md:text-3xl font-extrabold mb-4">Make a better choice with our advisors</h2>
+        <p class="text-white/90 max-w-xl leading-relaxed mb-6">Register your request to buy, sell, or rent—specialists from our resident agencies will contact you promptly.</p>
+        <div class="flex flex-wrap gap-6 text-sm">
+          <span class="inline-flex items-center gap-2"><span class="material-symbols-outlined">check_circle</span> Complimentary legal advice</span>
+          <span class="inline-flex items-center gap-2"><span class="material-symbols-outlined">check_circle</span> Valuation expertise</span>
         </div>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {% for item in "1234" %}
-        <div class="bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant/40 architectural-shadow flex flex-col justify-between">
+      <div class="lg:col-span-5 bg-white text-[#181c1b] p-6 md:p-8 rounded-xl border border-secondary/30 shadow-2xl">
+        <h3 class="font-bold text-lg text-primary mb-4 text-left">Request a specialist callback</h3>
+        <form method="post" action="{% url 'core:home' %}#contact" class="space-y-4 text-left">
+          {% csrf_token %}
           <div>
-            <div class="relative h-56 bg-surface-container">
-              <div class="absolute top-3 right-3 bg-primary/90 text-on-primary px-3 py-1 rounded text-label-sm font-semibold border border-secondary/40">{% if forloop.counter == 3 %}Rent{% else %}For sale{% endif %}</div>
-              <div class="absolute bottom-3 right-3 bg-surface-container-lowest/90 text-primary px-2.5 py-1 rounded text-label-sm font-semibold flex items-center gap-1">
-                <span class="material-symbols-outlined text-secondary" style="font-size:16px">location_on</span>
-                <span>{% if forloop.counter == 1 %}Zaferanieh{% elif forloop.counter == 2 %}Fereshteh{% elif forloop.counter == 3 %}Elahieh{% else %}Niavaran{% endif %}</span>
-              </div>
-            </div>
-            <div class="p-5 text-left">
-              <h3 class="text-title-md text-primary font-bold mb-4">{% if forloop.counter == 1 %}450 m² penthouse with Alborz views{% elif forloop.counter == 2 %}Modern 320 m² apartment{% elif forloop.counter == 3 %}180 m² flat office{% else %}Classic 600 m² villa{% endif %}</h3>
-              <div class="grid grid-cols-3 gap-2 py-3 border-y border-outline-variant/20 text-center text-label-lg font-bold text-primary">
-                <div>{% if forloop.counter == 1 %}450 m²{% elif forloop.counter == 2 %}320 m²{% elif forloop.counter == 3 %}180 m²{% else %}600 m²{% endif %}</div>
-                <div class="border-x border-outline-variant/20">{% if forloop.counter == 3 %}Flat{% else %}Suites{% endif %}</div>
-                <div>{% if forloop.counter == 3 %}3 park{% else %}Deed OK{% endif %}</div>
-              </div>
-            </div>
+            <label class="block text-sm text-on-surface-variant mb-1 font-medium">Full name</label>
+            {{ consultation_form.full_name }}
           </div>
-          <div class="p-5 pt-0">
-            <button type="button" class="w-full h-11 rounded-lg bg-surface hover:bg-surface-container text-primary font-semibold text-label-md border border-outline-variant/60 flex items-center justify-center gap-2">
-              View property details <span class="material-symbols-outlined text-secondary" style="font-size:16px">visibility</span>
-            </button>
+          <div>
+            <label class="block text-sm text-on-surface-variant mb-1 font-medium">Direct phone number</label>
+            {{ consultation_form.phone }}
           </div>
-        </div>
-        {% endfor %}
+          <div>
+            <label class="block text-sm text-on-surface-variant mb-1 font-medium">Request subject</label>
+            {{ consultation_form.request_type }}
+          </div>
+          <div>
+            <label class="block text-sm text-on-surface-variant mb-1 font-medium">Message (optional)</label>
+            {{ consultation_form.message }}
+          </div>
+          <button type="submit" class="w-full h-12 rounded-lg bg-primary text-white font-bold flex items-center justify-center gap-2 mt-2 shadow">
+            Submit consultation request
+            <span class="material-symbols-outlined text-white text-sm">send</span>
+          </button>
+        </form>
       </div>
-      <div class="mt-12 text-center">
-        <a class="inline-flex items-center gap-2 text-primary font-bold hover:text-secondary text-label-lg pb-1 border-b border-secondary" href="#">View all complex listings <span class="material-symbols-outlined" style="font-size:18px">arrow_forward</span></a>
-      </div>
-    </section>
-
-    <section class="py-20 bg-surface-container-high/60 border-t border-outline-variant/30">
-      <div class="max-w-[1320px] mx-auto px-6 md:px-12">
-        <div class="bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/40 architectural-shadow">
-          <div class="grid grid-cols-1 lg:grid-cols-12">
-            <div class="lg:col-span-7 p-8 md:p-12 text-left">
-              <div class="inline-flex items-center gap-2 text-secondary mb-2"><span class="w-6 h-[2px] bg-secondary"></span><span class="text-label-lg font-bold">In-person reception</span></div>
-              <h2 class="text-headline-lg text-primary tracking-tight mb-4">Visit the complex in person</h2>
-              <p class="text-on-surface-variant text-body-md leading-relaxed mb-8">Our hospitality team welcomes investors and buyers for specialist consultations in VIP meeting rooms.</p>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-                <div class="flex items-start gap-3">
-                  <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-secondary"><span class="material-symbols-outlined">pin_drop</span></div>
-                  <div><h4 class="text-title-md text-primary font-bold">Address</h4><p class="text-body-sm text-on-surface-variant mt-1">Tehran, Fereshteh St., No. 120, Emtiaz Complex</p></div>
-                </div>
-                <div class="flex items-start gap-3">
-                  <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-secondary"><span class="material-symbols-outlined">schedule</span></div>
-                  <div><h4 class="text-title-md text-primary font-bold">Hours</h4><p class="text-body-sm text-on-surface-variant mt-1">Daily 9:00–21:00 (Thu until 18:00)</p></div>
-                </div>
-                <div class="flex items-start gap-3">
-                  <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-secondary"><span class="material-symbols-outlined">call</span></div>
-                  <div><h4 class="text-title-md text-primary font-bold">Phone</h4><p class="text-body-sm text-on-surface-variant mt-1" dir="ltr">+98 21 2200 8890</p></div>
-                </div>
-                <div class="flex items-start gap-3">
-                  <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-secondary"><span class="material-symbols-outlined">local_parking</span></div>
-                  <div><h4 class="text-title-md text-primary font-bold">Parking</h4><p class="text-body-sm text-on-surface-variant mt-1">50 cars with valet service</p></div>
-                </div>
-              </div>
-              <a class="inline-flex h-12 px-6 rounded-lg bg-primary-container text-on-primary border border-secondary items-center gap-2 text-label-lg" href="#contact"><span class="material-symbols-outlined text-white">directions</span>Directions &amp; call</a>
-            </div>
-            <div class="lg:col-span-5 min-h-[340px] bg-surface-container border-l border-outline-variant/30 flex items-center justify-center p-6">
-              <div class="bg-surface-container-lowest p-6 rounded-xl border border-secondary/40 text-center max-w-xs shadow-xl">
-                <div class="w-12 h-12 rounded-full bg-primary-container text-white mx-auto flex items-center justify-center mb-3"><span class="material-symbols-outlined">apartment</span></div>
-                <h3 class="text-title-md text-primary font-bold mb-1">Emtiaz Complex</h3>
-                <p class="text-body-sm text-on-surface-variant mb-4">Fereshteh St., No. 120</p>
-                <div class="inline-flex items-center gap-1.5 text-secondary text-label-sm font-bold"><span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>Modares &amp; Chamran access</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="py-24 max-w-[1320px] mx-auto px-6 md:px-12" id="contact">
-      <div class="relative rounded-2xl text-on-primary p-8 md:p-14 overflow-hidden border border-secondary/50 architectural-shadow" style="background-color: rgb(153, 27, 27)">
-        <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          <div class="lg:col-span-7 text-left">
-            <h2 class="text-headline-lg tracking-tight mb-4">Make a better choice with our advisors</h2>
-            <p class="text-body-lg max-w-xl leading-relaxed mb-6">Register your request—specialists from our resident agencies will contact you promptly.</p>
-            <div class="flex flex-wrap items-center gap-6">
-              <div class="flex items-center gap-3"><span class="material-symbols-outlined text-white">check_circle</span><span>Complimentary legal advice</span></div>
-              <div class="flex items-center gap-3"><span class="material-symbols-outlined text-white">check_circle</span><span>Valuation expertise</span></div>
-            </div>
-          </div>
-          <div class="lg:col-span-5 bg-surface-container-lowest text-on-surface p-6 md:p-8 rounded-xl border border-secondary/30 shadow-2xl">
-            <h3 class="text-title-md text-primary font-bold mb-4 text-left">Request a specialist callback</h3>
-            <form class="space-y-4 text-left" method="post" action="#">{% csrf_token %}
-              <div>
-                <label class="block text-label-md text-on-surface-variant mb-1 font-medium">Full name</label>
-                <input class="w-full h-11 bg-surface rounded-lg border border-outline-variant/60 px-3" name="full_name" required type="text" placeholder="e.g. Dr. Radmanesh" />
-              </div>
-              <div>
-                <label class="block text-label-md text-on-surface-variant mb-1 font-medium">Phone</label>
-                <input class="w-full h-11 bg-surface rounded-lg border border-outline-variant/60 px-3 font-mono" dir="ltr" name="phone" required type="tel" placeholder="09..." />
-              </div>
-              <div>
-                <label class="block text-label-md text-on-surface-variant mb-1 font-medium">Subject</label>
-                <select class="w-full h-11 bg-surface rounded-lg border border-outline-variant/60 px-3" name="subject">
-                  <option>Buy apartment / penthouse</option>
-                  <option>Sell or exchange</option>
-                  <option>Lease office or commercial</option>
-                  <option>Investment advice</option>
-                </select>
-              </div>
-              <button class="w-full h-12 rounded-lg bg-primary-container hover:bg-[#8B1E2A] text-on-primary border border-secondary font-bold text-label-lg flex items-center justify-center gap-2" type="submit">
-                Submit consultation request <span class="material-symbols-outlined text-white">send</span>
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </section>
-{% endblock %}
+    </div>
+  </div>
+</section>
+{% endblock content %}
