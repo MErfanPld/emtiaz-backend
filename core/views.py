@@ -1,7 +1,12 @@
+from django.contrib import messages
+from django.shortcuts import redirect
 from django.utils.translation import get_language
 from django.views.generic import TemplateView
 
 from real_estate.models import Property
+
+from .forms import ConsultationForm
+from .sms import notify_admins_new_consultation
 
 
 def _lang_is_en():
@@ -9,7 +14,7 @@ def _lang_is_en():
 
 
 class HomeView(TemplateView):
-    """صفحه اصلی — FA: home.html | EN: home_en.html"""
+    """صفحه اصلی + ثبت درخواست مشاوره."""
 
     def get_template_names(self):
         if _lang_is_en():
@@ -24,12 +29,29 @@ class HomeView(TemplateView):
         )
         ctx['featured_properties'] = featured
         ctx['property_count'] = Property.objects.filter(is_active=True).count()
+        if 'consultation_form' not in ctx:
+            ctx['consultation_form'] = ConsultationForm()
         return ctx
+
+    def post(self, request, *args, **kwargs):
+        form = ConsultationForm(request.POST)
+        if form.is_valid():
+            req = form.save()
+            ok = notify_admins_new_consultation(req)
+            if ok:
+                req.sms_sent = True
+                req.save(update_fields=['sms_sent'])
+            messages.success(
+                request,
+                'درخواست شما با موفقیت ثبت شد. به‌زودی با شما تماس می‌گیریم.',
+            )
+            return redirect(request.path + '#contact')
+        ctx = self.get_context_data(consultation_form=form)
+        messages.error(request, 'لطفاً فرم را به‌درستی تکمیل کنید.')
+        return self.render_to_response(ctx)
 
 
 class AboutView(TemplateView):
-    """معرفی مجموعه — FA: about.html | EN: about_en.html"""
-
     def get_template_names(self):
         if _lang_is_en():
             return ['core/about_en.html']
