@@ -1,6 +1,7 @@
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -12,9 +13,12 @@ from django.views.generic import (
     UpdateView,
 )
 
+from blog.models import Category, Post, Tag
 from real_estate.models import Property
 
 from .forms import PropertyForm, PropertyImageFormSet
+
+User = get_user_model()
 
 
 class ApprovedRequiredMixin:
@@ -34,11 +38,32 @@ class DashboardIndexView(ApprovedRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        qs = Property.objects.all()
-        ctx['property_total'] = qs.count()
-        ctx['property_active'] = qs.filter(is_active=True).count()
-        ctx['property_draft'] = qs.filter(is_active=False).count()
-        ctx['recent_properties'] = qs.order_by('-created_at')[:8]
+        user = self.request.user
+
+        # املاک
+        props = Property.objects.all()
+        ctx['property_total'] = props.count()
+        ctx['property_active'] = props.filter(is_active=True).count()
+        ctx['property_draft'] = props.filter(is_active=False).count()
+        ctx['recent_properties'] = props.order_by('-created_at')[:5]
+
+        # وبلاگ
+        posts = Post.objects.all()
+        ctx['post_total'] = posts.count()
+        ctx['post_published'] = posts.filter(is_published=True).count()
+        ctx['post_draft'] = posts.filter(is_published=False).count()
+        ctx['post_views'] = posts.aggregate(total=Sum('views_count'))['total'] or 0
+        ctx['category_count'] = Category.objects.count()
+        ctx['tag_count'] = Tag.objects.count()
+        ctx['recent_posts'] = posts.select_related('category').order_by('-created_at')[:5]
+
+        # کاربران (فقط برای staff)
+        ctx['is_manager'] = user.is_staff or user.is_superuser
+        if ctx['is_manager']:
+            ctx['user_total'] = User.objects.count()
+            ctx['user_pending'] = User.objects.filter(is_approved=False).count()
+            ctx['user_approved'] = User.objects.filter(is_approved=True).count()
+
         return ctx
 
 
@@ -88,7 +113,6 @@ class PropertyFormsetMixin:
     def form_valid(self, form):
         context = self.get_context_data()
         formset = context['formset']
-        # برای create ابتدا object را بساز
         self.object = form.save()
         formset = PropertyImageFormSet(
             self.request.POST,
@@ -99,7 +123,6 @@ class PropertyFormsetMixin:
             formset.save()
             messages.success(self.request, self.success_message)
             return redirect(self.get_success_url())
-        # formset نامعتبر — دوباره نمایش
         return self.render_to_response(
             self.get_context_data(form=form, formset=formset)
         )
