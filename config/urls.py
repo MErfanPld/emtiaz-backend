@@ -4,15 +4,14 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-# مسیرهایی که دو‌زبانه نیستند (پنل و احراز هویت)
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('i18n/', include('django.conf.urls.i18n')),  # set_language
+    path('i18n/', include('django.conf.urls.i18n')),
     path('accounts/', include('accounts.urls')),
     path('dashboard/', include('dashboard.urls')),
+    path('ckeditor/', include('ckeditor_uploader.urls')),
 ]
 
-# سایت عمومی — فارسی بدون پیشوند، انگلیسی با /en/
 urlpatterns += i18n_patterns(
     path('', include('core.urls')),
     path('blog/', include('blog.urls')),
