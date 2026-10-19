@@ -7,11 +7,19 @@
 {% block content %}
 <div class="bg-white rounded-xl border overflow-hidden">
   <table class="w-full text-sm text-right">
-    <thead class="bg-[#f7faf7]"><tr><th class="py-3 px-4">نام</th><th class="py-3 px-4">اسلاگ</th><th class="py-3 px-4">ترتیب</th><th class="py-3 px-4">فعال</th><th class="py-3 px-4"></th></tr></thead>
+    <thead class="bg-[#f7faf7]"><tr>
+      <th class="py-3 px-4">نام فارسی</th>
+      <th class="py-3 px-4">نام انگلیسی</th>
+      <th class="py-3 px-4">اسلاگ</th>
+      <th class="py-3 px-4">ترتیب</th>
+      <th class="py-3 px-4">فعال</th>
+      <th class="py-3 px-4"></th>
+    </tr></thead>
     <tbody class="divide-y">
       {% for c in categories %}
       <tr>
         <td class="py-3 px-4 font-bold">{{ c.name }}</td>
+        <td class="py-3 px-4 {% if not c.name_en %}text-red-500{% endif %}">{{ c.name_en|default:"— پر شود" }}</td>
         <td class="py-3 px-4 font-mono text-xs" dir="ltr">{{ c.slug }}</td>
         <td class="py-3 px-4">{{ c.sort_order }}</td>
         <td class="py-3 px-4">{% if c.is_active %}بله{% else %}خیر{% endif %}</td>
@@ -21,9 +29,10 @@
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="5" class="py-10 text-center">دسته‌ای نیست.</td></tr>
+      <tr><td colspan="6" class="py-10 text-center">دسته‌ای نیست.</td></tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+<p class="text-xs text-on-surface-variant mt-3">برای نمایش انگلیسی در سایت، فیلد «نام انگلیسی» را پر کنید.</p>
 {% endblock %}

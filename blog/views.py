@@ -13,7 +13,6 @@ def _lang_is_en():
 
 
 def _build_toc_and_body(html: str):
-    """Extract h2/h3 headings, inject id attributes, return (toc_list, modified_html)."""
     if not html:
         return [], html or ''
 
@@ -29,7 +28,6 @@ def _build_toc_and_body(html: str):
             return match.group(0)
         counter[0] += 1
         sid = f'section-{counter[0]}'
-        # keep existing id if present
         if re.search(r'\bid\s*=', attrs, re.I):
             sid_match = re.search(r'\bid\s*=\s*["\']([^"\']+)["\']', attrs, re.I)
             if sid_match:
@@ -122,7 +120,7 @@ class PostDetailView(DetailView):
         ctx = super().get_context_data(**kwargs)
         post = self.object
         is_en = _lang_is_en()
-        raw_body = post.display_body() if is_en else post.body
+        raw_body = post.display_body if is_en else post.body
         toc, body_html = _build_toc_and_body(raw_body or '')
         ctx['toc'] = toc
         ctx['body_html'] = body_html

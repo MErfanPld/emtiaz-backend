@@ -8,6 +8,10 @@ from django.utils.translation import get_language
 from ckeditor.fields import RichTextField
 
 
+def _is_en(lang=None):
+    return ((lang or get_language() or 'fa')[:2] == 'en')
+
+
 class Category(models.Model):
     name = models.CharField('نام دسته', max_length=80)
     name_en = models.CharField('نام انگلیسی', max_length=80, blank=True)
@@ -28,9 +32,9 @@ class Category(models.Model):
             self.slug = slugify(self.name_en or self.name, allow_unicode=True)[:100] or f'cat-{self.pk or "new"}'
         super().save(*args, **kwargs)
 
-    def display_name(self, lang=None):
-        lang = (lang or get_language() or 'fa')[:2]
-        if lang == 'en' and self.name_en:
+    @property
+    def display_name(self):
+        if _is_en() and self.name_en:
             return self.name_en
         return self.name
 
@@ -54,9 +58,9 @@ class Tag(models.Model):
             self.slug = slugify(self.name_en or self.name, allow_unicode=True)[:80] or f'tag-{self.pk or "new"}'
         super().save(*args, **kwargs)
 
-    def display_name(self, lang=None):
-        lang = (lang or get_language() or 'fa')[:2]
-        if lang == 'en' and self.name_en:
+    @property
+    def display_name(self):
+        if _is_en() and self.name_en:
             return self.name_en
         return self.name
 
@@ -123,26 +127,26 @@ class Post(models.Model):
             return self.cover_image.url
         return self.cover_image_url or ''
 
-    def display_title(self, lang=None):
-        lang = (lang or get_language() or 'fa')[:2]
-        if lang == 'en' and self.title_en:
+    @property
+    def display_title(self):
+        if _is_en() and self.title_en:
             return self.title_en
         return self.title
 
-    def display_excerpt(self, lang=None):
-        lang = (lang or get_language() or 'fa')[:2]
-        if lang == 'en' and self.excerpt_en:
+    @property
+    def display_excerpt(self):
+        if _is_en() and self.excerpt_en:
             return self.excerpt_en
         return self.excerpt
 
-    def display_body(self, lang=None):
-        lang = (lang or get_language() or 'fa')[:2]
-        if lang == 'en' and self.body_en:
+    @property
+    def display_body(self):
+        if _is_en() and self.body_en:
             return self.body_en
         return self.body
 
-    def display_author(self, lang=None):
-        lang = (lang or get_language() or 'fa')[:2]
-        if lang == 'en' and self.author_name_en:
+    @property
+    def display_author(self):
+        if _is_en() and self.author_name_en:
             return self.author_name_en
         return self.author_name
