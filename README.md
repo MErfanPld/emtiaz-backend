@@ -24,6 +24,13 @@ python manage.py runserver
 - داشبورد: http://127.0.0.1:8000/dashboard/
 - ادمین: http://127.0.0.1:8000/admin/
 
+### (اختیاری) جمع‌آوری استاتیک برای production
+
+```bash
+python manage.py collectstatic --noinput
+# خروجی در static_cdn/ قرار می‌گیرد و در git نادیده گرفته می‌شود
+```
+
 ## ساختار اصلی
 
 | مسیر | توضیح |
@@ -33,8 +40,8 @@ python manage.py runserver
 | `real_estate/` | لیست و جزئیات املاک + گالری |
 | `blog/` | مقالات (CKEditor، دسته، برچسب) |
 | `dashboard/` | پنل مدیریت (املاک، وبلاگ، کاربران، مشاوره) |
-| `assets/` | استاتیک (CSS/JS/تصاویر) |
-| `templates/` | قالب‌های مشترک و داشبورد |
+| `assets/` | استاتیک منبع (CSS / JS / تصاویر) |
+| `templates/` | قالب‌های مشترک، حساب کاربری و داشبورد |
 
 ## وابستگی‌ها
 
@@ -48,4 +55,6 @@ python manage.py runserver
 - احراز هویت: Session (بدون REST/JWT)
 - ثبت‌نام → وضعیت `pending` تا تأیید مدیر
 - زبان: فارسی پیش‌فرض + انگلیسی (`/en/`)
+- اعداد و تاریخ‌ها فارسی (فیلتر + JS)
 - پیامک مشاوره فعلاً تستی در کنسول چاپ می‌شود
+- `static_cdn/` در `.gitignore` است (خروجی collectstatic و media)
