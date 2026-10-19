@@ -15,5 +15,8 @@
     <div class="flex-1 w-full min-w-0">{% block content %}{% endblock content %}</div>
     {% include "./includes/footer.html" %}
     {% include "./_footer.html" %}
+    {% if LANGUAGE_CODE != 'en' %}
+    <script src="{% static 'js/persian-digits.js' %}"></script>
+    {% endif %}
   </body>
 </html>

@@ -40,14 +40,12 @@ class DashboardIndexView(ApprovedRequiredMixin, TemplateView):
         ctx = super().get_context_data(**kwargs)
         user = self.request.user
 
-        # املاک
         props = Property.objects.all()
         ctx['property_total'] = props.count()
         ctx['property_active'] = props.filter(is_active=True).count()
         ctx['property_draft'] = props.filter(is_active=False).count()
         ctx['recent_properties'] = props.order_by('-created_at')[:5]
 
-        # وبلاگ
         posts = Post.objects.all()
         ctx['post_total'] = posts.count()
         ctx['post_published'] = posts.filter(is_published=True).count()
@@ -57,12 +55,15 @@ class DashboardIndexView(ApprovedRequiredMixin, TemplateView):
         ctx['tag_count'] = Tag.objects.count()
         ctx['recent_posts'] = posts.select_related('category').order_by('-created_at')[:5]
 
-        # کاربران (فقط برای staff)
         ctx['is_manager'] = user.is_staff or user.is_superuser
         if ctx['is_manager']:
             ctx['user_total'] = User.objects.count()
-            ctx['user_pending'] = User.objects.filter(is_approved=False).count()
-            ctx['user_approved'] = User.objects.filter(is_approved=True).count()
+            ctx['user_pending'] = User.objects.filter(
+                approval_status=User.ApprovalStatus.PENDING
+            ).count()
+            ctx['user_approved'] = User.objects.filter(
+                approval_status=User.ApprovalStatus.APPROVED
+            ).count()
 
         return ctx
 
@@ -93,8 +94,6 @@ class PropertyDashboardListView(ApprovedRequiredMixin, ListView):
 
 
 class PropertyFormsetMixin:
-    """ذخیره فرم اصلی + formset گالری."""
-
     def get_formset(self):
         if self.request.method == 'POST':
             return PropertyImageFormSet(
@@ -111,8 +110,6 @@ class PropertyFormsetMixin:
         return ctx
 
     def form_valid(self, form):
-        context = self.get_context_data()
-        formset = context['formset']
         self.object = form.save()
         formset = PropertyImageFormSet(
             self.request.POST,

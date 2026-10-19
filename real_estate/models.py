@@ -4,6 +4,13 @@ from django.utils.text import slugify
 from django.utils.translation import get_language
 
 
+_FA_DIGITS = str.maketrans('0123456789', '۰۱۲۳۴۵۶۷۸۹')
+
+
+def _persian_num(s):
+    return str(s).translate(_FA_DIGITS)
+
+
 class Property(models.Model):
     """ملک قابل نمایش در لیست عمومی و مدیریت از پنل ادمین."""
 
@@ -83,13 +90,13 @@ class Property(models.Model):
     image_count = models.PositiveSmallIntegerField('تعداد تصاویر (دستی)', default=0)
 
     has_deed = models.BooleanField('سند تک‌برگ', default=True)
-    is_complex_office = models.BooleanField('مستقر در مجتمع امتیاز', default=True)
+    is_complex_office = models.BooleanField('مستقر در مجموعه امتیاز', default=True)
     has_pool_or_roof = models.BooleanField('استخر / روف‌گاردن', default=False)
     is_brand_builder = models.BooleanField('سازنده برند', default=False)
 
     is_active = models.BooleanField('فعال / نمایش عمومی', default=True, db_index=True)
     is_featured = models.BooleanField('ویژه', default=False)
-    is_exclusive = models.BooleanField('انحصاری مجتمع', default=False)
+    is_exclusive = models.BooleanField('انحصاری مجموعه', default=False)
 
     description = models.TextField('توضیحات (فارسی)', blank=True)
     description_en = models.TextField('توضیحات (انگلیسی)', blank=True)
@@ -153,7 +160,10 @@ class Property(models.Model):
             return self.price_label
         if not self.price:
             return '—'
-        return f'{self.price:,}'
+        formatted = f'{self.price:,}'
+        if lang != 'en':
+            return _persian_num(formatted)
+        return formatted
 
     @property
     def formatted_price_en(self):
@@ -180,12 +190,6 @@ class Property(models.Model):
 
 
 class PropertyImage(models.Model):
-    """تصاویر گالری هر ملک.
-
-    توجه: فیلد FK را listing نام‌گذاری کردیم تا با decorator داخلی
-    @property تداخل نداشته باشد.
-    """
-
     listing = models.ForeignKey(
         Property,
         on_delete=models.CASCADE,
