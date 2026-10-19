@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>مدیریت املاک | مجموعه املاک امتیاز</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" crossorigin="anonymous"/>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<script src="{% static 'js/tailwind-config.js' %}"></script>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col">
+<aside class="fixed top-0 right-0 h-screen w-72 z-40 bg-surface-container-lowest border-l border-outline-variant shadow-sm flex flex-col">
+  <div class="p-6 border-b border-outline-variant/40">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg bg-primary-container text-primary-fixed flex items-center justify-center"><i class="fa-solid fa-building"></i></div>
+      <div><h1 class="text-primary font-bold">املاک امتیاز</h1><p class="text-sm text-on-surface-variant">سامانه مدیریت</p></div>
+    </div>
+  </div>
+  <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-1">
+    <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container rounded-lg" href="{% url 'dashboard:index' %}"><i class="fa-solid fa-gauge-high w-5"></i><span>داشبورد</span></a>
+    <a class="flex items-center gap-3 px-4 py-3 bg-primary text-on-primary rounded-lg font-bold" href="{% url 'dashboard:property_list' %}"><i class="fa-solid fa-house-chimney w-5"></i><span>مدیریت املاک</span></a>
+    <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container rounded-lg" href="{% url 'accounts:profile' %}"><i class="fa-solid fa-user w-5"></i><span>پروفایل</span></a>
+  </nav>
+  <div class="p-4 border-t">
+    <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}
+      <button type="submit" class="w-full flex items-center justify-center gap-2 py-2 text-error hover:bg-error-container/30 rounded-lg"><i class="fa-solid fa-right-from-bracket"></i> خروج</button>
+    </form>
+  </div>
+</aside>
+
+<header class="sticky top-0 z-30 bg-surface-container-lowest border-b border-outline-variant mr-72 h-16 px-6 flex items-center justify-between max-w-[calc(100%-18rem)]">
+  <div class="text-sm text-on-surface-variant"><a href="{% url 'dashboard:index' %}" class="hover:text-primary">داشبورد</a> / <span class="text-primary font-bold">املاک</span></div>
+  <a href="{% url 'dashboard:property_create' %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-on-primary text-sm font-bold"><i class="fa-solid fa-plus"></i> ملک جدید</a>
+</header>
+
+<main class="mr-72 flex-1 p-6 max-w-[calc(100%-18rem)] space-y-6">
+  {% if messages %}
+  {% for message in messages %}
+  <div class="rounded-lg border border-secondary/40 bg-secondary-container/30 px-4 py-3 text-sm text-primary">{{ message }}</div>
+  {% endfor %}
+  {% endif %}
+
+  <form method="get" class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+    <div class="relative flex-1">
+      <i class="fa-solid fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-outline"></i>
+      <input type="text" name="q" value="{{ request.GET.q }}" placeholder="جستجو کد، عنوان، محله..." class="w-full pr-10 pl-4 py-2.5 rounded-lg border border-outline-variant bg-white text-sm"/>
+    </div>
+    <select name="status" class="border border-outline-variant rounded-lg px-3 py-2.5 text-sm bg-white">
+      <option value="">همه وضعیت‌ها</option>
+      <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>منتشرشده</option>
+      <option value="draft" {% if request.GET.status == 'draft' %}selected{% endif %}>پیش‌نویس</option>
+    </select>
+    <button type="submit" class="px-5 py-2.5 rounded-lg bg-primary text-on-primary text-sm font-bold"><i class="fa-solid fa-filter ml-1"></i> فیلتر</button>
+  </form>
+
+  <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-right text-sm border-collapse">
+        <thead>
+          <tr class="bg-surface-container-low border-b text-on-surface-variant">
+            <th class="py-3 px-4">کد</th>
+            <th class="py-3 px-4">عنوان</th>
+            <th class="py-3 px-4">معامله</th>
+            <th class="py-3 px-4">متراژ</th>
+            <th class="py-3 px-4">قیمت</th>
+            <th class="py-3 px-4">وضعیت</th>
+            <th class="py-3 px-4">عملیات</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-outline-variant/60">
+          {% for p in properties %}
+          <tr class="hover:bg-surface-container-low/40">
+            <td class="py-3 px-4 font-mono text-xs">{{ p.code }}</td>
+            <td class="py-3 px-4 font-bold text-primary">{{ p.title }}</td>
+            <td class="py-3 px-4">{{ p.get_transaction_type_display }}</td>
+            <td class="py-3 px-4">{{ p.area_sqm }} م</td>
+            <td class="py-3 px-4 font-bold">{{ p.formatted_price }}</td>
+            <td class="py-3 px-4">
+              {% if p.is_active %}
+              <span class="px-2 py-0.5 rounded-full text-xs bg-primary-fixed border">منتشر</span>
+              {% else %}
+              <span class="px-2 py-0.5 rounded-full text-xs bg-surface-container-high border">پیش‌نویس</span>
+              {% endif %}
+            </td>
+            <td class="py-3 px-4">
+              <div class="flex items-center gap-2">
+                <a href="{% url 'real_estate:detail' p.slug %}" class="text-on-surface-variant hover:text-primary" title="مشاهده" target="_blank"><i class="fa-solid fa-eye"></i></a>
+                <a href="{% url 'dashboard:property_edit' p.slug %}" class="text-primary hover:opacity-80" title="ویرایش"><i class="fa-solid fa-pen-to-square"></i></a>
+                <a href="{% url 'dashboard:property_delete' p.slug %}" class="text-error hover:opacity-80" title="حذف"><i class="fa-solid fa-trash"></i></a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" class="py-12 text-center text-on-surface-variant">ملکی ثبت نشده. <a class="text-primary font-bold" href="{% url 'dashboard:property_create' %}">اولین ملک را اضافه کنید</a></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if page_obj.has_other_pages %}
+    <div class="p-4 border-t flex justify-center gap-2 text-sm">
+      {% if page_obj.has_previous %}<a class="px-3 py-1 border rounded" href="?page={{ page_obj.previous_page_number }}">قبلی</a>{% endif %}
+      <span class="px-3 py-1">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}<a class="px-3 py-1 border rounded" href="?page={{ page_obj.next_page_number }}">بعدی</a>{% endif %}
+    </div>
+    {% endif %}
+  </div>
+</main>
+</body>
+</html>

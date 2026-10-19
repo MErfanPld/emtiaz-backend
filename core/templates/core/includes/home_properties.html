@@ -1,0 +1,45 @@
+{% comment %}کارت‌های املاک صفحه اصلی — از context: featured_properties{% endcomment %}
+{% if featured_properties %}
+<section id="properties" class="w-full max-w-[1320px] mx-auto px-4 sm:px-6 md:px-12 py-12 md:py-16">
+  <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+    <div class="{% if LANGUAGE_CODE == 'en' %}text-left{% else %}text-right{% endif %}">
+      <span class="inline-flex items-center gap-2 text-secondary text-sm font-semibold mb-2">
+        <i class="fa-solid fa-house-chimney"></i>
+        {% if LANGUAGE_CODE == 'en' %}Featured listings{% else %}املاک منتخب مجموعه{% endif %}
+      </span>
+      <h2 class="text-2xl md:text-3xl font-extrabold text-primary">
+        {% if LANGUAGE_CODE == 'en' %}Latest properties{% else %}جدیدترین فایل‌های ملکی{% endif %}
+      </h2>
+    </div>
+    <a href="{% url 'real_estate:list' %}" class="inline-flex items-center gap-2 text-primary font-bold text-sm hover:opacity-80">
+      {% if LANGUAGE_CODE == 'en' %}View all{% else %}مشاهده همه{% endif %}
+      <i class="fa-solid {% if LANGUAGE_CODE == 'en' %}fa-arrow-right{% else %}fa-arrow-left{% endif %}"></i>
+    </a>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+    {% for p in featured_properties %}
+    <a href="{% url 'real_estate:detail' p.slug %}" class="bg-white rounded-xl border border-[#c1c8c4] overflow-hidden hover:shadow-md transition-shadow flex flex-col {% if LANGUAGE_CODE == 'en' %}text-left{% else %}text-right{% endif %}">
+      <div class="relative aspect-[16/10] bg-[#ecefeb]">
+        {% if p.display_image %}
+        <img src="{{ p.display_image }}" alt="" class="w-full h-full object-cover"/>
+        {% else %}
+        <div class="w-full h-full flex items-center justify-center text-primary/30"><i class="fa-solid fa-building text-4xl"></i></div>
+        {% endif %}
+        <span class="absolute top-3 {% if LANGUAGE_CODE == 'en' %}left-3{% else %}right-3{% endif %} px-2.5 py-1 rounded-full bg-primary text-white text-xs font-bold">
+          {% if LANGUAGE_CODE == 'en' %}{{ p.transaction_label_en }}{% else %}{{ p.get_transaction_type_display }}{% endif %}
+        </span>
+      </div>
+      <div class="p-4 flex flex-col flex-grow">
+        <h3 class="font-bold text-primary mb-1 line-clamp-2">{% if LANGUAGE_CODE == 'en' %}{% firstof p.title_en p.title %}{% else %}{{ p.title }}{% endif %}</h3>
+        <p class="text-xs text-on-surface-variant mb-3 flex items-center gap-1">
+          <i class="fa-solid fa-location-dot text-secondary"></i>
+          {% if LANGUAGE_CODE == 'en' %}{% firstof p.area_name_en p.area_name %}{% else %}{{ p.area_name }}{% endif %}
+        </p>
+        <div class="text-xs text-on-surface-variant mb-3">{{ p.area_sqm }} {% if LANGUAGE_CODE == 'en' %}m²{% else %}متر{% endif %} · {{ p.bedrooms }} {% if LANGUAGE_CODE == 'en' %}beds{% else %}خواب{% endif %}</div>
+        <div class="mt-auto text-base font-black text-primary">{{ p.formatted_price }} <span class="text-xs font-normal">{% if LANGUAGE_CODE == 'en' %}Toman{% else %}تومان{% endif %}</span></div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}

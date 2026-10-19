@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>{{ page_title }} | مجموعه املاک امتیاز</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" crossorigin="anonymous"/>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<script src="{% static 'js/tailwind-config.js' %}"></script>
+</head>
+<body class="bg-surface text-on-surface min-h-screen">
+<aside class="fixed top-0 right-0 h-screen w-64 z-40 bg-surface-container-lowest border-l flex flex-col">
+  <div class="p-5 border-b font-bold text-primary"><i class="fa-solid fa-building ml-2"></i>املاک امتیاز</div>
+  <nav class="p-3 space-y-1 text-sm">
+    <a class="block px-3 py-2 rounded-lg hover:bg-surface-container" href="{% url 'dashboard:index' %}"><i class="fa-solid fa-gauge-high ml-2"></i>داشبورد</a>
+    <a class="block px-3 py-2 rounded-lg bg-primary text-on-primary font-bold" href="{% url 'dashboard:property_list' %}"><i class="fa-solid fa-house ml-2"></i>املاک</a>
+  </nav>
+</aside>
+<header class="mr-64 h-14 border-b bg-white px-6 flex items-center justify-between">
+  <div class="text-sm"><a href="{% url 'dashboard:property_list' %}" class="text-on-surface-variant hover:text-primary">املاک</a> / <span class="font-bold text-primary">{{ page_title }}</span></div>
+</header>
+<main class="mr-64 p-6 max-w-5xl">
+  <form method="post" enctype="multipart/form-data" class="bg-white rounded-xl border border-outline-variant p-6 space-y-6 shadow-sm">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="text-error text-sm">{{ form.non_field_errors }}</div>{% endif %}
+
+    <section>
+      <h3 class="font-bold text-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-id-card"></i> شناسه و عنوان</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div><label class="block text-xs font-semibold mb-1">{{ form.code.label }}</label>{{ form.code }}{% if form.code.errors %}<p class="text-error text-xs mt-1">{{ form.code.errors.0 }}</p>{% endif %}</div>
+        <div><label class="block text-xs font-semibold mb-1">اسلاگ (اختیاری)</label>{{ form.slug }}</div>
+        <div class="md:col-span-2"><label class="block text-xs font-semibold mb-1">عنوان فارسی</label>{{ form.title }}</div>
+        <div class="md:col-span-2"><label class="block text-xs font-semibold mb-1">عنوان انگلیسی</label>{{ form.title_en }}</div>
+      </div>
+    </section>
+
+    <section>
+      <h3 class="font-bold text-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-tags"></i> نوع و موقعیت</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div><label class="block text-xs font-semibold mb-1">نوع معامله</label>{{ form.transaction_type }}</div>
+        <div><label class="block text-xs font-semibold mb-1">نوع کاربری</label>{{ form.property_type }}</div>
+        <div><label class="block text-xs font-semibold mb-1">محله</label>{{ form.area_name }}</div>
+        <div><label class="block text-xs font-semibold mb-1">محله EN</label>{{ form.area_name_en }}</div>
+        <div><label class="block text-xs font-semibold mb-1">آدرس</label>{{ form.address_line }}</div>
+        <div><label class="block text-xs font-semibold mb-1">آدرس EN</label>{{ form.address_line_en }}</div>
+      </div>
+    </section>
+
+    <section>
+      <h3 class="font-bold text-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-ruler-combined"></i> مشخصات</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div><label class="block text-xs font-semibold mb-1">متراژ</label>{{ form.area_sqm }}</div>
+        <div><label class="block text-xs font-semibold mb-1">خواب</label>{{ form.bedrooms }}</div>
+        <div><label class="block text-xs font-semibold mb-1">پارکینگ</label>{{ form.parking }}</div>
+        <div><label class="block text-xs font-semibold mb-1">طبقه</label>{{ form.floor }}</div>
+        <div><label class="block text-xs font-semibold mb-1">طبقه EN</label>{{ form.floor_en }}</div>
+        <div><label class="block text-xs font-semibold mb-1">سال ساخت</label>{{ form.year_built }}</div>
+        <div><label class="block text-xs font-semibold mb-1">سال EN</label>{{ form.year_built_en }}</div>
+      </div>
+    </section>
+
+    <section>
+      <h3 class="font-bold text-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-money-bill"></i> قیمت و دفتر</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div><label class="block text-xs font-semibold mb-1">قیمت (تومان)</label>{{ form.price }}</div>
+        <div><label class="block text-xs font-semibold mb-1">برچسب قیمت FA</label>{{ form.price_label }}</div>
+        <div><label class="block text-xs font-semibold mb-1">برچسب قیمت EN</label>{{ form.price_label_en }}</div>
+        <div><label class="block text-xs font-semibold mb-1">دفتر</label>{{ form.agency_name }}</div>
+        <div><label class="block text-xs font-semibold mb-1">دفتر EN</label>{{ form.agency_name_en }}</div>
+        <div><label class="block text-xs font-semibold mb-1">مشاور</label>{{ form.consultant_name }}</div>
+        <div><label class="block text-xs font-semibold mb-1">مشاور EN</label>{{ form.consultant_name_en }}</div>
+        <div><label class="block text-xs font-semibold mb-1">تلفن مشاور</label>{{ form.consultant_phone }}</div>
+      </div>
+    </section>
+
+    <section>
+      <h3 class="font-bold text-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-image"></i> تصویر کاور</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div><label class="block text-xs font-semibold mb-1">آپلود</label>{{ form.cover_image }}</div>
+        <div><label class="block text-xs font-semibold mb-1">یا URL</label>{{ form.cover_image_url }}</div>
+      </div>
+      <p class="text-xs text-on-surface-variant mt-2">گالری چندتصویری را از پنل ادمین Django هم می‌توانید اضافه کنید.</p>
+    </section>
+
+    <section>
+      <h3 class="font-bold text-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-toggle-on"></i> وضعیت</h3>
+      <div class="flex flex-wrap gap-6 text-sm">
+        <label class="inline-flex items-center gap-2">{{ form.is_active }} فعال / منتشر</label>
+        <label class="inline-flex items-center gap-2">{{ form.is_featured }} ویژه</label>
+        <label class="inline-flex items-center gap-2">{{ form.is_exclusive }} انحصاری</label>
+        <label class="inline-flex items-center gap-2">{{ form.has_deed }} سند تک‌برگ</label>
+        <label class="inline-flex items-center gap-2">{{ form.is_complex_office }} دفتر مستقر در مجموعه</label>
+      </div>
+    </section>
+
+    <section>
+      <h3 class="font-bold text-primary mb-3"><i class="fa-solid fa-align-right ml-1"></i> توضیحات</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div><label class="block text-xs font-semibold mb-1">فارسی</label>{{ form.description }}</div>
+        <div><label class="block text-xs font-semibold mb-1">انگلیسی</label>{{ form.description_en }}</div>
+      </div>
+    </section>
+
+    <div class="flex flex-wrap gap-3 pt-2 border-t">
+      <button type="submit" class="px-6 py-2.5 rounded-lg bg-primary text-on-primary font-bold text-sm"><i class="fa-solid fa-floppy-disk ml-1"></i>{{ submit_label }}</button>
+      <a href="{% url 'dashboard:property_list' %}" class="px-6 py-2.5 rounded-lg border text-sm font-semibold">انصراف</a>
+    </div>
+  </form>
+</main>
+</body>
+</html>
