@@ -53,6 +53,7 @@
         <ul class="space-y-3">
           <li><a class="text-white/70 hover:text-white transition-colors text-sm" href="{% url 'core:about' %}">{% if LANGUAGE_CODE == 'en' %}About{% else %}معرفی مجموعه{% endif %}</a></li>
           <li><a class="text-white/70 hover:text-white transition-colors text-sm" href="{% url 'real_estate:list' %}">{% if LANGUAGE_CODE == 'en' %}Properties{% else %}املاک{% endif %}</a></li>
+                    <li><a class="text-white/70 hover:text-white transition-colors text-sm" href="{% url 'blog:list' %}">{% if LANGUAGE_CODE == 'en' %}Properties{% else %}مقالات{% endif %}</a></li>
           <li><a class="text-white/70 hover:text-white transition-colors text-sm" href="{% url 'core:about' %}#visit">{% if LANGUAGE_CODE == 'en' %}Contact{% else %}تماس با ما{% endif %}</a></li>
         </ul>
       </div>
@@ -64,7 +65,7 @@
         <div class="space-y-4 text-sm text-white/70">
           <div>
             <span class="block text-white/60 font-medium mb-1">{% if LANGUAGE_CODE == 'en' %}Hotline:{% else %}خط ویژه:{% endif %}</span>
-            <span class="text-lg text-white font-bold font-mono" dir="ltr">{% if LANGUAGE_CODE == 'en' %}+98 21 2200 8890{% else %}۰۲۱-۲۲۰۰۸۸۹۰{% endif %}</span>
+            <span class="text-lg text-white font-bold font-medium" dir="ltr">{% if LANGUAGE_CODE == 'en' %}+98 21 2200 8890{% else %}۰۲۱-۲۲۰۰۸۸۹۰{% endif %}</span>
           </div>
           <div>
             <span class="block text-white/60 font-medium mb-1">{% if LANGUAGE_CODE == 'en' %}Address:{% else %}آدرس:{% endif %}</span>
