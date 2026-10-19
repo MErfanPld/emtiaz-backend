@@ -5,9 +5,9 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
-from blog.models import Category, Post
+from blog.models import Category, Post, Tag
 
-from .blog_forms import CategoryForm, PostForm
+from .blog_forms import CategoryForm, PostForm, TagForm
 from .views import ApprovedRequiredMixin
 
 
@@ -19,10 +19,10 @@ class BlogPostListView(ApprovedRequiredMixin, ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        qs = Post.objects.select_related('category').order_by('-created_at')
+        qs = Post.objects.select_related('category').prefetch_related('tags').order_by('-created_at')
         q = self.request.GET.get('q', '').strip()
         if q:
-            qs = qs.filter(Q(title__icontains=q) | Q(excerpt__icontains=q))
+            qs = qs.filter(Q(title__icontains=q) | Q(title_en__icontains=q) | Q(excerpt__icontains=q))
         status = self.request.GET.get('status')
         if status == 'published':
             qs = qs.filter(is_published=True)
@@ -132,4 +132,58 @@ class BlogCategoryDeleteView(ApprovedRequiredMixin, DeleteView):
 
     def form_valid(self, form):
         messages.success(self.request, 'دسته حذف شد.')
+        return super().form_valid(form)
+
+
+# ─── Tags ───────────────────────────────────────────────
+
+@method_decorator(login_required, name='dispatch')
+class BlogTagListView(ApprovedRequiredMixin, ListView):
+    model = Tag
+    template_name = 'dashboard/blog/tag_list.html'
+    context_object_name = 'tags'
+
+
+@method_decorator(login_required, name='dispatch')
+class BlogTagCreateView(ApprovedRequiredMixin, CreateView):
+    model = Tag
+    form_class = TagForm
+    template_name = 'dashboard/blog/tag_form.html'
+    success_url = reverse_lazy('dashboard:blog_tag_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'برچسب ایجاد شد.')
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['page_title'] = 'برچسب جدید'
+        return ctx
+
+
+@method_decorator(login_required, name='dispatch')
+class BlogTagUpdateView(ApprovedRequiredMixin, UpdateView):
+    model = Tag
+    form_class = TagForm
+    template_name = 'dashboard/blog/tag_form.html'
+    success_url = reverse_lazy('dashboard:blog_tag_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'برچسب به‌روز شد.')
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['page_title'] = f'ویرایش — {self.object.name}'
+        return ctx
+
+
+@method_decorator(login_required, name='dispatch')
+class BlogTagDeleteView(ApprovedRequiredMixin, DeleteView):
+    model = Tag
+    template_name = 'dashboard/blog/tag_confirm_delete.html'
+    success_url = reverse_lazy('dashboard:blog_tag_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'برچسب حذف شد.')
         return super().form_valid(form)

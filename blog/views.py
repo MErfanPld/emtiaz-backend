@@ -1,28 +1,43 @@
 from django.db.models import F, Q
+from django.utils.translation import get_language
 from django.views.generic import DetailView, ListView
 
-from .models import Category, Post
+from .models import Category, Post, Tag
+
+
+def _lang_is_en():
+    return (get_language() or 'fa')[:2] == 'en'
 
 
 class PostListView(ListView):
     model = Post
-    template_name = 'blog/post_list.html'
     context_object_name = 'posts'
     paginate_by = 9
 
+    def get_template_names(self):
+        if _lang_is_en():
+            return ['blog/post_list_en.html']
+        return ['blog/post_list.html']
+
     def get_queryset(self):
-        qs = Post.objects.filter(is_published=True).select_related('category')
+        qs = Post.objects.filter(is_published=True).select_related('category').prefetch_related('tags')
         q = self.request.GET.get('q', '').strip()
         if q:
             qs = qs.filter(
                 Q(title__icontains=q)
+                | Q(title_en__icontains=q)
                 | Q(excerpt__icontains=q)
+                | Q(excerpt_en__icontains=q)
                 | Q(body__icontains=q)
-                | Q(tags__icontains=q)
-            )
+                | Q(tags__name__icontains=q)
+                | Q(tags__name_en__icontains=q)
+            ).distinct()
         cat = self.request.GET.get('category', '').strip()
         if cat:
             qs = qs.filter(category__slug=cat)
+        tag = self.request.GET.get('tag', '').strip()
+        if tag:
+            qs = qs.filter(tags__slug=tag)
         sort = self.request.GET.get('sort', 'newest')
         if sort == 'views':
             qs = qs.order_by('-views_count', '-published_at')
@@ -35,21 +50,28 @@ class PostListView(ListView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['categories'] = Category.objects.filter(is_active=True)
+        ctx['tags'] = Tag.objects.filter(is_active=True)
         ctx['active_category'] = self.request.GET.get('category', '')
+        ctx['active_tag'] = self.request.GET.get('tag', '')
         ctx['q'] = self.request.GET.get('q', '')
         ctx['sort'] = self.request.GET.get('sort', 'newest')
+        ctx['is_en'] = _lang_is_en()
         return ctx
 
 
 class PostDetailView(DetailView):
     model = Post
-    template_name = 'blog/post_detail.html'
     context_object_name = 'post'
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
 
+    def get_template_names(self):
+        if _lang_is_en():
+            return ['blog/post_detail_en.html']
+        return ['blog/post_detail.html']
+
     def get_queryset(self):
-        return Post.objects.filter(is_published=True).select_related('category')
+        return Post.objects.filter(is_published=True).select_related('category').prefetch_related('tags')
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
@@ -64,8 +86,10 @@ class PostDetailView(DetailView):
             Post.objects.filter(is_published=True)
             .exclude(pk=post.pk)
             .select_related('category')
+            .prefetch_related('tags')
         )
         if post.category_id:
             related = related.filter(category_id=post.category_id) | related
         ctx['related_posts'] = related.distinct().order_by('-published_at')[:3]
+        ctx['is_en'] = _lang_is_en()
         return ctx
