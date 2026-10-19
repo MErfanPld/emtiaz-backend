@@ -1,37 +1,51 @@
-# Emtiaz Backend
+# مجموعه املاک امتیاز (Emtiaz)
 
-Backend و سایت املاک امتیاز — Django Templates + Session Authentication
+سایت و پنل مدیریت املاک امتیاز — **Django Templates** + **Session Authentication**
+
+## پیش‌نیاز
+
+- Python 3.12+
+- pip / venv
 
 ## راه‌اندازی
 
 ```bash
-python -m venv venv
-source venv/bin/activate
+git pull origin master
+python -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
+cp .env.example .env        # در صورت نیاز
 python manage.py migrate
-python manage.py createsuperuser   # با ایمیل
+python manage.py createsuperuser   # ورود با شماره موبایل
 python manage.py runserver
 ```
 
-## احراز هویت (کلاسیک / Session)
+- سایت: http://127.0.0.1:8000/
+- داشبورد: http://127.0.0.1:8000/dashboard/
+- ادمین: http://127.0.0.1:8000/admin/
+
+## ساختار اصلی
 
 | مسیر | توضیح |
 |------|--------|
-| `/accounts/login/` | ورود (فقط حساب تأییدشده و فعال) |
-| `/accounts/logout/` | خروج امن (فقط POST + CSRF) |
-| `/accounts/register/` | ثبت‌نام (حساب همیشه pending) |
-| `/accounts/register/done/` | پیام موفقیت ثبت‌نام |
-| `/accounts/pending/` | صفحه انتظار تأیید / رد |
-| `/accounts/profile/` | مشاهده و ویرایش پروفایل |
-| `/accounts/password/change/` | تغییر رمز عبور |
-| `/dashboard/` | داشبورد (نیاز به ورود + تأیید) |
-| `/admin/` | پنل ادمین Django |
+| `accounts/` | کاربر سفارشی (موبایل)، ورود/ثبت‌نام، تأیید حساب |
+| `core/` | صفحه اصلی، درباره، درخواست مشاوره |
+| `real_estate/` | لیست و جزئیات املاک + گالری |
+| `blog/` | مقالات (CKEditor، دسته، برچسب) |
+| `dashboard/` | پنل مدیریت (املاک، وبلاگ، کاربران، مشاوره) |
+| `assets/` | استاتیک (CSS/JS/تصاویر) |
+| `templates/` | قالب‌های مشترک و داشبورد |
 
-## قوانین امنیتی
+## وابستگی‌ها
 
-- ثبت‌نام هرگز حساب را خودکار تأیید نمی‌کند.
-- `approval_status` از `is_active` جدا است.
-- کاربر pending / rejected / inactive وارد صفحات محافظت‌شده نمی‌شود.
-- خروج فقط با POST و CSRF.
-- کاربر نمی‌تواند نقش یا وضعیت تأیید خود را تغییر دهد.
-- تأیید/رد حساب فقط از طریق Django Admin.
+- Django 6.x
+- Pillow
+- django-ckeditor
+- jdatetime
+
+## نکات
+
+- احراز هویت: Session (بدون REST/JWT)
+- ثبت‌نام → وضعیت `pending` تا تأیید مدیر
+- زبان: فارسی پیش‌فرض + انگلیسی (`/en/`)
+- پیامک مشاوره فعلاً تستی در کنسول چاپ می‌شود
