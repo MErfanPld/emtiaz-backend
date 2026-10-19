@@ -1,72 +1,184 @@
 {% extends "base.html" %}
 {% load static jalali_tags %}
 {% block title %}{{ post.title }} | مجموعه املاک امتیاز{% endblock %}
+{% block extra_head %}
+<style>
+  .ck-content { color: #181c1b; line-height: 1.85; font-size: 1.05rem; }
+  .ck-content h2 { color: #181c1b; font-weight: 800; font-size: 1.35rem; margin: 2rem 0 .75rem; scroll-margin-top: 6rem; }
+  .ck-content h3 { color: #181c1b; font-weight: 700; font-size: 1.15rem; margin: 1.5rem 0 .5rem; scroll-margin-top: 6rem; }
+  .ck-content p { color: #2a2f2d; margin-bottom: 1rem; }
+  .ck-content ul, .ck-content ol { color: #2a2f2d; padding-right: 1.25rem; margin-bottom: 1rem; }
+  .ck-content li { margin-bottom: .4rem; }
+  .ck-content a { color: #1a1a1a; text-decoration: underline; }
+  .ck-content blockquote { border-right: 4px solid #c9a227; padding: 1rem 1.25rem; background: #f7faf7; margin: 1.5rem 0; color: #181c1b; font-style: italic; }
+  .ck-content img { border-radius: .75rem; margin: 1.5rem 0; }
+  .meta-icon { color: #181c1b !important; }
+  .toc-link:hover { background: #f0f4f1; color: #181c1b; }
+</style>
+{% endblock %}
 {% block content %}
 <main class="w-full max-w-[1320px] mx-auto px-4 sm:px-6 md:px-12 py-8 md:py-12">
-  <nav class="mb-8 flex flex-wrap items-center gap-2 text-sm text-outline">
-    <a class="hover:text-primary" href="{% url 'core:home' %}">صفحه اصلی</a>
-    <span>/</span>
-    <a class="hover:text-primary" href="{% url 'blog:list' %}">مقالات</a>
-    <span>/</span>
-    <span class="text-on-surface font-semibold line-clamp-1">{{ post.title }}</span>
+  <!-- Breadcrumb -->
+  <nav class="mb-8 flex flex-wrap items-center gap-2 text-sm text-[#3d4441]" aria-label="breadcrumb">
+    <a class="hover:text-primary font-medium" href="{% url 'core:home' %}">صفحه اصلی</a>
+    <i class="fa-solid fa-chevron-left text-xs text-[#181c1b]"></i>
+    <a class="hover:text-primary font-medium" href="{% url 'blog:list' %}">مقالات و آموزش‌ها</a>
+    <i class="fa-solid fa-chevron-left text-xs text-[#181c1b]"></i>
+    <span class="text-[#181c1b] font-semibold line-clamp-1">{{ post.title }}</span>
   </nav>
 
+  <!-- Header -->
   <header class="max-w-4xl mx-auto mb-10 text-center md:text-right">
     {% if post.category %}
-    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f7faf7] border text-secondary text-sm mb-4">{{ post.category.name }}</div>
+    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f0f4f1] border border-[#c1c8c4] text-[#181c1b] text-sm font-semibold mb-5">
+      <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+      {{ post.category.name }}
+    </div>
     {% endif %}
-    <h1 class="text-2xl md:text-4xl font-extrabold text-primary mb-5">{{ post.title }}</h1>
-    {% if post.excerpt %}<p class="text-lg text-on-surface-variant leading-relaxed mb-6">{{ post.excerpt }}</p>{% endif %}
-    <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 pt-5 border-t text-sm text-outline">
-      <span>{{ post.author_name }}</span>
-      <span><i class="fa-regular fa-calendar text-secondary ml-1"></i>{{ post.published_at|jalali:"j F Y" }}</span>
-      <span>{{ post.reading_minutes }} دقیقه مطالعه</span>
-      <span>{{ post.views_count }} بازدید</span>
+    <h1 class="text-2xl md:text-4xl font-extrabold text-[#181c1b] tracking-tight mb-5 leading-snug">{{ post.title }}</h1>
+    {% if post.excerpt %}
+    <p class="text-base md:text-lg text-[#2a2f2d] leading-relaxed mb-8 max-w-3xl">{{ post.excerpt }}</p>
+    {% endif %}
+    <div class="flex flex-wrap items-center justify-center md:justify-start gap-y-3 gap-x-6 pt-6 border-t border-[#c1c8c4] text-sm text-[#181c1b]">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-pen-to-square meta-icon"></i>
+        <span>نویسنده: <strong>{{ post.author_name }}</strong></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <i class="fa-regular fa-calendar meta-icon"></i>
+        <span>تاریخ انتشار: <strong>{{ post.published_at|jalali:"j F Y" }}</strong></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <i class="fa-regular fa-clock meta-icon"></i>
+        <span>زمان مطالعه: <strong>{{ post.reading_minutes }} دقیقه</strong></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-eye meta-icon"></i>
+        <span>بازدید: <strong>{{ post.views_count }}</strong></span>
+      </div>
     </div>
   </header>
 
+  <!-- Hero image -->
   {% if post.display_image %}
-  <div class="rounded-xl overflow-hidden mb-12 border aspect-[16/9] bg-[#ecefeb]">
-    <img class="w-full h-full object-cover" src="{{ post.display_image }}" alt="{{ post.title }}"/>
+  <div class="relative w-full rounded-xl overflow-hidden mb-12 border border-[#c1c8c4] shadow-sm">
+    <div class="aspect-[16/9] w-full bg-[#ecefeb]">
+      <img alt="{{ post.title }}" class="w-full h-full object-cover" src="{{ post.display_image }}"/>
+    </div>
   </div>
   {% endif %}
 
+  <!-- Two columns -->
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-    <article class="lg:col-span-8 prose prose-lg max-w-none text-on-surface-variant leading-relaxed">
-      <div class="ck-content space-y-4 text-base md:text-lg">{{ post.body|safe }}</div>
+    <!-- Main -->
+    <article class="lg:col-span-8 space-y-8">
+      <div class="ck-content">{{ body_html|safe }}</div>
+
       {% if post.tags.all %}
-      <div class="mt-10 pt-6 border-t flex flex-wrap gap-2 not-prose">
+      <div class="pt-6 border-t border-[#c1c8c4] flex flex-wrap items-center gap-3">
+        <span class="text-sm font-semibold text-[#181c1b]">برچسب‌ها:</span>
         {% for t in post.tags.all %}
-        <a href="{% url 'blog:list' %}?tag={{ t.slug }}" class="px-3 py-1 bg-[#f7faf7] rounded-full text-sm hover:bg-primary hover:text-white transition-colors">#{{ t.name }}</a>
+        <a href="{% url 'blog:list' %}?tag={{ t.slug }}" class="px-3 py-1 bg-[#f0f4f1] text-[#181c1b] rounded-full text-sm font-medium hover:bg-primary hover:text-white transition-colors">#{{ t.name }}</a>
         {% endfor %}
       </div>
       {% endif %}
-    </article>
-    <aside class="lg:col-span-4 space-y-6 lg:sticky lg:top-28">
-      <div class="p-6 bg-white rounded-xl border shadow-sm space-y-4">
-        <h3 class="font-bold text-primary">نیاز به راهنمایی؟</h3>
-        <p class="text-sm text-on-surface-variant">مشاوران مجموعه املاک امتیاز آماده‌اند.</p>
-        <a class="block text-center w-full bg-primary text-white py-3 rounded-lg text-sm font-semibold" href="{% url 'real_estate:list' %}">مشاهده املاک</a>
+
+      <!-- Author card -->
+      <div class="p-6 bg-white rounded-xl border border-[#c1c8c4] flex items-center gap-5 shadow-sm">
+        <div class="w-16 h-16 rounded-full bg-primary text-white flex items-center justify-center shrink-0 text-xl">
+          <i class="fa-solid fa-building"></i>
+        </div>
+        <div>
+          <h4 class="font-bold text-[#181c1b] mb-1">{{ post.author_name }}</h4>
+          <p class="text-sm text-[#2a2f2d] leading-relaxed">محتوای تخصصی و راهنماهای ملکی با نظارت کارشناسان مجموعه املاک امتیاز.</p>
+        </div>
       </div>
-      <a href="{% url 'blog:list' %}" class="block text-center text-sm font-semibold text-primary">← بازگشت به مقالات</a>
+    </article>
+
+    <!-- Sticky sidebar -->
+    <aside class="lg:col-span-4 space-y-6 lg:sticky lg:top-28">
+      {% if toc %}
+      <div class="p-6 bg-white rounded-xl border border-[#c1c8c4] shadow-sm">
+        <div class="flex items-center gap-2 mb-4 pb-3 border-b border-[#c1c8c4] text-[#181c1b]">
+          <i class="fa-solid fa-list-ul text-secondary"></i>
+          <h3 class="font-bold">فهرست مطالب مقاله</h3>
+        </div>
+        <nav class="space-y-1 text-sm">
+          {% for item in toc %}
+          <a class="toc-link flex items-center gap-2 text-[#2a2f2d] hover:text-[#181c1b] transition-colors py-1.5 px-2 rounded {% if item.level == 'h3' %}pr-5{% endif %}" href="#{{ item.id }}">
+            <span class="w-1.5 h-1.5 rounded-full bg-secondary shrink-0"></span>
+            <span>{{ item.text }}</span>
+          </a>
+          {% endfor %}
+        </nav>
+      </div>
+      {% endif %}
+
+      <div class="p-6 bg-gradient-to-br from-white to-[#f7faf7] rounded-xl border border-secondary/40 shadow-sm space-y-4">
+        <div class="w-12 h-12 rounded-lg bg-primary text-white flex items-center justify-center">
+          <i class="fa-solid fa-headset text-xl"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-[#181c1b] mb-1">نیاز به راهنمایی بیشتر دارید؟</h3>
+          <p class="text-sm text-[#2a2f2d] leading-relaxed">مشاوران مجموعه املاک امتیاز آماده ارائه مشاوره هستند.</p>
+        </div>
+        <div class="pt-2 space-y-3">
+          <a class="block text-center w-full bg-primary text-white py-3 rounded-lg text-sm font-semibold hover:opacity-90" href="{% url 'real_estate:list' %}">مشاهده املاک</a>
+          <a class="block text-center w-full border border-secondary text-[#181c1b] py-2.5 rounded-lg text-sm font-semibold hover:bg-white" href="tel:02122000000">تماس مستقیم: ۰۲۱-۲۲۰۰۰۰۰۰</a>
+        </div>
+      </div>
+
+      <a href="{% url 'blog:list' %}" class="block text-center text-sm font-bold text-[#181c1b] hover:text-secondary">
+        <i class="fa-solid fa-arrow-right ml-1"></i> بازگشت به لیست مقالات
+      </a>
     </aside>
   </div>
 
+  <!-- Related -->
   {% if related_posts %}
-  <section class="mt-20 pt-10 border-t">
-    <h2 class="text-xl font-bold text-primary mb-6">مطالب مرتبط</h2>
+  <section class="mt-20 pt-10 border-t border-[#c1c8c4]">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <span class="text-secondary text-sm font-semibold">پژوهش‌های تکمیلی</span>
+        <h2 class="text-xl font-bold text-[#181c1b] mt-1">مطالب مرتبط</h2>
+      </div>
+      <a class="text-[#181c1b] hover:text-secondary font-semibold text-sm flex items-center gap-1" href="{% url 'blog:list' %}">
+        مشاهده همه مقالات <i class="fa-solid fa-arrow-left text-xs"></i>
+      </a>
+    </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       {% for r in related_posts %}
-      <article class="bg-white rounded-xl border overflow-hidden shadow-sm">
-        <a href="{{ r.get_absolute_url }}" class="aspect-[16/10] bg-[#ecefeb] block">{% if r.display_image %}<img class="w-full h-full object-cover" src="{{ r.display_image }}" alt=""/>{% endif %}</a>
-        <div class="p-4">
-          <div class="text-xs text-outline mb-1">{{ r.published_at|jalali:"j F Y" }}</div>
-          <h3 class="font-bold text-primary"><a href="{{ r.get_absolute_url }}">{{ r.title }}</a></h3>
+      <article class="bg-white rounded-xl border border-[#c1c8c4] overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow">
+        <a href="{{ r.get_absolute_url }}" class="aspect-[16/10] bg-[#ecefeb] overflow-hidden block">
+          {% if r.display_image %}<img class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" src="{{ r.display_image }}" alt=""/>{% endif %}
+        </a>
+        <div class="p-5 flex flex-col flex-1">
+          <div class="flex items-center gap-2 text-xs text-[#3d4441] mb-2">
+            {% if r.category %}<span class="text-secondary font-semibold">{{ r.category.name }}</span><span>•</span>{% endif %}
+            <span>{{ r.reading_minutes }} دقیقه</span>
+          </div>
+          <h3 class="font-bold text-[#181c1b] mb-2 hover:text-secondary transition-colors">
+            <a href="{{ r.get_absolute_url }}">{{ r.title }}</a>
+          </h3>
+          <p class="text-sm text-[#2a2f2d] line-clamp-2 mt-auto">{{ r.excerpt|truncatewords:18 }}</p>
         </div>
       </article>
       {% endfor %}
     </div>
   </section>
   {% endif %}
+
+  <!-- CTA -->
+  <section class="mt-16 p-8 md:p-12 bg-primary text-white rounded-xl relative overflow-hidden shadow-lg">
+    <div class="relative z-10 max-w-2xl">
+      <span class="text-secondary text-sm font-bold mb-2 block">مرجع معتبر معاملات ملکی</span>
+      <h2 class="text-2xl md:text-3xl font-extrabold mb-4 leading-tight">برای انتخاب بهتر ملک، از اطلاعات دقیق شروع کنید</h2>
+      <p class="text-white/85 mb-8 leading-relaxed">فایل‌های کارشناسی‌شده و مشاوران مجموعه، بستری شفاف برای تصمیم آگاهانه شما فراهم کرده‌اند.</p>
+      <div class="flex flex-wrap gap-4">
+        <a class="bg-secondary text-primary px-6 py-3 rounded-lg font-bold text-sm hover:bg-white transition-colors" href="{% url 'real_estate:list' %}">مشاهده املاک</a>
+        <a class="border border-white/40 text-white px-6 py-3 rounded-lg font-semibold text-sm hover:bg-white/10 transition-colors" href="{% url 'core:about' %}#visit">تماس با مجموعه</a>
+      </div>
+    </div>
+  </section>
 </main>
 {% endblock %}
