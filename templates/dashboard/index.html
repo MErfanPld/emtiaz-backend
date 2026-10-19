@@ -1,133 +1,75 @@
-{% load static %}
-<!DOCTYPE html>
-<html dir="rtl" lang="fa">
-<head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>داشبورد | مجموعه املاک امتیاز</title>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" crossorigin="anonymous"/>
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
-<script src="{% static 'js/tailwind-config.js' %}"></script>
-<style>
-@media (max-width: 1023px) {
-  aside.dash-side { transform: translateX(100%); }
-  aside.dash-side.open { transform: translateX(0); }
-  .dash-main, .dash-top { margin-right: 0 !important; max-width: 100% !important; }
-}
-</style>
-</head>
-<body class="bg-surface text-on-surface min-h-screen flex flex-col">
-<aside class="dash-side fixed top-0 right-0 h-screen w-72 z-40 bg-surface-container-lowest border-l border-outline-variant shadow-sm flex flex-col justify-between transition-transform">
-<div class="p-6 border-b border-outline-variant/40">
-  <div class="flex items-center gap-3">
-    <div class="w-10 h-10 rounded-lg bg-primary-container text-on-primary flex items-center justify-center"><i class="fa-solid fa-building"></i></div>
-    <div><h1 class="text-primary font-bold">املاک امتیاز</h1><p class="text-sm text-on-surface-variant">مجموعه مدیریت</p></div>
-  </div>
-</div>
-<div class="flex-1 overflow-y-auto px-4 py-4 space-y-1 text-sm">
-  <a class="flex items-center gap-3 px-4 py-3 bg-primary text-on-primary rounded-lg font-bold" href="{% url 'dashboard:index' %}"><i class="fa-solid fa-gauge-high w-5"></i> داشبورد</a>
-  <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container rounded-lg" href="{% url 'dashboard:property_list' %}"><i class="fa-solid fa-house-chimney w-5"></i> مدیریت املاک</a>
-  <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container rounded-lg" href="{% url 'dashboard:property_create' %}"><i class="fa-solid fa-plus w-5"></i> افزودن ملک</a>
-  <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container rounded-lg" href="{% url 'accounts:profile' %}"><i class="fa-solid fa-user w-5"></i> پروفایل</a>
-  <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container rounded-lg" href="{% url 'core:home' %}"><i class="fa-solid fa-globe w-5"></i> مشاهده سایت</a>
-</div>
-<div class="p-4 border-t">
-  <div class="flex items-center gap-3 mb-3 p-2 rounded-lg border bg-white">
-    <div class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold">{{ user.first_name|slice:":1"|default:"ک" }}</div>
-    <div class="min-w-0"><p class="font-medium truncate">{{ user.get_full_name|default:user.phone_number }}</p><p class="text-xs text-secondary">{% if user.is_superuser %}مدیر کل مجموعه{% else %}{{ user.job_title|default:"کاربر" }}{% endif %}</p></div>
-  </div>
-  <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}
-    <button type="submit" class="w-full flex items-center justify-center gap-2 py-2 text-error rounded-lg hover:bg-error-container/30"><i class="fa-solid fa-right-from-bracket"></i> خروج</button>
-  </form>
-</div>
-</aside>
-
-<header class="dash-top sticky top-0 z-30 w-full bg-surface-container-lowest border-b mr-72 flex items-center justify-between h-14 px-4 sm:px-6 max-w-[calc(100%-18rem)]">
-  <button type="button" id="dash-menu" class="lg:hidden p-2 rounded-lg border"><i class="fa-solid fa-bars"></i></button>
-  <div class="text-sm text-on-surface-variant">داشبورد / <span class="text-primary font-bold">نمای کلی</span></div>
-  <a href="{% url 'dashboard:property_create' %}" class="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary text-on-primary text-sm font-bold"><i class="fa-solid fa-plus"></i> ملک جدید</a>
-</header>
-
-<main class="dash-main mr-72 flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-[calc(100%-18rem)]">
-  <div class="bg-white rounded-xl p-5 border shadow-sm">
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}داشبورد{% endblock %}
+{% block breadcrumb %}<span class="text-primary font-bold">نمای کلی</span>{% endblock %}
+{% block header_actions %}
+<a href="{% url 'dashboard:property_create' %}" class="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary text-white text-sm font-bold"><i class="fa-solid fa-plus"></i> ملک جدید</a>
+{% endblock %}
+{% block content %}
+<div class="space-y-6">
+  <div class="bg-white rounded-xl p-5 border border-[#c1c8c4] shadow-sm">
     <h2 class="text-xl font-bold text-primary mb-1">خوش آمدید، {{ user.get_full_name|default:"کاربر عزیز" }}</h2>
-    <p class="text-sm text-on-surface-variant">از اینجا املاک مجموعه را مدیریت کنید و روی سایت منتشر کنید.</p>
+    <p class="text-sm text-on-surface-variant">از اینجا املاک مجموعه را مدیریت کنید.</p>
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
     <div class="bg-white p-5 rounded-xl border shadow-sm">
-      <div class="flex justify-between items-center mb-2"><span class="text-sm text-on-surface-variant">کل املاک</span><i class="fa-solid fa-building text-primary"></i></div>
+      <div class="flex justify-between mb-2 text-sm text-on-surface-variant"><span>کل املاک</span><i class="fa-solid fa-building text-primary"></i></div>
       <div class="text-3xl font-black text-primary">{{ property_total }}</div>
     </div>
     <div class="bg-white p-5 rounded-xl border shadow-sm">
-      <div class="flex justify-between items-center mb-2"><span class="text-sm text-on-surface-variant">منتشرشده</span><i class="fa-solid fa-circle-check text-secondary"></i></div>
+      <div class="flex justify-between mb-2 text-sm text-on-surface-variant"><span>منتشرشده</span><i class="fa-solid fa-circle-check text-green-600"></i></div>
       <div class="text-3xl font-black text-primary">{{ property_active }}</div>
     </div>
     <div class="bg-white p-5 rounded-xl border shadow-sm">
-      <div class="flex justify-between items-center mb-2"><span class="text-sm text-on-surface-variant">پیش‌نویس</span><i class="fa-solid fa-file text-outline"></i></div>
+      <div class="flex justify-between mb-2 text-sm text-on-surface-variant"><span>پیش‌نویس</span><i class="fa-solid fa-file"></i></div>
       <div class="text-3xl font-black text-primary">{{ property_draft }}</div>
     </div>
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-    <a href="{% url 'dashboard:property_create' %}" class="bg-white p-4 rounded-xl border hover:border-secondary flex items-center gap-3">
-      <div class="w-11 h-11 rounded-lg bg-primary text-on-primary flex items-center justify-center"><i class="fa-solid fa-plus"></i></div>
-      <div><div class="font-bold text-primary">افزودن ملک</div><div class="text-xs text-on-surface-variant">ثبت فایل جدید</div></div>
+    <a href="{% url 'dashboard:property_create' %}" class="bg-white p-4 rounded-xl border hover:border-primary flex items-center gap-3">
+      <div class="w-11 h-11 rounded-lg bg-primary text-white flex items-center justify-center"><i class="fa-solid fa-plus"></i></div>
+      <div><div class="font-bold text-primary">افزودن ملک</div><div class="text-xs text-on-surface-variant">ثبت فایل + گالری</div></div>
     </a>
-    <a href="{% url 'dashboard:property_list' %}" class="bg-white p-4 rounded-xl border hover:border-secondary flex items-center gap-3">
-      <div class="w-11 h-11 rounded-lg bg-surface-container flex items-center justify-center text-primary"><i class="fa-solid fa-list"></i></div>
+    <a href="{% url 'dashboard:property_list' %}" class="bg-white p-4 rounded-xl border hover:border-primary flex items-center gap-3">
+      <div class="w-11 h-11 rounded-lg bg-[#ecefeb] text-primary flex items-center justify-center"><i class="fa-solid fa-list"></i></div>
       <div><div class="font-bold text-primary">لیست املاک</div><div class="text-xs text-on-surface-variant">ویرایش و حذف</div></div>
     </a>
-    <a href="{% url 'real_estate:list' %}" class="bg-white p-4 rounded-xl border hover:border-secondary flex items-center gap-3" target="_blank">
-      <div class="w-11 h-11 rounded-lg bg-surface-container flex items-center justify-center text-primary"><i class="fa-solid fa-globe"></i></div>
+    <a href="{% url 'real_estate:list' %}" target="_blank" class="bg-white p-4 rounded-xl border hover:border-primary flex items-center gap-3">
+      <div class="w-11 h-11 rounded-lg bg-[#ecefeb] text-primary flex items-center justify-center"><i class="fa-solid fa-globe"></i></div>
       <div><div class="font-bold text-primary">ویترین سایت</div><div class="text-xs text-on-surface-variant">مشاهده عمومی</div></div>
     </a>
-    <a href="{% url 'accounts:profile' %}" class="bg-white p-4 rounded-xl border hover:border-secondary flex items-center gap-3">
-      <div class="w-11 h-11 rounded-lg bg-surface-container flex items-center justify-center text-primary"><i class="fa-solid fa-user"></i></div>
-      <div><div class="font-bold text-primary">پروفایل</div><div class="text-xs text-on-surface-variant">اطلاعات حساب</div></div>
+    <a href="{% url 'accounts:profile' %}" class="bg-white p-4 rounded-xl border hover:border-primary flex items-center gap-3">
+      <div class="w-11 h-11 rounded-lg bg-[#ecefeb] text-primary flex items-center justify-center"><i class="fa-solid fa-user"></i></div>
+      <div><div class="font-bold text-primary">پروفایل</div><div class="text-xs text-on-surface-variant">حساب کاربری</div></div>
     </a>
   </div>
 
   <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
-    <div class="p-4 border-b flex items-center justify-between">
+    <div class="p-4 border-b flex justify-between items-center">
       <h3 class="font-bold text-primary"><i class="fa-solid fa-clock-rotate-left ml-1"></i> آخرین املاک</h3>
-      <a href="{% url 'dashboard:property_list' %}" class="text-sm text-secondary font-bold">همه</a>
+      <a href="{% url 'dashboard:property_list' %}" class="text-sm font-bold text-primary">همه</a>
     </div>
     <div class="overflow-x-auto">
       <table class="w-full text-sm text-right">
-        <thead class="bg-surface-container-low text-on-surface-variant">
-          <tr>
-            <th class="py-3 px-4">کد</th>
-            <th class="py-3 px-4">عنوان</th>
-            <th class="py-3 px-4">قیمت</th>
-            <th class="py-3 px-4">وضعیت</th>
-            <th class="py-3 px-4"></th>
-          </tr>
-        </thead>
+        <thead class="bg-[#f7faf7] text-on-surface-variant"><tr>
+          <th class="py-3 px-4">کد</th><th class="py-3 px-4">عنوان</th><th class="py-3 px-4">قیمت</th><th class="py-3 px-4">وضعیت</th><th class="py-3 px-4"></th>
+        </tr></thead>
         <tbody class="divide-y">
           {% for p in recent_properties %}
-          <tr class="hover:bg-surface-container-low/40">
+          <tr class="hover:bg-[#f7faf7]/60">
             <td class="py-3 px-4 font-mono text-xs">{{ p.code }}</td>
             <td class="py-3 px-4 font-bold">{{ p.title }}</td>
             <td class="py-3 px-4">{{ p.formatted_price }}</td>
-            <td class="py-3 px-4">{% if p.is_active %}<span class="text-xs px-2 py-0.5 rounded-full bg-primary-fixed">منتشر</span>{% else %}<span class="text-xs px-2 py-0.5 rounded-full bg-surface-container-high">پیش‌نویس</span>{% endif %}</td>
+            <td class="py-3 px-4">{% if p.is_active %}<span class="text-xs px-2 py-0.5 rounded-full bg-green-100">منتشر</span>{% else %}<span class="text-xs px-2 py-0.5 rounded-full bg-gray-100">پیش‌نویس</span>{% endif %}</td>
             <td class="py-3 px-4"><a class="text-primary" href="{% url 'dashboard:property_edit' p.slug %}"><i class="fa-solid fa-pen"></i></a></td>
           </tr>
           {% empty %}
-          <tr><td colspan="5" class="py-10 text-center text-on-surface-variant">هنوز ملکی ثبت نشده. <a href="{% url 'dashboard:property_create' %}" class="text-primary font-bold">افزودن ملک</a></td></tr>
+          <tr><td colspan="5" class="py-10 text-center text-on-surface-variant">هنوز ملکی نیست. <a href="{% url 'dashboard:property_create' %}" class="text-primary font-bold">افزودن</a></td></tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
   </div>
-</main>
-<script>
-document.getElementById('dash-menu')?.addEventListener('click', function(){
-  document.querySelector('.dash-side')?.classList.toggle('open');
-});
-</script>
-</body>
-</html>
+</div>
+{% endblock %}

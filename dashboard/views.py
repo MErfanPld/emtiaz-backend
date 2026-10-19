@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, Q
-from django.shortcuts import get_object_or_404, redirect
+from django.db.models import Q
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import (
@@ -14,7 +14,7 @@ from django.views.generic import (
 
 from real_estate.models import Property
 
-from .forms import PropertyForm
+from .forms import PropertyForm, PropertyImageFormSet
 
 
 class ApprovedRequiredMixin:
@@ -67,36 +67,70 @@ class PropertyDashboardListView(ApprovedRequiredMixin, ListView):
         return qs
 
 
+class PropertyFormsetMixin:
+    """ذخیره فرم اصلی + formset گالری."""
+
+    def get_formset(self):
+        if self.request.method == 'POST':
+            return PropertyImageFormSet(
+                self.request.POST,
+                self.request.FILES,
+                instance=getattr(self, 'object', None),
+            )
+        return PropertyImageFormSet(instance=getattr(self, 'object', None))
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        if 'formset' not in ctx:
+            ctx['formset'] = self.get_formset()
+        return ctx
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        formset = context['formset']
+        # برای create ابتدا object را بساز
+        self.object = form.save()
+        formset = PropertyImageFormSet(
+            self.request.POST,
+            self.request.FILES,
+            instance=self.object,
+        )
+        if formset.is_valid():
+            formset.save()
+            messages.success(self.request, self.success_message)
+            return redirect(self.get_success_url())
+        # formset نامعتبر — دوباره نمایش
+        return self.render_to_response(
+            self.get_context_data(form=form, formset=formset)
+        )
+
+
 @method_decorator(login_required, name='dispatch')
-class PropertyCreateView(ApprovedRequiredMixin, CreateView):
+class PropertyCreateView(ApprovedRequiredMixin, PropertyFormsetMixin, CreateView):
     model = Property
     form_class = PropertyForm
     template_name = 'dashboard/property_form.html'
     success_url = reverse_lazy('dashboard:property_list')
-
-    def form_valid(self, form):
-        messages.success(self.request, 'ملک با موفقیت ثبت شد.')
-        return super().form_valid(form)
+    success_message = 'ملک با موفقیت ثبت شد.'
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['page_title'] = 'افزودن ملک جدید'
         ctx['submit_label'] = 'ثبت ملک'
+        if 'formset' not in kwargs:
+            ctx['formset'] = PropertyImageFormSet()
         return ctx
 
 
 @method_decorator(login_required, name='dispatch')
-class PropertyUpdateView(ApprovedRequiredMixin, UpdateView):
+class PropertyUpdateView(ApprovedRequiredMixin, PropertyFormsetMixin, UpdateView):
     model = Property
     form_class = PropertyForm
     template_name = 'dashboard/property_form.html'
     success_url = reverse_lazy('dashboard:property_list')
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
-
-    def form_valid(self, form):
-        messages.success(self.request, 'تغییرات ملک ذخیره شد.')
-        return super().form_valid(form)
+    success_message = 'تغییرات ملک و گالری ذخیره شد.'
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -113,6 +147,6 @@ class PropertyDeleteView(ApprovedRequiredMixin, DeleteView):
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
 
-    def delete(self, request, *args, **kwargs):
-        messages.success(request, 'ملک حذف شد.')
-        return super().delete(request, *args, **kwargs)
+    def form_valid(self, form):
+        messages.success(self.request, 'ملک حذف شد.')
+        return super().form_valid(form)

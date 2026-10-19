@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import inlineformset_factory
 
 from real_estate.models import Property, PropertyImage
 
@@ -44,3 +45,24 @@ class PropertyImageForm(forms.ModelForm):
     class Meta:
         model = PropertyImage
         fields = ['image', 'image_url', 'caption', 'caption_en', 'sort_order']
+        widgets = {
+            'image_url': forms.URLInput(attrs={
+                'class': 'w-full border border-[#c1c8c4] rounded-lg px-3 py-2 text-sm',
+                'placeholder': 'https://...',
+            }),
+            'caption': forms.TextInput(attrs={'class': 'w-full border border-[#c1c8c4] rounded-lg px-2 py-1.5 text-sm'}),
+            'caption_en': forms.TextInput(attrs={'class': 'w-full border border-[#c1c8c4] rounded-lg px-2 py-1.5 text-sm'}),
+            'sort_order': forms.NumberInput(attrs={'class': 'w-20 border border-[#c1c8c4] rounded-lg px-2 py-1.5 text-sm', 'min': 0}),
+            'image': forms.ClearableFileInput(attrs={'class': 'text-sm'}),
+        }
+
+
+PropertyImageFormSet = inlineformset_factory(
+    Property,
+    PropertyImage,
+    form=PropertyImageForm,
+    fk_name='listing',
+    extra=3,
+    can_delete=True,
+    max_num=30,
+)

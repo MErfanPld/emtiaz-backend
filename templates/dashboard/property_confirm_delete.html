@@ -1,26 +1,15 @@
-{% load static %}
-<!DOCTYPE html>
-<html dir="rtl" lang="fa">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>حذف ملک | مجموعه املاک امتیاز</title>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
-<script src="{% static 'js/tailwind-config.js' %}"></script>
-</head>
-<body class="bg-surface min-h-screen flex items-center justify-center p-6">
-  <div class="bg-white rounded-xl border shadow-lg p-8 max-w-md w-full text-center">
-    <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-error-container/40 text-error flex items-center justify-center text-2xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
-    <h1 class="text-xl font-bold text-primary mb-2">حذف ملک</h1>
-    <p class="text-sm text-on-surface-variant mb-6">آیا از حذف «{{ object.title }}» ({{ object.code }}) مطمئن هستید؟ این عمل قابل بازگشت نیست.</p>
-    <form method="post" class="flex gap-3 justify-center">
-      {% csrf_token %}
-      <button type="submit" class="px-5 py-2.5 rounded-lg bg-error text-white font-bold text-sm"><i class="fa-solid fa-trash ml-1"></i> حذف قطعی</button>
-      <a href="{% url 'dashboard:property_list' %}" class="px-5 py-2.5 rounded-lg border text-sm font-semibold">انصراف</a>
-    </form>
-  </div>
-</body>
-</html>
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}حذف ملک{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard:property_list' %}">املاک</a> / <span class="text-primary font-bold">حذف</span>{% endblock %}
+{% block content %}
+<div class="bg-white rounded-xl border shadow-sm p-8 max-w-md mx-auto text-center">
+  <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-2xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
+  <h1 class="text-xl font-bold text-primary mb-2">حذف ملک</h1>
+  <p class="text-sm text-on-surface-variant mb-6">آیا از حذف «{{ object.title }}» ({{ object.code }}) مطمئن هستید؟</p>
+  <form method="post" class="flex gap-3 justify-center">
+    {% csrf_token %}
+    <button type="submit" class="px-5 py-2.5 rounded-lg bg-red-600 text-white font-bold text-sm"><i class="fa-solid fa-trash ml-1"></i> حذف قطعی</button>
+    <a href="{% url 'dashboard:property_list' %}" class="px-5 py-2.5 rounded-lg border text-sm font-semibold">انصراف</a>
+  </form>
+</div>
+{% endblock %}
