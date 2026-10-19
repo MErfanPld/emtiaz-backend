@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="icon" href="{% static 'logo.svg' %}" type="image/svg+xml"/>
+<title>{% block title %}داشبورد{% endblock %} | مجموعه املاک امتیاز</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" crossorigin="anonymous"/>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<script src="{% static 'js/tailwind-config.js' %}"></script>
+<style>
+  body { font-family: Vazirmatn, system-ui, sans-serif; }
+  .dash-side {
+    transition: transform .25s ease;
+  }
+  @media (max-width: 1023px) {
+    .dash-side { transform: translateX(100%); }
+    .dash-side.is-open { transform: translateX(0); }
+    .dash-main, .dash-top { margin-right: 0 !important; max-width: 100% !important; width: 100% !important; }
+  }
+  .nav-link { display: flex; align-items: center; gap: .75rem; padding: .75rem 1rem; border-radius: .5rem; color: #5c635f; transition: .15s; }
+  .nav-link:hover { background: #ecefeb; color: #181c1b; }
+  .nav-link.active { background: var(--tw-color-primary, #1a1a1a); color: #fff; font-weight: 700; }
+  .nav-link i { width: 1.25rem; text-align: center; }
+</style>
+{% block extra_head %}{% endblock %}
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col">
+{% with url_name=request.resolver_match.url_name %}
+<aside id="dash-side" class="dash-side fixed top-0 right-0 h-screen w-72 z-50 bg-white border-l border-[#c1c8c4] shadow-sm flex flex-col">
+  <div class="p-5 border-b border-[#c1c8c4]">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg bg-primary text-white flex items-center justify-center"><i class="fa-solid fa-building"></i></div>
+      <div>
+        <h1 class="text-primary font-bold text-sm">مجموعه املاک امتیاز</h1>
+        <p class="text-xs text-on-surface-variant">سامانه مدیریت</p>
+      </div>
+    </div>
+  </div>
+
+  <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1 text-sm">
+    <a class="nav-link {% if url_name == 'index' %}active{% endif %}" href="{% url 'dashboard:index' %}">
+      <i class="fa-solid fa-gauge-high"></i><span>داشبورد</span>
+    </a>
+
+    {# املاک — همه کاربران تأییدشده #}
+    <p class="px-4 pt-4 pb-1 text-[11px] font-bold text-on-surface-variant/80">املاک</p>
+    <a class="nav-link {% if url_name == 'property_list' or url_name == 'property_edit' or url_name == 'property_delete' %}active{% endif %}" href="{% url 'dashboard:property_list' %}">
+      <i class="fa-solid fa-house-chimney"></i><span>لیست املاک</span>
+    </a>
+    <a class="nav-link {% if url_name == 'property_create' %}active{% endif %}" href="{% url 'dashboard:property_create' %}">
+      <i class="fa-solid fa-plus"></i><span>افزودن ملک</span>
+    </a>
+
+    {% if user.is_staff or user.is_superuser %}
+    <p class="px-4 pt-4 pb-1 text-[11px] font-bold text-on-surface-variant/80">مدیریت پیشرفته</p>
+    <a class="nav-link" href="/admin/" target="_blank">
+      <i class="fa-solid fa-screwdriver-wrench"></i><span>پنل ادمین Django</span>
+    </a>
+    <a class="nav-link opacity-60 cursor-not-allowed" href="#" title="به‌زودی">
+      <i class="fa-solid fa-store"></i><span>دفاتر املاک</span>
+    </a>
+    <a class="nav-link opacity-60 cursor-not-allowed" href="#" title="به‌زودی">
+      <i class="fa-solid fa-newspaper"></i><span>مقالات</span>
+    </a>
+    <a class="nav-link opacity-60 cursor-not-allowed" href="#" title="به‌زودی">
+      <i class="fa-solid fa-inbox"></i><span>درخواست‌ها</span>
+    </a>
+    {% endif %}
+
+    {% if user.is_superuser %}
+    <p class="px-4 pt-4 pb-1 text-[11px] font-bold text-on-surface-variant/80">مدیر کل</p>
+    <a class="nav-link" href="/admin/accounts/user/" target="_blank">
+      <i class="fa-solid fa-users"></i><span>مدیریت کاربران</span>
+    </a>
+    <a class="nav-link opacity-60 cursor-not-allowed" href="#" title="به‌زودی">
+      <i class="fa-solid fa-gear"></i><span>تنظیمات سایت</span>
+    </a>
+    {% endif %}
+
+    <p class="px-4 pt-4 pb-1 text-[11px] font-bold text-on-surface-variant/80">حساب</p>
+    <a class="nav-link" href="{% url 'accounts:profile' %}">
+      <i class="fa-solid fa-user"></i><span>پروفایل</span>
+    </a>
+    <a class="nav-link" href="{% url 'core:home' %}" target="_blank">
+      <i class="fa-solid fa-globe"></i><span>مشاهده سایت</span>
+    </a>
+  </nav>
+
+  <div class="p-4 border-t border-[#c1c8c4]">
+    <div class="flex items-center gap-3 mb-3 p-2 rounded-lg border bg-[#f7faf7]">
+      <div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
+        {{ user.first_name|slice:":1"|default:"ک" }}
+      </div>
+      <div class="min-w-0 flex-1">
+        <p class="font-medium text-sm truncate">{{ user.get_full_name|default:user.phone_number }}</p>
+        <p class="text-[11px] text-secondary">
+          {% if user.is_superuser %}مدیر کل مجموعه
+          {% elif user.is_staff %}کارمند / مدیر
+          {% else %}{{ user.job_title|default:"کاربر تأییدشده" }}{% endif %}
+        </p>
+      </div>
+    </div>
+    <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}
+      <button type="submit" class="w-full flex items-center justify-center gap-2 py-2 text-sm text-red-600 rounded-lg hover:bg-red-50">
+        <i class="fa-solid fa-right-from-bracket"></i> خروج
+      </button>
+    </form>
+  </div>
+</aside>
+{% endwith %}
+
+<div id="dash-backdrop" class="fixed inset-0 z-40 bg-black/40 lg:hidden hidden"></div>
+
+<header class="dash-top sticky top-0 z-30 bg-white border-b border-[#c1c8c4] mr-72 h-14 px-4 flex items-center justify-between max-w-[calc(100%-18rem)]">
+  <div class="flex items-center gap-3">
+    <button type="button" id="dash-menu-btn" class="lg:hidden w-10 h-10 rounded-lg border flex items-center justify-center">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <div class="text-sm text-on-surface-variant">{% block breadcrumb %}داشبورد{% endblock %}</div>
+  </div>
+  <div class="flex items-center gap-2">{% block header_actions %}{% endblock %}</div>
+</header>
+
+<main class="dash-main mr-72 flex-1 p-4 sm:p-6 max-w-[calc(100%-18rem)] min-h-[calc(100vh-3.5rem)]">
+  {% if messages %}
+  <div class="mb-4 space-y-2">
+    {% for message in messages %}
+    <div class="rounded-lg border px-4 py-3 text-sm {% if message.tags == 'error' %}border-red-300 bg-red-50 text-red-800{% else %}border-secondary/40 bg-[#f7faf7] text-primary{% endif %}">{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+
+<script>
+(function(){
+  var side = document.getElementById('dash-side');
+  var btn = document.getElementById('dash-menu-btn');
+  var bd = document.getElementById('dash-backdrop');
+  function open(){ side.classList.add('is-open'); bd.classList.remove('hidden'); document.body.style.overflow='hidden'; }
+  function close(){ side.classList.remove('is-open'); bd.classList.add('hidden'); document.body.style.overflow=''; }
+  if(btn) btn.addEventListener('click', function(){ side.classList.contains('is-open') ? close() : open(); });
+  if(bd) bd.addEventListener('click', close);
+})();
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>
