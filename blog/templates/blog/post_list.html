@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}مقالات و راهنماهای ملکی | مجموعه املاک امتیاز{% endblock %}
+{% block content %}
+<main class="flex-grow">
+  <div class="w-full max-w-[1320px] mx-auto px-4 sm:px-6 md:px-12 pt-6 pb-2">
+    <nav class="flex items-center gap-2 text-sm text-on-surface-variant" aria-label="Breadcrumb">
+      <a class="hover:text-primary flex items-center gap-1" href="{% url 'core:home' %}"><i class="fa-solid fa-house text-xs"></i> صفحه اصلی</a>
+      <span class="text-outline">/</span>
+      <span class="text-primary font-semibold">مقالات و راهنماهای ملکی</span>
+    </nav>
+  </div>
+
+  <section class="relative w-full py-10 md:py-14">
+    <div class="max-w-[1320px] mx-auto px-4 sm:px-6 md:px-12">
+      <div class="text-center max-w-3xl mx-auto space-y-4">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded bg-white border border-secondary/40 shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-secondary"></span>
+          <span class="text-sm font-semibold text-primary">مجله املاک امتیاز</span>
+          <span class="text-outline">|</span>
+          <span class="text-xs text-secondary font-bold">مرجع تحلیلی و حقوقی مسکن</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-extrabold text-primary tracking-tight">
+          دانش بیشتر، <span class="text-secondary">انتخاب بهتر</span> در بازار ملک
+        </h1>
+        <p class="text-on-surface-variant max-w-2xl mx-auto leading-relaxed">
+          نکات کاربردی خرید، فروش، رهن و اجاره و راهنمای انتخاب ملک مناسب.
+        </p>
+        <form method="get" class="pt-2 max-w-xl mx-auto relative flex items-center bg-white p-1.5 rounded border border-outline shadow-sm focus-within:border-primary">
+          {% if active_category %}<input type="hidden" name="category" value="{{ active_category }}"/>{% endif %}
+          <i class="fa-solid fa-magnifying-glass text-on-surface-variant pr-3"></i>
+          <input class="w-full bg-transparent border-none text-on-surface placeholder:text-on-surface-variant/70 text-sm focus:ring-0 px-2 py-2" name="q" value="{{ q }}" placeholder="جست‌وجو در مقالات..." type="search"/>
+          <button class="bg-primary text-white hover:opacity-90 px-5 py-2.5 rounded text-sm font-semibold shrink-0" type="submit">جست‌وجو</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-[1320px] mx-auto px-4 sm:px-6 md:px-12 pt-4 pb-4">
+    <div class="bg-white p-5 md:p-6 rounded border border-outline shadow-sm">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+        <h3 class="font-bold text-primary flex items-center gap-2"><i class="fa-solid fa-sliders text-secondary"></i> دسته‌بندی موضوعات</h3>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <a href="{% url 'blog:list' %}" class="px-4 py-2 rounded-full text-sm font-semibold border {% if not active_category %}bg-primary text-white border-primary{% else %}border-outline hover:border-secondary{% endif %}">همه مقالات</a>
+        {% for c in categories %}
+        <a href="?category={{ c.slug }}{% if q %}&q={{ q }}{% endif %}" class="px-4 py-2 rounded-full text-sm border {% if active_category == c.slug %}bg-primary text-white border-primary{% else %}border-outline hover:border-secondary{% endif %}">{{ c.name }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-[1320px] mx-auto px-4 sm:px-6 md:px-12 py-8">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+      <div>
+        <div class="flex items-center gap-2 text-secondary text-sm font-semibold mb-1"><i class="fa-solid fa-book"></i> آرشیو مقالات</div>
+        <h2 class="text-2xl font-bold text-primary">آخرین مقالات</h2>
+      </div>
+      <form method="get" class="flex items-center gap-2 text-sm">
+        {% if active_category %}<input type="hidden" name="category" value="{{ active_category }}"/>{% endif %}
+        {% if q %}<input type="hidden" name="q" value="{{ q }}"/>{% endif %}
+        <span class="text-on-surface-variant">مرتب‌سازی:</span>
+        <select name="sort" onchange="this.form.submit()" class="bg-white border border-outline rounded px-3 py-1.5 text-sm">
+          <option value="newest" {% if sort == 'newest' %}selected{% endif %}>جدیدترین</option>
+          <option value="views" {% if sort == 'views' %}selected{% endif %}>پربازدید</option>
+          <option value="featured" {% if sort == 'featured' %}selected{% endif %}>ویژه</option>
+        </select>
+      </form>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for post in posts %}
+      <article class="bg-white rounded border border-outline shadow-sm hover:shadow-md transition-all flex flex-col overflow-hidden group">
+        <a href="{{ post.get_absolute_url }}" class="relative aspect-[16/10] overflow-hidden bg-[#ecefeb] block">
+          {% if post.display_image %}
+          <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ post.display_image }}" alt="{{ post.title }}"/>
+          {% else %}
+          <div class="w-full h-full flex items-center justify-center text-primary/20"><i class="fa-solid fa-newspaper text-5xl"></i></div>
+          {% endif %}
+          {% if post.category %}
+          <span class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded border text-xs font-semibold text-primary">{{ post.category.name }}</span>
+          {% endif %}
+        </a>
+        <div class="p-5 flex flex-col flex-grow">
+          <div class="flex items-center gap-3 text-xs text-on-surface-variant mb-2">
+            <span><i class="fa-regular fa-calendar text-secondary"></i> {% if post.published_at %}{{ post.published_at|date:"j F Y" }}{% else %}—{% endif %}</span>
+            <span>•</span>
+            <span><i class="fa-regular fa-clock text-secondary"></i> {{ post.reading_minutes }} دقیقه</span>
+          </div>
+          <h3 class="font-bold text-primary mb-2 leading-snug group-hover:opacity-80">
+            <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+          </h3>
+          <p class="text-sm text-on-surface-variant line-clamp-3 leading-relaxed flex-grow">{{ post.excerpt|default:post.body|truncatewords:28 }}</p>
+          <div class="mt-4 pt-3 border-t border-outline/40 flex items-center justify-between">
+            <span class="text-xs text-secondary font-medium">{{ post.author_name }}</span>
+            <a class="text-sm font-semibold text-primary flex items-center gap-1" href="{{ post.get_absolute_url }}">مطالعه <i class="fa-solid fa-arrow-left text-xs"></i></a>
+          </div>
+        </div>
+      </article>
+      {% empty %}
+      <div class="col-span-full py-16 text-center text-on-surface-variant">مقاله‌ای منتشر نشده است.</div>
+      {% endfor %}
+    </div>
+
+    {% if page_obj.has_other_pages %}
+    <nav class="flex items-center justify-center gap-2 mt-10 flex-wrap" aria-label="Pagination">
+      {% if page_obj.has_previous %}
+      <a class="px-4 py-2 rounded border text-sm" href="?page={{ page_obj.previous_page_number }}{% if active_category %}&category={{ active_category }}{% endif %}{% if q %}&q={{ q }}{% endif %}&sort={{ sort }}">صفحه قبل</a>
+      {% endif %}
+      <span class="px-3 py-2 text-sm">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}
+      <a class="px-4 py-2 rounded border text-sm" href="?page={{ page_obj.next_page_number }}{% if active_category %}&category={{ active_category }}{% endif %}{% if q %}&q={{ q }}{% endif %}&sort={{ sort }}">صفحه بعد</a>
+      {% endif %}
+    </nav>
+    {% endif %}
+  </section>
+
+  <section class="max-w-[1320px] mx-auto px-4 sm:px-6 md:px-12 py-12">
+    <div class="relative bg-primary rounded-xl p-8 md:p-12 text-white overflow-hidden">
+      <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
+        <div class="max-w-2xl space-y-3 text-center lg:text-right">
+          <h2 class="text-2xl md:text-3xl font-bold">با دنیای ملک آگاهانه‌تر همراه شوید</h2>
+          <p class="text-white/80 leading-relaxed">راهنماها را دنبال کنید تا با دید روشن‌تری درباره خرید و فروش تصمیم بگیرید.</p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-3 shrink-0">
+          <a class="inline-flex items-center justify-center gap-2 bg-secondary text-primary font-bold px-6 py-3 rounded" href="{% url 'real_estate:list' %}">مشاهده املاک</a>
+          <a class="inline-flex items-center justify-center gap-2 bg-white/10 border border-white/30 px-6 py-3 rounded" href="{% url 'core:about' %}#visit">تماس با مجموعه</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}
