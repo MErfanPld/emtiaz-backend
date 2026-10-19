@@ -4,14 +4,27 @@
 {% block content %}
 <form method="post" enctype="multipart/form-data" class="bg-white rounded-xl border border-[#c1c8c4] p-5 sm:p-6 space-y-8 shadow-sm max-w-5xl">
   {% csrf_token %}
-  {% if form.non_field_errors %}<div class="text-red-600 text-sm">{{ form.non_field_errors }}</div>{% endif %}
+
+  {% if form.errors or formset.errors or formset.non_form_errors %}
+  <div class="rounded-lg border border-red-300 bg-red-50 text-red-800 px-4 py-3 text-sm space-y-1">
+    <p class="font-bold">فرم ذخیره نشد. موارد زیر را بررسی کنید:</p>
+    {% if form.non_field_errors %}<div>{{ form.non_field_errors }}</div>{% endif %}
+    {% for field in form %}
+      {% if field.errors %}<div><strong>{{ field.label }}:</strong> {{ field.errors.0 }}</div>{% endif %}
+    {% endfor %}
+    {% if formset.non_form_errors %}<div>{{ formset.non_form_errors }}</div>{% endif %}
+    {% for f in formset %}
+      {% if f.errors %}<div>گالری ردیف {{ forloop.counter }}: {{ f.errors }}</div>{% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
 
   <section>
     <h3 class="font-bold text-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-id-card"></i> شناسه و عنوان</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div><label class="block text-xs font-semibold mb-1">کد ملک *</label>{{ form.code }}{% if form.code.errors %}<p class="text-red-600 text-xs">{{ form.code.errors.0 }}</p>{% endif %}</div>
-      <div><label class="block text-xs font-semibold mb-1">اسلاگ</label>{{ form.slug }}</div>
-      <div class="md:col-span-2"><label class="block text-xs font-semibold mb-1">عنوان فارسی *</label>{{ form.title }}</div>
+      <div><label class="block text-xs font-semibold mb-1">کد ملک *</label>{{ form.code }}{% if form.code.errors %}<p class="text-red-600 text-xs mt-1">{{ form.code.errors.0 }}</p>{% endif %}</div>
+      <div><label class="block text-xs font-semibold mb-1">اسلاگ (اختیاری)</label>{{ form.slug }}{% if form.slug.errors %}<p class="text-red-600 text-xs mt-1">{{ form.slug.errors.0 }}</p>{% endif %}</div>
+      <div class="md:col-span-2"><label class="block text-xs font-semibold mb-1">عنوان فارسی *</label>{{ form.title }}{% if form.title.errors %}<p class="text-red-600 text-xs mt-1">{{ form.title.errors.0 }}</p>{% endif %}</div>
       <div class="md:col-span-2"><label class="block text-xs font-semibold mb-1">عنوان انگلیسی</label>{{ form.title_en }}</div>
     </div>
   </section>
@@ -21,7 +34,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div><label class="block text-xs font-semibold mb-1">نوع معامله</label>{{ form.transaction_type }}</div>
       <div><label class="block text-xs font-semibold mb-1">نوع کاربری</label>{{ form.property_type }}</div>
-      <div><label class="block text-xs font-semibold mb-1">محله</label>{{ form.area_name }}</div>
+      <div><label class="block text-xs font-semibold mb-1">محله *</label>{{ form.area_name }}{% if form.area_name.errors %}<p class="text-red-600 text-xs mt-1">{{ form.area_name.errors.0 }}</p>{% endif %}</div>
       <div><label class="block text-xs font-semibold mb-1">محله EN</label>{{ form.area_name_en }}</div>
       <div><label class="block text-xs font-semibold mb-1">آدرس</label>{{ form.address_line }}</div>
       <div><label class="block text-xs font-semibold mb-1">آدرس EN</label>{{ form.address_line_en }}</div>
