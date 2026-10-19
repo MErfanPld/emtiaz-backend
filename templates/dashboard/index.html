@@ -1,7 +1,7 @@
 {% extends "dashboard/base_dashboard.html" %}
 {% load persian %}
 {% block title %}داشبورد{% endblock %}
-{% block breadcrumb %}<span class="text-primary font-bold">نمای کلی</span>{% endblock %}
+{% block breadcrumb %}<span class="text-primary font-bold"></span>{% endblock %}
 {% block header_actions %}
 <div class="flex items-center gap-2">
   <a href="{% url 'dashboard:blog_create' %}" class="hidden md:inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#c1c8c4] text-sm font-bold text-primary hover:bg-[#f7faf7]">
@@ -43,7 +43,7 @@
         <div class="text-3xl font-black text-[#181c1b]">{{ property_total|fa_num }}</div>
       </a>
       <a href="{% url 'dashboard:property_list' %}?status=active" class="bg-white p-5 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
-        <div class="flex justify-between mb-2 text-sm text-[#3d4441]"><span>منتشرشده</span><i class="fa-solid fa-circle-check text-green-600"></i></div>
+        <div class="flex justify-between mb-2 text-sm text-[#3d4441]"><span>منتشرشده</span><i class="fa-solid fa-circle-check text-black-600"></i></div>
         <div class="text-3xl font-black text-[#181c1b]">{{ property_active|fa_num }}</div>
       </a>
       <a href="{% url 'dashboard:property_list' %}?status=draft" class="bg-white p-5 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
@@ -63,7 +63,7 @@
         <div class="text-2xl font-black text-[#181c1b]">{{ post_total|fa_num }}</div>
       </a>
       <a href="{% url 'dashboard:blog_list' %}?status=published" class="bg-white p-4 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
-        <div class="flex justify-between mb-1 text-xs text-[#3d4441]"><span>منتشر</span><i class="fa-solid fa-circle-check text-green-600"></i></div>
+        <div class="flex justify-between mb-1 text-xs text-[#3d4441]"><span>منتشر</span><i class="fa-solid fa-circle-check text-black-600"></i></div>
         <div class="text-2xl font-black text-[#181c1b]">{{ post_published|fa_num }}</div>
       </a>
       <a href="{% url 'dashboard:blog_list' %}?status=draft" class="bg-white p-4 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
@@ -92,11 +92,11 @@
         <div class="text-3xl font-black text-[#181c1b]">{{ user_total|fa_num }}</div>
       </a>
       <a href="{% url 'dashboard:user_list' %}" class="bg-white p-5 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
-        <div class="flex justify-between mb-2 text-sm text-[#3d4441]"><span>تأییدشده</span><i class="fa-solid fa-user-check text-green-600"></i></div>
+        <div class="flex justify-between mb-2 text-sm text-[#3d4441]"><span>تأییدشده</span><i class="fa-solid fa-user-check text-black-600"></i></div>
         <div class="text-3xl font-black text-[#181c1b]">{{ user_approved|fa_num }}</div>
       </a>
       <a href="{% url 'dashboard:user_list' %}" class="bg-white p-5 rounded-xl border {% if user_pending %}border-amber-300{% else %}border-[#c1c8c4]{% endif %} shadow-sm hover:border-primary transition-colors">
-        <div class="flex justify-between mb-2 text-sm text-[#3d4441]"><span>در انتظار تأیید</span><i class="fa-solid fa-user-clock text-amber-600"></i></div>
+        <div class="flex justify-between mb-2 text-sm text-[#3d4441]"><span>در انتظار تأیید</span><i class="fa-solid fa-user-clock text-black-600"></i></div>
         <div class="text-3xl font-black {% if user_pending %}text-amber-700{% else %}text-[#181c1b]{% endif %}">{{ user_pending|fa_num }}</div>
       </a>
     </div>
@@ -110,26 +110,33 @@
         <div class="w-11 h-11 rounded-lg bg-primary text-white flex items-center justify-center"><i class="fa-solid fa-plus"></i></div>
         <span class="text-xs font-bold text-[#181c1b]">ملک جدید</span>
       </a>
+
       <a href="{% url 'dashboard:property_list' %}" class="bg-white p-4 rounded-xl border border-[#c1c8c4] hover:border-primary flex flex-col items-center gap-2 text-center">
-        <div class="w-11 h-11 rounded-lg bg-[#ecefeb] text-[#181c1b] flex items-center justify-center"><i class="fa-solid fa-list"></i></div>
+        <div class="w-11 h-11 rounded-lg bg-primary text-white flex items-center justify-center"><i class="fa-solid fa-list"></i></div>
         <span class="text-xs font-bold text-[#181c1b]">لیست املاک</span>
       </a>
+      
       <a href="{% url 'dashboard:blog_create' %}" class="bg-white p-4 rounded-xl border border-[#c1c8c4] hover:border-primary flex flex-col items-center gap-2 text-center">
         <div class="w-11 h-11 rounded-lg bg-primary text-white flex items-center justify-center"><i class="fa-solid fa-pen-to-square"></i></div>
         <span class="text-xs font-bold text-[#181c1b]">مقاله جدید</span>
       </a>
+
       <a href="{% url 'dashboard:blog_list' %}" class="bg-white p-4 rounded-xl border border-[#c1c8c4] hover:border-primary flex flex-col items-center gap-2 text-center">
-        <div class="w-11 h-11 rounded-lg bg-[#ecefeb] text-[#181c1b] flex items-center justify-center"><i class="fa-solid fa-newspaper"></i></div>
+        <div class="w-11 h-11 rounded-lg bg-primary text-white flex items-center justify-center"><i class="fa-solid fa-newspaper"></i></div>
         <span class="text-xs font-bold text-[#181c1b]">لیست مقالات</span>
       </a>
+
       <a href="{% url 'dashboard:blog_category_list' %}" class="bg-white p-4 rounded-xl border border-[#c1c8c4] hover:border-primary flex flex-col items-center gap-2 text-center">
-        <div class="w-11 h-11 rounded-lg bg-[#ecefeb] text-[#181c1b] flex items-center justify-center"><i class="fa-solid fa-folder"></i></div>
-        <span class="text-xs font-bold text-[#181c1b]">دسته‌ها</span>
+        <div class="w-11 h-11 rounded-lg bg-primary text-white flex items-center justify-center"><i class="fa-solid fa-folder"></i></div>
+        <span class="text-xs font-bold text-[#181c1b]">دسته بندی ها</span>
       </a>
+
+
       <a href="{% url 'dashboard:blog_tag_list' %}" class="bg-white p-4 rounded-xl border border-[#c1c8c4] hover:border-primary flex flex-col items-center gap-2 text-center">
-        <div class="w-11 h-11 rounded-lg bg-[#ecefeb] text-[#181c1b] flex items-center justify-center"><i class="fa-solid fa-tags"></i></div>
-        <span class="text-xs font-bold text-[#181c1b]">برچسب‌ها</span>
-      </a>
+        <div class="w-11 h-11 rounded-lg bg-primary text-white flex items-center justify-center"><i class="fa-solid fa-tags"></i></div>
+        <span class="text-xs font-bold text-[#181c1b]">برچسب ها</span>
+      </a>      
+
     </div>
   </div>
 

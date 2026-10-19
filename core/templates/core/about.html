@@ -3,13 +3,12 @@
 {% block content %}
 <div class="w-full bg-surface-container-low border-b border-outline-variant/30">
   <div class="w-full max-w-[1320px] mx-auto px-6 md:px-12 py-3 flex items-center justify-between">
-    <nav class="flex items-center gap-2 text-label-md text-on-surface-variant">
+    <nav class="flex flex-wrap items-center justify-between gap-3  text-on-surface-variant mb-6 text-sm">
       <a class="hover:text-primary transition-colors flex items-center gap-1" href="{% url 'core:home' %}">
-        <span class="material-symbols-outlined text-base">home</span>
         <span>صفحه اصلی</span>
       </a>
-      <span class="text-outline">/</span>
-      <span class="text-primary font-semibold">معرفی مجتمع تخصصی املاک امتیاز</span>
+        <span class="material-symbols-outlined text-sm">chevron_left</span>
+      <span class="text-primary font-semibold">معرفی مجموعه تخصصی املاک امتیاز</span>
     </nav>
     <div class="hidden sm:flex items-center gap-2 text-label-sm text-secondary bg-surface-container px-3 py-1 rounded-full border border-secondary/30">
       <span class="material-symbols-outlined text-sm">verified</span>
@@ -28,14 +27,14 @@
           <span class="text-label-md text-primary font-semibold">آشنایی با املاک امتیاز</span>
         </div>
         <h1 class="text-3xl md:text-5xl font-bold text-primary tracking-tight leading-tight">
-          یک مجتمع، مجموعه‌ای از <span class="text-secondary relative inline-block">فرصت‌های ملکی<span class="absolute bottom-1 right-0 w-full h-[3px] bg-secondary/40 rounded-full"></span></span>
+          یک مجموعه‌ای از <span class="text-secondary relative inline-block">فرصت‌های ملکی<span class="absolute bottom-1 right-0 w-full h-[3px] bg-secondary/40 rounded-full"></span></span>
         </h1>
         <p class="text-lg text-on-surface-variant max-w-2xl leading-relaxed">
           املاک امتیاز فضایی برای گردهمایی دفاتر مستقل املاک و مشاوران حرفه‌ای است؛ جایی که متقاضیان خرید، فروش و اجاره می‌توانند در یک مکان گزینه‌های مختلف ملکی را بررسی کنند.
         </p>
         <div class="pt-2 flex flex-wrap items-center gap-4">
           <a class="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-lg bg-primary text-white font-semibold border border-secondary/40 shadow-md" href="#offices">آشنایی با دفاتر <span class="material-symbols-outlined text-lg">storefront</span></a>
-          <a class="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-lg bg-surface-container-lowest text-primary font-semibold border border-secondary/60" href="#visit">تماس با مجتمع <span class="material-symbols-outlined text-lg text-secondary">phone_in_talk</span></a>
+          <a class="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-lg bg-surface-container-lowest text-primary font-semibold border border-secondary/60" href="#visit">تماس با مجموعه <span class="material-symbols-outlined text-lg text-secondary">phone_in_talk</span></a>
         </div>
         <div class="pt-8 border-t border-outline-variant/40 grid grid-cols-3 gap-6 max-w-lg">
           <div><span class="block text-2xl font-bold text-primary">۲۴+</span><span class="text-sm text-on-surface-variant">دفتر معتبر</span></div>
@@ -64,7 +63,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
       <div class="lg:col-span-5 order-2 lg:order-1">
         <div class="rounded-lg overflow-hidden border border-outline-variant shadow-lg aspect-[4/3] bg-surface-container">
-          <img class="w-full h-full object-cover" alt="نمای مجتمع" src="{% static 'banner.png' %}"/>
+          <img class="w-full h-full object-cover" alt="نمای مجموعه" src="{% static 'banner.png' %}"/>
         </div>
       </div>
       <div class="lg:col-span-7 order-1 lg:order-2 space-y-6">
@@ -94,7 +93,7 @@
 <section class="w-full py-20 bg-surface border-b border-outline-variant/40">
   <div class="w-full max-w-[1320px] mx-auto px-6 md:px-12 space-y-12">
     <div class="text-center max-w-2xl mx-auto space-y-3">
-      <span class="text-label-lg text-secondary font-bold">ارزش‌ها و رویکرد</span>
+      <span class="text-label-lg text-secondary font-bold">‌</span>
       <h2 class="text-2xl md:text-3xl font-bold text-primary">نگاه ما به خدمات ملکی</h2>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -121,21 +120,21 @@
   <div class="w-full max-w-[1320px] mx-auto px-6 md:px-12 space-y-14">
     <div class="text-center max-w-2xl mx-auto space-y-3">
       <span class="text-label-lg text-secondary font-bold">فرآیند مراجعه</span>
-      <h2 class="text-2xl md:text-3xl font-bold text-primary">مسیر آشنایی با مجتمع</h2>
+      <h2 class="text-2xl md:text-3xl font-bold text-primary">مسیر آشنایی با مجموعه</h2>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <div class="p-8 rounded-lg bg-surface border border-outline-variant space-y-4">
-        <div class="w-12 h-12 rounded-full bg-primary text-secondary flex items-center justify-center font-bold text-xl">۱</div>
+        <div class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xl">۱</div>
         <h3 class="text-xl font-bold text-primary">دفاتر را بشناسید</h3>
         <p class="text-on-surface-variant">تخصص و خدمات هر دفتر را بررسی کنید.</p>
       </div>
       <div class="p-8 rounded-lg bg-surface border border-outline-variant space-y-4">
-        <div class="w-12 h-12 rounded-full bg-primary text-secondary flex items-center justify-center font-bold text-xl">۲</div>
+        <div class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xl">۲</div>
         <h3 class="text-xl font-bold text-primary">گزینه‌ها را بررسی کنید</h3>
         <p class="text-on-surface-variant">فهرست املاک را با معیارهای خود بسنجید.</p>
       </div>
       <div class="p-8 rounded-lg bg-surface border border-outline-variant space-y-4">
-        <div class="w-12 h-12 rounded-full bg-primary text-secondary flex items-center justify-center font-bold text-xl">۳</div>
+        <div class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xl">۳</div>
         <h3 class="text-xl font-bold text-primary">با دفتر مرتبط تماس بگیرید</h3>
         <p class="text-on-surface-variant">تماس بگیرید یا در پذیرش حضور یابید.</p>
       </div>
@@ -147,7 +146,7 @@
   <div class="w-full max-w-[1320px] mx-auto px-6 md:px-12 space-y-12">
     <div class="space-y-2 max-w-2xl">
       <span class="text-label-lg text-secondary font-bold">واحدهای مستقر</span>
-      <h2 class="text-2xl md:text-3xl font-bold text-primary">دفاتر املاک مجتمع</h2>
+      <h2 class="text-2xl md:text-3xl font-bold text-primary">دفاتر املاک مجموعه</h2>
       <p class="text-lg text-on-surface-variant">نمونه‌های نمایشی تا اتصال مدل دفاتر به دیتابیس.</p>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -186,7 +185,7 @@
   <div class="w-full max-w-[1320px] mx-auto px-6 md:px-12 space-y-12">
     <div class="text-center max-w-3xl mx-auto space-y-3">
       <span class="text-label-lg text-secondary font-bold">مراجعه حضوری</span>
-      <h2 class="text-2xl md:text-3xl font-bold text-primary">از نزدیک با مجتمع آشنا شوید</h2>
+      <h2 class="text-2xl md:text-3xl font-bold text-primary">از نزدیک با مجموعه آشنا شوید</h2>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div class="p-6 rounded-lg bg-surface border border-outline-variant flex items-start gap-4">
@@ -203,7 +202,7 @@
       </div>
     </div>
     <div class="flex flex-wrap items-center justify-center gap-4">
-      <a class="inline-flex items-center gap-2 px-8 py-3.5 rounded-lg bg-primary text-white font-semibold" href="tel:02122008890"><span class="material-symbols-outlined">call</span>تماس با مجتمع</a>
+      <a class="inline-flex items-center gap-2 px-8 py-3.5 rounded-lg bg-primary text-white font-semibold" href="tel:02122008890"><span class="material-symbols-outlined">call</span>تماس با مجموعه</a>
       <a class="inline-flex items-center gap-2 px-8 py-3.5 rounded-lg bg-surface-container text-primary font-semibold border border-outline" href="#offices"><span class="material-symbols-outlined text-secondary">store</span>مشاهده دفاتر</a>
     </div>
   </div>
@@ -216,7 +215,7 @@
         <h2 class="text-2xl md:text-3xl font-bold">برای آشنایی بیشتر با ما در ارتباط باشید</h2>
         <p class="text-lg text-white/80">مشاوران پذیرش آماده همراهی شما هستند.</p>
       </div>
-      <a class="inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-secondary text-primary font-bold" href="tel:02122008890"><span class="material-symbols-outlined">call</span>تماس با مجتمع</a>
+      <a class="border border-white/40 hover:bg-primary-container text-on-primary px-6 py-3.5 rounded-lg font-semibold flex items-center justify-center gap-2" href="tel:02122008890"><span class="material-symbols-outlined">call</span>تماس با مجموعه</a>
     </div>
   </div>
 </section>
