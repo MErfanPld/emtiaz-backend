@@ -7,19 +7,30 @@ from real_estate.models import Property, PropertyImage
 class PropertyForm(forms.ModelForm):
     class Meta:
         model = Property
-        # فقط فیلدهایی که در property_form.html رندر می‌شوند.
-        # فیلدهای required مدل (مثل sort_order/image_count) اگر در POST نباشند
-        # فرم را invalid می‌کنند و ثبت ملک fail می‌شود.
         fields = [
+            # شناسه
             'code', 'title', 'title_en', 'slug',
+            # نوع و موقعیت
             'transaction_type', 'property_type',
             'area_name', 'area_name_en', 'address_line', 'address_line_en',
-            'area_sqm', 'bedrooms', 'parking', 'floor',
-            'year_built',
+            # مشخصات
+            'area_sqm', 'bedrooms', 'parking', 'floor', 'floor_en',
+            'year_built', 'year_built_en',
+            # قیمت
             'price', 'price_label', 'price_label_en',
+            # دفتر و مشاور
+            'agency_name', 'agency_name_en',
+            'consultant_name', 'consultant_name_en', 'consultant_phone',
+            # نشان‌ها
+            'badge_primary', 'badge_primary_en',
+            'badge_secondary', 'badge_secondary_en',
+            # تصویر
             'cover_image', 'cover_image_url',
-            'has_deed', 'is_complex_office',
+            # ویژگی‌ها و وضعیت
+            'has_deed', 'is_complex_office', 'has_pool_or_roof', 'is_brand_builder',
             'is_active', 'is_featured', 'is_exclusive',
+            'sort_order',
+            # توضیحات
             'description', 'description_en',
         ]
         widgets = {
@@ -28,12 +39,18 @@ class PropertyForm(forms.ModelForm):
             'code': forms.TextInput(attrs={'placeholder': 'مثلاً D-408'}),
             'price': forms.NumberInput(attrs={'min': 0}),
             'slug': forms.TextInput(attrs={'placeholder': 'خالی بگذارید تا خودکار ساخته شود'}),
+            'consultant_phone': forms.TextInput(attrs={'placeholder': '09xxxxxxxxx', 'dir': 'ltr'}),
+            'badge_primary': forms.TextInput(attrs={'placeholder': 'مثلاً فروش انحصاری'}),
+            'badge_secondary': forms.TextInput(attrs={'placeholder': 'مثلاً نوساز'}),
+            'sort_order': forms.NumberInput(attrs={'min': 0}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # اسلاگ اختیاری — در مدل save پر می‌شود
         self.fields['slug'].required = False
+        # فیلدهای عددی با default در مدل — اگر خالی ارسال شوند مشکل نسازند
+        if 'sort_order' in self.fields:
+            self.fields['sort_order'].required = False
         for name, field in self.fields.items():
             css = (
                 'w-full border border-[#c1c8c4] rounded-lg px-3 py-2 text-sm '
@@ -44,7 +61,9 @@ class PropertyForm(forms.ModelForm):
             elif isinstance(field.widget, forms.FileInput):
                 field.widget.attrs['class'] = 'text-sm'
             else:
-                field.widget.attrs['class'] = css
+                field.widget.attrs.setdefault('class', css)
+                if 'class' not in field.widget.attrs or 'w-full' not in field.widget.attrs.get('class', ''):
+                    field.widget.attrs['class'] = css
 
 
 class PropertyImageForm(forms.ModelForm):
@@ -71,7 +90,6 @@ class PropertyImageForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # ردیف‌های خالی گالری نباید validation را بشکنند
         self.fields['sort_order'].required = False
 
 
