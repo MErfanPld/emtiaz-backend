@@ -48,10 +48,34 @@
       <div><label class="block text-xs font-semibold mb-1">خواب</label>{{ form.bedrooms }}</div>
       <div><label class="block text-xs font-semibold mb-1">پارکینگ</label>{{ form.parking }}</div>
       <div><label class="block text-xs font-semibold mb-1">طبقه</label>{{ form.floor }}</div>
+      <div><label class="block text-xs font-semibold mb-1">طبقه EN</label>{{ form.floor_en }}</div>
       <div><label class="block text-xs font-semibold mb-1">سال ساخت</label>{{ form.year_built }}</div>
+      <div><label class="block text-xs font-semibold mb-1">سال ساخت EN</label>{{ form.year_built_en }}</div>
       <div><label class="block text-xs font-semibold mb-1">قیمت (تومان)</label>{{ form.price }}</div>
       <div><label class="block text-xs font-semibold mb-1">برچسب قیمت FA</label>{{ form.price_label }}</div>
       <div><label class="block text-xs font-semibold mb-1">برچسب قیمت EN</label>{{ form.price_label_en }}</div>
+      <div><label class="block text-xs font-semibold mb-1">ترتیب نمایش</label>{{ form.sort_order }}</div>
+    </div>
+  </section>
+
+  <section>
+    <h3 class="font-bold text-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-user-tie"></i> دفتر املاک و مشاور</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div><label class="block text-xs font-semibold mb-1">نام دفتر املاک</label>{{ form.agency_name }}</div>
+      <div><label class="block text-xs font-semibold mb-1">نام دفتر (انگلیسی)</label>{{ form.agency_name_en }}</div>
+      <div><label class="block text-xs font-semibold mb-1">نام مشاور</label>{{ form.consultant_name }}</div>
+      <div><label class="block text-xs font-semibold mb-1">نام مشاور (انگلیسی)</label>{{ form.consultant_name_en }}</div>
+      <div><label class="block text-xs font-semibold mb-1">تلفن مشاور</label>{{ form.consultant_phone }}</div>
+    </div>
+  </section>
+
+  <section>
+    <h3 class="font-bold text-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-certificate"></i> نشان‌ها (Badge)</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div><label class="block text-xs font-semibold mb-1">نشان اصلی</label>{{ form.badge_primary }}</div>
+      <div><label class="block text-xs font-semibold mb-1">نشان اصلی EN</label>{{ form.badge_primary_en }}</div>
+      <div><label class="block text-xs font-semibold mb-1">نشان فرعی</label>{{ form.badge_secondary }}</div>
+      <div><label class="block text-xs font-semibold mb-1">نشان فرعی EN</label>{{ form.badge_secondary_en }}</div>
     </div>
   </section>
 
@@ -107,13 +131,15 @@
   </section>
 
   <section>
-    <h3 class="font-bold text-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-toggle-on"></i> وضعیت</h3>
+    <h3 class="font-bold text-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-toggle-on"></i> وضعیت و ویژگی‌ها</h3>
     <div class="flex flex-wrap gap-5 text-sm">
       <label class="inline-flex items-center gap-2">{{ form.is_active }} فعال / منتشر</label>
       <label class="inline-flex items-center gap-2">{{ form.is_featured }} ویژه</label>
       <label class="inline-flex items-center gap-2">{{ form.is_exclusive }} انحصاری</label>
       <label class="inline-flex items-center gap-2">{{ form.has_deed }} سند تک‌برگ</label>
       <label class="inline-flex items-center gap-2">{{ form.is_complex_office }} دفتر مستقر در مجموعه</label>
+      <label class="inline-flex items-center gap-2">{{ form.has_pool_or_roof }} استخر / روف‌گاردن</label>
+      <label class="inline-flex items-center gap-2">{{ form.is_brand_builder }} سازنده برند</label>
     </div>
   </section>
 
