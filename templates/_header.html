@@ -34,4 +34,30 @@
     .container-pad { padding-left: 1rem; padding-right: 1rem; }
   }
   img, video { max-width: 100%; height: auto; }
+
+  /*
+   * Fix: Tailwind Forms plugin puts the select chevron on the right with
+   * insufficient padding for RTL text → icon overlaps the label text.
+   * Apply site-wide for every native <select>.
+   */
+  select {
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-size: 1.1rem 1.1rem !important;
+  }
+  /* RTL (فارسی): آیکون سمت چپ، فضای کافی برای متن */
+  html[dir="rtl"] select {
+    background-position: left 0.75rem center !important;
+    padding-left: 2.5rem !important;
+    padding-right: 0.75rem !important;
+  }
+  /* LTR (English): آیکون سمت راست */
+  html[dir="ltr"] select {
+    background-position: right 0.75rem center !important;
+    padding-right: 2.5rem !important;
+    padding-left: 0.75rem !important;
+  }
 </style>
