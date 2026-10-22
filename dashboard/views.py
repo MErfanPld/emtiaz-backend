@@ -95,6 +95,11 @@ class PropertyDashboardListView(ApprovedRequiredMixin, ListView):
 
 
 class PropertyFormsetMixin:
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
     def get_formset(self, instance=None):
         if instance is None:
             instance = getattr(self, 'object', None)
@@ -113,16 +118,6 @@ class PropertyFormsetMixin:
         return ctx
 
     def form_valid(self, form):
-        # ابتدا formset را با instance موقت بساز تا هر دو با هم validate شوند
-        # و فقط در صورت معتبر بودن هر دو، ذخیره شود (بدون ملک یتیم).
-        formset = PropertyImageFormSet(
-            self.request.POST,
-            self.request.FILES,
-            instance=form.instance if form.instance.pk else None,
-        )
-        # برای create، instance هنوز pk ندارد؛ formset را بعد از save چک می‌کنیم
-        # اما اول خود form باید valid باشد (که هست چون اینجا form_valid هستیم).
-
         with transaction.atomic():
             self.object = form.save()
             formset = PropertyImageFormSet(
@@ -131,7 +126,6 @@ class PropertyFormsetMixin:
                 instance=self.object,
             )
             if not formset.is_valid():
-                # rollback با raise — یا دستی
                 transaction.set_rollback(True)
                 messages.error(
                     self.request,
