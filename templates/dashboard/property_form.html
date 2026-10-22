@@ -2,7 +2,7 @@
 {% block title %}{{ page_title }}{% endblock %}
 {% block breadcrumb %}<a href="{% url 'dashboard:property_list' %}" class="hover:text-primary">املاک</a> / <span class="text-primary font-bold">{{ page_title }}</span>{% endblock %}
 {% block content %}
-<form method="post" enctype="multipart/form-data" class="bg-white rounded-xl border border-[#c1c8c4] p-5 sm:p-6 space-y-8 shadow-sm max-w-5xl">
+<form method="post" enctype="multipart/form-data" id="property-form" class="bg-white rounded-xl border border-[#c1c8c4] p-5 sm:p-6 space-y-8 shadow-sm max-w-5xl">
   {% csrf_token %}
 
   {% if form.errors or formset.errors or formset.non_form_errors %}
@@ -42,7 +42,7 @@
   </section>
 
   <section>
-    <h3 class="font-bold text-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-ruler-combined"></i> مشخصات و قیمت</h3>
+    <h3 class="font-bold text-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-ruler-combined"></i> مشخصات</h3>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
       <div><label class="block text-xs font-semibold mb-1">متراژ</label>{{ form.area_sqm }}</div>
       <div><label class="block text-xs font-semibold mb-1">خواب</label>{{ form.bedrooms }}</div>
@@ -51,10 +51,28 @@
       <div><label class="block text-xs font-semibold mb-1">طبقه EN</label>{{ form.floor_en }}</div>
       <div><label class="block text-xs font-semibold mb-1">سال ساخت</label>{{ form.year_built }}</div>
       <div><label class="block text-xs font-semibold mb-1">سال ساخت EN</label>{{ form.year_built_en }}</div>
-      <div><label class="block text-xs font-semibold mb-1">قیمت (تومان)</label>{{ form.price }}</div>
-      <div><label class="block text-xs font-semibold mb-1">برچسب قیمت FA</label>{{ form.price_label }}</div>
-      <div><label class="block text-xs font-semibold mb-1">برچسب قیمت EN</label>{{ form.price_label_en }}</div>
       <div><label class="block text-xs font-semibold mb-1">ترتیب نمایش</label>{{ form.sort_order }}</div>
+    </div>
+  </section>
+
+  <section>
+    <h3 class="font-bold text-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-money-bill-wave"></i> قیمت</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-xs font-semibold mb-1">قیمت (تومان)</label>
+        {{ form.price }}
+        <p class="text-[11px] text-on-surface-variant mt-1">هر ۳ رقم با ویرگول جدا می‌شود — مثال: 45,000,000,000</p>
+        {% if form.price.errors %}<p class="text-red-600 text-xs mt-1">{{ form.price.errors.0 }}</p>{% endif %}
+      </div>
+      <div>
+        <label class="block text-xs font-semibold mb-1">برچسب قیمت</label>
+        {{ form.price_label }}
+        <p class="text-[11px] text-on-surface-variant mt-1">اگر انتخاب شود، به‌جای عدد قیمت نمایش داده می‌شود (مثلاً توافقی)</p>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold mb-1">برچسب قیمت EN <span class="font-normal text-on-surface-variant">(خودکار)</span></label>
+        {{ form.price_label_en }}
+      </div>
     </div>
   </section>
 
@@ -71,11 +89,12 @@
 
   <section>
     <h3 class="font-bold text-primary mb-3 flex items-center gap-2"><i class="fa-solid fa-certificate"></i> نشان‌ها (Badge)</h3>
+    <p class="text-[11px] text-on-surface-variant mb-3">با انتخاب نشان فارسی، نسخه انگلیسی به‌صورت خودکار پر می‌شود.</p>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div><label class="block text-xs font-semibold mb-1">نشان اصلی</label>{{ form.badge_primary }}</div>
-      <div><label class="block text-xs font-semibold mb-1">نشان اصلی EN</label>{{ form.badge_primary_en }}</div>
+      <div><label class="block text-xs font-semibold mb-1">نشان اصلی EN <span class="font-normal text-on-surface-variant">(خودکار)</span></label>{{ form.badge_primary_en }}</div>
       <div><label class="block text-xs font-semibold mb-1">نشان فرعی</label>{{ form.badge_secondary }}</div>
-      <div><label class="block text-xs font-semibold mb-1">نشان فرعی EN</label>{{ form.badge_secondary_en }}</div>
+      <div><label class="block text-xs font-semibold mb-1">نشان فرعی EN <span class="font-normal text-on-surface-variant">(خودکار)</span></label>{{ form.badge_secondary_en }}</div>
     </div>
   </section>
 
@@ -87,7 +106,6 @@
     </div>
   </section>
 
-  {# گالری تصاویر #}
   <section class="border-t pt-6">
     <h3 class="font-bold text-primary mb-1 flex items-center gap-2"><i class="fa-solid fa-images"></i> گالری تصاویر</h3>
     <p class="text-xs text-on-surface-variant mb-4">تا ۳۰ تصویر — فایل آپلود یا لینک URL. ردیف‌های خالی نادیده گرفته می‌شوند.</p>
@@ -156,4 +174,80 @@
     <a href="{% url 'dashboard:property_list' %}" class="px-6 py-2.5 rounded-lg border text-sm font-semibold">انصراف</a>
   </div>
 </form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  var BADGE_MAP = {
+    '': '',
+    'فروش انحصاری': 'Exclusive listing',
+    'نوساز': 'Brand new',
+    'سند تک‌برگ': 'Single-sheet deed',
+    'موقعیت عالی': 'Prime location',
+    'ویژه مجموعه': 'Complex exclusive',
+    'پیش‌فروش': 'Pre-sale',
+    'رهن کامل': 'Full deposit',
+    'تخلیه فوری': 'Immediate delivery',
+    'بازسازی‌شده': 'Renovated',
+    'پارکینگ اختصاصی': 'Private parking'
+  };
+  var PRICE_LABEL_MAP = {
+    '': '',
+    'توافقی': 'Negotiable',
+    'قیمت نهایی': 'Final price',
+    'شروع از': 'Starting from',
+    'متری': 'Per sqm',
+    'ماهانه': 'Monthly',
+    'رهن + اجاره': 'Deposit + rent'
+  };
+
+  function syncSelect(faId, enId, map) {
+    var fa = document.getElementById(faId);
+    var en = document.getElementById(enId);
+    if (!fa || !en) return;
+    function apply() {
+      var v = fa.value || '';
+      en.value = (map[v] !== undefined) ? map[v] : '';
+    }
+    fa.addEventListener('change', apply);
+    apply();
+  }
+
+  syncSelect('id_badge_primary', 'id_badge_primary_en', BADGE_MAP);
+  syncSelect('id_badge_secondary', 'id_badge_secondary_en', BADGE_MAP);
+  syncSelect('id_price_label', 'id_price_label_en', PRICE_LABEL_MAP);
+
+  // فرمت قیمت با جداکننده هزارگان
+  var price = document.getElementById('id_price');
+  if (price) {
+    function onlyDigits(s) {
+      return String(s || '')
+        .replace(/[۰-۹]/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d); })
+        .replace(/[٠-٩]/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'.indexOf(d); })
+        .replace(/[^0-9]/g, '');
+    }
+    function format(s) {
+      var d = onlyDigits(s);
+      if (!d) return '';
+      return d.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+    price.addEventListener('input', function () {
+      var start = price.selectionStart;
+      var before = price.value.length;
+      price.value = format(price.value);
+      var after = price.value.length;
+      var pos = Math.max(0, (start || 0) + (after - before));
+      try { price.setSelectionRange(pos, pos); } catch (e) {}
+    });
+    // قبل از ارسال، عدد خام بماند (سرور هم ویرگول را حذف می‌کند)
+    var form = document.getElementById('property-form');
+    if (form) {
+      form.addEventListener('submit', function () {
+        price.value = onlyDigits(price.value);
+      });
+    }
+  }
+})();
+</script>
 {% endblock %}
