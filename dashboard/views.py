@@ -3,9 +3,10 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import Q, Sum
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.generic import (
     CreateView,
     DeleteView,
@@ -15,6 +16,7 @@ from django.views.generic import (
 )
 
 from blog.models import Category, Post, Tag
+from core.models import ConsultationRequest
 from real_estate.models import Property
 
 from .forms import PropertyForm, PropertyImageFormSet
@@ -33,6 +35,17 @@ class ApprovedRequiredMixin:
         return super().dispatch(request, *args, **kwargs)
 
 
+class StaffManagerMixin(ApprovedRequiredMixin):
+    """فقط مدیر / سوپریوزر."""
+
+    def dispatch(self, request, *args, **kwargs):
+        resp = super().dispatch(request, *args, **kwargs)
+        if not (request.user.is_staff or request.user.is_superuser):
+            messages.error(request, 'دسترسی فقط برای مدیران.')
+            return redirect('dashboard:index')
+        return resp
+
+
 @method_decorator(login_required, name='dispatch')
 class DashboardIndexView(ApprovedRequiredMixin, TemplateView):
     template_name = 'dashboard/index.html'
@@ -43,8 +56,15 @@ class DashboardIndexView(ApprovedRequiredMixin, TemplateView):
 
         props = Property.objects.all()
         ctx['property_total'] = props.count()
-        ctx['property_active'] = props.filter(is_active=True).count()
-        ctx['property_draft'] = props.filter(is_active=False).count()
+        ctx['property_active'] = props.filter(
+            is_active=True, publish_status=Property.PublishStatus.APPROVED
+        ).count()
+        ctx['property_pending'] = props.filter(
+            publish_status=Property.PublishStatus.PENDING
+        ).count()
+        ctx['property_draft'] = props.filter(
+            publish_status=Property.PublishStatus.REJECTED
+        ).count()
         ctx['recent_properties'] = props.order_by('-created_at')[:5]
 
         posts = Post.objects.all()
@@ -55,6 +75,10 @@ class DashboardIndexView(ApprovedRequiredMixin, TemplateView):
         ctx['category_count'] = Category.objects.count()
         ctx['tag_count'] = Tag.objects.count()
         ctx['recent_posts'] = posts.select_related('category').order_by('-created_at')[:5]
+
+        ctx['consultation_new'] = ConsultationRequest.objects.filter(
+            status=ConsultationRequest.Status.NEW
+        ).count()
 
         ctx['is_manager'] = user.is_staff or user.is_superuser
         if ctx['is_manager']:
@@ -70,6 +94,27 @@ class DashboardIndexView(ApprovedRequiredMixin, TemplateView):
 
 
 @method_decorator(login_required, name='dispatch')
+class NotificationsView(ApprovedRequiredMixin, TemplateView):
+    """اعلانات: املاک در انتظار تأیید + درخواست‌های مشاوره جدید."""
+
+    template_name = 'dashboard/notifications.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['pending_properties'] = (
+            Property.objects.filter(publish_status=Property.PublishStatus.PENDING)
+            .select_related('created_by')
+            .order_by('-created_at')[:30]
+        )
+        ctx['new_consultations'] = (
+            ConsultationRequest.objects.filter(status=ConsultationRequest.Status.NEW)
+            .order_by('-created_at')[:30]
+        )
+        ctx['is_manager'] = self.request.user.is_staff or self.request.user.is_superuser
+        return ctx
+
+
+@method_decorator(login_required, name='dispatch')
 class PropertyDashboardListView(ApprovedRequiredMixin, ListView):
     model = Property
     template_name = 'dashboard/property_list.html'
@@ -78,6 +123,12 @@ class PropertyDashboardListView(ApprovedRequiredMixin, ListView):
 
     def get_queryset(self):
         qs = Property.objects.all().order_by('-created_at')
+        user = self.request.user
+        if not (user.is_staff or user.is_superuser):
+            if user.department:
+                qs = qs.filter(department=user.department)
+            else:
+                qs = qs.filter(created_by=user)
         q = self.request.GET.get('q', '').strip()
         if q:
             qs = qs.filter(
@@ -88,9 +139,11 @@ class PropertyDashboardListView(ApprovedRequiredMixin, ListView):
             )
         status = self.request.GET.get('status')
         if status == 'active':
-            qs = qs.filter(is_active=True)
+            qs = qs.filter(is_active=True, publish_status=Property.PublishStatus.APPROVED)
+        elif status == 'pending':
+            qs = qs.filter(publish_status=Property.PublishStatus.PENDING)
         elif status == 'draft':
-            qs = qs.filter(is_active=False)
+            qs = qs.filter(publish_status=Property.PublishStatus.REJECTED)
         return qs
 
 
@@ -119,7 +172,20 @@ class PropertyFormsetMixin:
 
     def form_valid(self, form):
         with transaction.atomic():
-            self.object = form.save()
+            is_create = form.instance.pk is None
+            self.object = form.save(commit=False)
+            if is_create:
+                self.object.created_by = self.request.user
+                # کارمند عادی: در انتظار تأیید؛ مدیر می‌تواند مستقیم منتشر کند
+                if self.request.user.is_staff or self.request.user.is_superuser:
+                    self.object.publish_status = Property.PublishStatus.APPROVED
+                    self.object.is_active = True
+                else:
+                    self.object.publish_status = Property.PublishStatus.PENDING
+                    self.object.is_active = False
+            self.object.save()
+            form.save_m2m()
+
             formset = PropertyImageFormSet(
                 self.request.POST,
                 self.request.FILES,
@@ -136,7 +202,13 @@ class PropertyFormsetMixin:
                 )
             formset.save()
 
-        messages.success(self.request, self.success_message)
+        if is_create and self.object.publish_status == Property.PublishStatus.PENDING:
+            messages.success(
+                self.request,
+                'ملک ثبت شد و در انتظار تأیید مدیر برای انتشار است.',
+            )
+        else:
+            messages.success(self.request, self.success_message)
         return redirect(self.get_success_url())
 
 
@@ -185,3 +257,19 @@ class PropertyDeleteView(ApprovedRequiredMixin, DeleteView):
     def form_valid(self, form):
         messages.success(self.request, 'ملک حذف شد.')
         return super().form_valid(form)
+
+
+@method_decorator(login_required, name='dispatch')
+class PropertyApproveView(StaffManagerMixin, View):
+    def post(self, request, slug):
+        prop = get_object_or_404(Property, slug=slug)
+        action = request.POST.get('action', 'approve')
+        note = request.POST.get('note', '').strip()
+        if action == 'reject':
+            prop.reject_publish(request.user, note=note)
+            messages.warning(request, f'ملک {prop.code} رد شد.')
+        else:
+            prop.approve_publish(request.user, note=note)
+            messages.success(request, f'ملک {prop.code} تأیید و منتشر شد.')
+        next_url = request.POST.get('next') or reverse_lazy('dashboard:notifications')
+        return redirect(next_url)
