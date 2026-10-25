@@ -6,6 +6,7 @@ from django.views.generic import TemplateView
 from real_estate.models import Property
 
 from .forms import ConsultationForm
+from .models import TeamMember
 from .sms import notify_admins_new_consultation
 
 
@@ -24,11 +25,23 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         featured = (
-            Property.objects.filter(is_active=True)
+            Property.objects.filter(
+                is_active=True,
+                publish_status=Property.PublishStatus.APPROVED,
+            )
             .order_by('-is_featured', '-created_at')[:8]
         )
         ctx['featured_properties'] = featured
-        ctx['property_count'] = Property.objects.filter(is_active=True).count()
+        ctx['property_count'] = Property.objects.filter(
+            is_active=True,
+            publish_status=Property.PublishStatus.APPROVED,
+        ).count()
+        ctx['directors'] = (
+            TeamMember.objects.filter(
+                is_active=True,
+                role=TeamMember.Role.CO_DIRECTOR,
+            ).order_by('sort_order', 'id')[:2]
+        )
         if 'consultation_form' not in ctx:
             ctx['consultation_form'] = ConsultationForm()
         return ctx
@@ -56,3 +69,19 @@ class AboutView(TemplateView):
         if _lang_is_en():
             return ['core/about_en.html']
         return ['core/about.html']
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['dept_managers'] = (
+            TeamMember.objects.filter(
+                is_active=True,
+                role=TeamMember.Role.DEPT_MANAGER,
+            ).order_by('sort_order', 'id')
+        )
+        ctx['directors'] = (
+            TeamMember.objects.filter(
+                is_active=True,
+                role=TeamMember.Role.CO_DIRECTOR,
+            ).order_by('sort_order', 'id')[:2]
+        )
+        return ctx
