@@ -4,7 +4,9 @@
 {% if messages %}
 <div class="max-w-[1320px] mx-auto px-6 pt-4 space-y-2">
   {% for message in messages %}
-  <div class="rounded-lg border px-4 py-3 text-sm {% if message.tags == 'error' %}border-red-300 bg-red-50 text-red-800{% else %}border-green-300 bg-green-50 text-green-800{% endif %}">{{ message }}</div>
+  {% if message.tags == 'error' %}
+  <div class="rounded-lg border px-4 py-3 text-sm border-red-300 bg-red-50 text-red-800">{{ message }}</div>
+  {% endif %}
   {% endfor %}
 </div>
 {% endif %}
@@ -142,4 +144,40 @@
     </div>
   </div>
 </section>
+
+{% if show_consultation_success %}
+<div id="consultation-success-modal" class="fixed inset-0 z-[200] flex items-center justify-center p-4" role="dialog" aria-modal="true">
+  <div id="consultation-success-backdrop" class="absolute inset-0 bg-black/50"></div>
+  <div class="relative z-10 w-full max-w-sm bg-white rounded-2xl border border-[#c1c8c4] shadow-2xl p-6 text-center">
+    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-50 flex items-center justify-center">
+      <i class="fa-solid fa-circle-check text-3xl text-green-600"></i>
+    </div>
+    <h3 class="text-lg font-extrabold text-primary mb-2">Request received</h3>
+    <p class="text-sm text-on-surface-variant leading-relaxed mb-6">Your request was submitted successfully. We will contact you shortly.</p>
+    <button type="button" id="consultation-success-close" class="w-full h-11 rounded-lg bg-primary text-white font-bold text-sm">OK</button>
+  </div>
+</div>
+<script>
+(function(){
+  var modal = document.getElementById('consultation-success-modal');
+  if(!modal) return;
+  function close(){
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = '';
+    if(window.history && window.history.replaceState){
+      var u = new URL(window.location.href);
+      u.searchParams.delete('consultation');
+      window.history.replaceState({}, '', u.pathname + u.search + (u.hash || ''));
+    }
+  }
+  document.body.style.overflow = 'hidden';
+  var btn = document.getElementById('consultation-success-close');
+  var bd = document.getElementById('consultation-success-backdrop');
+  if(btn) btn.addEventListener('click', close);
+  if(bd) bd.addEventListener('click', close);
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') close(); });
+})();
+</script>
+{% endif %}
 {% endblock content %}
