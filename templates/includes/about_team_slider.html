@@ -10,9 +10,9 @@
     </h2>
     <p class="text-on-surface-variant text-sm max-w-2xl">
       {% if LANGUAGE_CODE == 'en' %}
-        Directors, department heads, and specialists — managed from the dashboard and shown here.
+        Directors, department heads, and specialists — tap View for full profile.
       {% else %}
-        مدیران مجموعه، مدیران بخش‌ها و متخصصان — از پنل مدیریت می‌شوند و اینجا نمایش داده می‌شوند.
+        مدیران مجموعه، مدیران بخش‌ها و متخصصان — برای مشاهده کامل روی «مشاهده» بزنید.
       {% endif %}
     </p>
   </div>
@@ -47,15 +47,24 @@
             {% if LANGUAGE_CODE == 'en' %}{{ m.name_en|default:m.name }}{% else %}{{ m.name }}{% endif %}
           </h3>
           {% if m.title or m.title_en %}
-          <p class="text-xs text-secondary font-semibold mt-1">
+          <p class="text-xs text-secondary font-semibold mt-1 mb-3">
             {% if LANGUAGE_CODE == 'en' %}{{ m.title_en|default:m.title }}{% else %}{{ m.title }}{% endif %}
           </p>
+          {% else %}
+          <div class="mb-3"></div>
           {% endif %}
-          {% if m.bio or m.bio_en %}
-          <p class="text-sm text-on-surface-variant leading-relaxed mt-2 line-clamp-3">
-            {% if LANGUAGE_CODE == 'en' %}{{ m.bio_en|default:m.bio }}{% else %}{{ m.bio }}{% endif %}
-          </p>
-          {% endif %}
+          <button
+            type="button"
+            class="team-view-btn mt-auto w-full h-10 rounded-lg border border-primary text-primary text-sm font-bold hover:bg-primary hover:text-white transition-colors"
+            data-name="{% if LANGUAGE_CODE == 'en' %}{{ m.name_en|default:m.name }}{% else %}{{ m.name }}{% endif %}"
+            data-title="{% if LANGUAGE_CODE == 'en' %}{{ m.title_en|default:m.title }}{% else %}{{ m.title }}{% endif %}"
+            data-role="{% if LANGUAGE_CODE == 'en' %}{% if m.role == 'co_director' %}Co-director{% elif m.role == 'dept_manager' %}Dept. manager{% else %}Team{% endif %}{% else %}{{ m.get_role_display }}{% endif %}"
+            data-dept="{% if m.department %}{% if LANGUAGE_CODE == 'en' %}{{ m.department_label_en }}{% else %}{{ m.get_department_display }}{% endif %}{% endif %}"
+            data-bio="{% if LANGUAGE_CODE == 'en' %}{{ m.bio_en|default:m.bio }}{% else %}{{ m.bio }}{% endif %}"
+            data-photo="{{ m.display_photo }}"
+          >
+            {% if LANGUAGE_CODE == 'en' %}View{% else %}مشاهده{% endif %}
+          </button>
         </div>
       </article>
       {% endfor %}
@@ -69,18 +78,86 @@
         <i class="fa-solid fa-chevron-{% if LANGUAGE_CODE == 'en' %}right{% else %}left{% endif %}"></i>
       </button>
     </div>
-    <script>
-    (function(){
-      var el = document.getElementById('team-slider');
-      if(!el) return;
-      var step = 280;
-      var prev = document.getElementById('team-prev');
-      var next = document.getElementById('team-next');
-      if(prev) prev.addEventListener('click', function(){ el.scrollBy({left: {% if LANGUAGE_CODE == 'en' %}-step{% else %}step{% endif %}, behavior:'smooth'}); });
-      if(next) next.addEventListener('click', function(){ el.scrollBy({left: {% if LANGUAGE_CODE == 'en' %}step{% else %}-step{% endif %}, behavior:'smooth'}); });
-    })();
-    </script>
     {% endif %}
   </div>
 </section>
+
+{# Team detail modal #}
+<div id="team-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4" role="dialog" aria-modal="true">
+  <div id="team-modal-backdrop" class="absolute inset-0 bg-black/50"></div>
+  <div class="relative z-10 w-full max-w-md bg-white rounded-2xl border border-[#c1c8c4] shadow-2xl overflow-hidden {% if LANGUAGE_CODE == 'en' %}text-left{% else %}text-right{% endif %}">
+    <button type="button" id="team-modal-close" class="absolute top-3 {% if LANGUAGE_CODE == 'en' %}right-3{% else %}left-3{% endif %} z-10 w-9 h-9 rounded-full bg-white/90 border shadow-sm flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors" aria-label="Close">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <div id="team-modal-photo" class="w-full aspect-[16/10] bg-[#ecefeb]"></div>
+    <div class="p-5 space-y-2">
+      <div class="flex flex-wrap gap-1.5" id="team-modal-tags"></div>
+      <h3 id="team-modal-name" class="text-xl font-extrabold text-primary"></h3>
+      <p id="team-modal-title" class="text-sm text-secondary font-semibold"></p>
+      <p id="team-modal-bio" class="text-sm text-on-surface-variant leading-relaxed pt-2"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var el = document.getElementById('team-slider');
+  if(el){
+    var step = 280;
+    var prev = document.getElementById('team-prev');
+    var next = document.getElementById('team-next');
+    if(prev) prev.addEventListener('click', function(){ el.scrollBy({left: {% if LANGUAGE_CODE == 'en' %}-step{% else %}step{% endif %}, behavior:'smooth'}); });
+    if(next) next.addEventListener('click', function(){ el.scrollBy({left: {% if LANGUAGE_CODE == 'en' %}step{% else %}-step{% endif %}, behavior:'smooth'}); });
+  }
+
+  var modal = document.getElementById('team-modal');
+  var backdrop = document.getElementById('team-modal-backdrop');
+  var closeBtn = document.getElementById('team-modal-close');
+  function openModal(btn){
+    var name = btn.getAttribute('data-name') || '';
+    var title = btn.getAttribute('data-title') || '';
+    var role = btn.getAttribute('data-role') || '';
+    var dept = btn.getAttribute('data-dept') || '';
+    var bio = btn.getAttribute('data-bio') || '';
+    var photo = btn.getAttribute('data-photo') || '';
+    document.getElementById('team-modal-name').textContent = name;
+    document.getElementById('team-modal-title').textContent = title;
+    document.getElementById('team-modal-bio').textContent = bio || ({% if LANGUAGE_CODE == 'en' %}'No description.'{% else %}'توضیحی ثبت نشده است.'{% endif %});
+    var tags = document.getElementById('team-modal-tags');
+    tags.innerHTML = '';
+    if(role){
+      var s1 = document.createElement('span');
+      s1.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary';
+      s1.textContent = role;
+      tags.appendChild(s1);
+    }
+    if(dept){
+      var s2 = document.createElement('span');
+      s2.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-secondary/15 text-secondary';
+      s2.textContent = dept;
+      tags.appendChild(s2);
+    }
+    var ph = document.getElementById('team-modal-photo');
+    if(photo){
+      ph.innerHTML = '<img src="'+photo.replace(/"/g,'&quot;')+'" alt="" class="w-full h-full object-cover"/>';
+    } else {
+      ph.innerHTML = '<div class="w-full h-full min-h-[160px] flex items-center justify-center text-primary/20"><i class="fa-solid fa-user text-5xl"></i></div>';
+    }
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(){
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = '';
+  }
+  document.querySelectorAll('.team-view-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ openModal(btn); });
+  });
+  if(closeBtn) closeBtn.addEventListener('click', closeModal);
+  if(backdrop) backdrop.addEventListener('click', closeModal);
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
+})();
+</script>
 {% endif %}

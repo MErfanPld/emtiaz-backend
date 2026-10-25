@@ -8,7 +8,7 @@
 {% block content %}
 <div class="max-w-2xl space-y-4">
   <h2 class="text-xl font-extrabold text-primary">{{ page_title }}</h2>
-  <form method="post" enctype="multipart/form-data" class="bg-white border border-[#c1c8c4] rounded-xl p-5 space-y-4">
+  <form method="post" enctype="multipart/form-data" class="bg-white border border-[#c1c8c4] rounded-xl p-5 space-y-4" id="team-form">
     {% csrf_token %}
     {% if form.non_field_errors %}
     <div class="text-red-600 text-sm">{{ form.non_field_errors }}</div>
@@ -22,6 +22,7 @@
       <div>
         <label class="block text-sm font-medium mb-1">بخش تخصصی</label>
         {{ form.department }}
+        <p class="text-[11px] text-on-surface-variant mt-1">با انتخاب بخش، سمت پیش‌فرض پیشنهاد می‌شود.</p>
       </div>
       <div>
         <label class="block text-sm font-medium mb-1">نام (فارسی) *</label>
@@ -32,13 +33,18 @@
         <label class="block text-sm font-medium mb-1">نام (انگلیسی)</label>
         {{ form.name_en }}
       </div>
-      <div>
+      <div class="sm:col-span-2">
         <label class="block text-sm font-medium mb-1">سمت (فارسی)</label>
+        <select id="title-preset" class="w-full border border-[#c1c8c4] rounded-lg px-3 py-2 text-sm bg-white mb-2">
+          <option value="">— انتخاب سمت پیش‌فرض —</option>
+        </select>
         {{ form.title }}
+        <p class="text-[11px] text-on-surface-variant mt-1">از لیست انتخاب کنید یا متن دلخواه بنویسید.</p>
       </div>
-      <div>
+      <div class="sm:col-span-2">
         <label class="block text-sm font-medium mb-1">سمت (انگلیسی)</label>
         {{ form.title_en }}
+        <p class="text-[11px] text-on-surface-variant mt-1">با انتخاب سمت فارسی به‌صورت خودکار پر می‌شود؛ در صورت نیاز ویرایش کنید.</p>
       </div>
     </div>
     <div>
@@ -76,4 +82,111 @@
     </div>
   </form>
 </div>
+{% endblock %}
+{% block extra_js %}
+<script>
+(function(){
+  // سمت‌های پیش‌فرض بر اساس نقش و بخش
+  var PRESETS = {
+    co_director: [
+      {fa: 'مدیر مجموعه', en: 'Co-director'},
+      {fa: 'مدیرعامل', en: 'CEO'},
+      {fa: 'رئیس هیئت‌مدیره', en: 'Chairman'}
+    ],
+    dept_manager: {
+      rent: [{fa: 'مدیر رهن و اجاره', en: 'Rent & Lease Manager'}],
+      sale: [{fa: 'مدیر خرید و فروش', en: 'Buy & Sell Manager'}],
+      kolangi: [{fa: 'مدیر کلنگی', en: 'Redevelopment Manager'}],
+      partnership: [{fa: 'مدیر مشارکت در ساخت', en: 'Construction Partnership Manager'}],
+      mostaghelat: [{fa: 'مدیر مستقلات', en: 'Standalone Properties Manager'}],
+      '': [
+        {fa: 'مدیر بخش', en: 'Department Manager'},
+        {fa: 'مدیر رهن و اجاره', en: 'Rent & Lease Manager'},
+        {fa: 'مدیر خرید و فروش', en: 'Buy & Sell Manager'},
+        {fa: 'مدیر کلنگی', en: 'Redevelopment Manager'},
+        {fa: 'مدیر مشارکت در ساخت', en: 'Construction Partnership Manager'},
+        {fa: 'مدیر مستقلات', en: 'Standalone Properties Manager'}
+      ]
+    },
+    member: {
+      rent: [{fa: 'مشاور رهن و اجاره', en: 'Rent & Lease Consultant'}],
+      sale: [{fa: 'مشاور خرید و فروش', en: 'Sales Consultant'}],
+      kolangi: [{fa: 'کارشناس کلنگی', en: 'Redevelopment Specialist'}],
+      partnership: [{fa: 'کارشناس مشارکت در ساخت', en: 'Partnership Specialist'}],
+      mostaghelat: [{fa: 'مشاور مستقلات', en: 'Standalone Properties Consultant'}],
+      '': [
+        {fa: 'مشاور املاک', en: 'Real Estate Consultant'},
+        {fa: 'کارشناس حقوقی', en: 'Legal Specialist'},
+        {fa: 'کارشناس سرمایه‌گذاری', en: 'Investment Specialist'},
+        {fa: 'مسئول پذیرش', en: 'Reception Officer'}
+      ]
+    }
+  };
+
+  var roleEl = document.getElementById('id_role');
+  var deptEl = document.getElementById('id_department');
+  var titleEl = document.getElementById('id_title');
+  var titleEnEl = document.getElementById('id_title_en');
+  var presetEl = document.getElementById('title-preset');
+  if(!roleEl || !titleEl || !presetEl) return;
+
+  var titleEnMap = {};
+
+  function listFor(){
+    var role = roleEl.value || 'member';
+    var dept = (deptEl && deptEl.value) || '';
+    if(role === 'co_director') return PRESETS.co_director.slice();
+    var group = PRESETS[role] || PRESETS.member;
+    if(Array.isArray(group)) return group.slice();
+    var specific = group[dept];
+    var general = group[''] || [];
+    if(specific && specific.length) return specific.concat(general.filter(function(x){
+      return !specific.some(function(s){ return s.fa === x.fa; });
+    }));
+    return general.slice();
+  }
+
+  function rebuildPresets(autoFill){
+    var list = listFor();
+    titleEnMap = {};
+    presetEl.innerHTML = '<option value="">— انتخاب سمت پیش‌فرض —</option>';
+    list.forEach(function(item){
+      titleEnMap[item.fa] = item.en;
+      var opt = document.createElement('option');
+      opt.value = item.fa;
+      opt.textContent = item.fa + ' / ' + item.en;
+      presetEl.appendChild(opt);
+    });
+    var cur = (titleEl.value || '').trim();
+    if(cur && titleEnMap[cur]){
+      presetEl.value = cur;
+    }
+    if(autoFill && !cur && list.length){
+      titleEl.value = list[0].fa;
+      if(titleEnEl) titleEnEl.value = list[0].en;
+      presetEl.value = list[0].fa;
+    }
+  }
+
+  presetEl.addEventListener('change', function(){
+    var fa = presetEl.value;
+    if(!fa) return;
+    titleEl.value = fa;
+    if(titleEnEl && titleEnMap[fa]) titleEnEl.value = titleEnMap[fa];
+  });
+
+  titleEl.addEventListener('input', function(){
+    var fa = (titleEl.value || '').trim();
+    if(titleEnMap[fa] && titleEnEl){
+      titleEnEl.value = titleEnMap[fa];
+      presetEl.value = fa;
+    }
+  });
+
+  roleEl.addEventListener('change', function(){ rebuildPresets(true); });
+  if(deptEl) deptEl.addEventListener('change', function(){ rebuildPresets(true); });
+
+  rebuildPresets(false);
+})();
+</script>
 {% endblock %}

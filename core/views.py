@@ -44,6 +44,10 @@ class HomeView(TemplateView):
         )
         if 'consultation_form' not in ctx:
             ctx['consultation_form'] = ConsultationForm()
+        # مدال موفقیت بعد از ثبت فرم
+        ctx['show_consultation_success'] = (
+            self.request.GET.get('consultation') == 'ok'
+        )
         return ctx
 
     def post(self, request, *args, **kwargs):
@@ -54,11 +58,8 @@ class HomeView(TemplateView):
             if ok:
                 req.sms_sent = True
                 req.save(update_fields=['sms_sent'])
-            messages.success(
-                request,
-                'درخواست شما با موفقیت ثبت شد. به‌زودی با شما تماس می‌گیریم.',
-            )
-            return redirect(request.path + '#contact')
+            # به‌جای messages.success → ریدایرکت با پارامتر مدال
+            return redirect(request.path + '?consultation=ok#contact')
         ctx = self.get_context_data(consultation_form=form)
         messages.error(request, 'لطفاً فرم را به‌درستی تکمیل کنید.')
         return self.render_to_response(ctx)
@@ -72,12 +73,10 @@ class AboutView(TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        # همه اعضای فعال برای اسلایدر «تیم ما»
         ctx['team_members'] = (
             TeamMember.objects.filter(is_active=True)
             .order_by('sort_order', 'role', 'id')
         )
-        # مدیران بخش (در صورت نیاز جداگانه)
         ctx['dept_managers'] = (
             TeamMember.objects.filter(
                 is_active=True,
