@@ -28,6 +28,12 @@ from .views_consultation import (
     ConsultationListView,
     ConsultationStatusView,
 )
+from .views_team import (
+    TeamMemberCreateView,
+    TeamMemberDeleteView,
+    TeamMemberListView,
+    TeamMemberUpdateView,
+)
 from .views_users import (
     GroupCreateView,
     GroupDeleteView,
@@ -65,6 +71,10 @@ urlpatterns = [
     path('consultations/', ConsultationListView.as_view(), name='consultation_list'),
     path('consultations/<int:pk>/', ConsultationDetailView.as_view(), name='consultation_detail'),
     path('consultations/<int:pk>/status/', ConsultationStatusView.as_view(), name='consultation_status'),
+    path('team/', TeamMemberListView.as_view(), name='team_list'),
+    path('team/new/', TeamMemberCreateView.as_view(), name='team_create'),
+    path('team/<int:pk>/edit/', TeamMemberUpdateView.as_view(), name='team_edit'),
+    path('team/<int:pk>/delete/', TeamMemberDeleteView.as_view(), name='team_delete'),
     path('users/', UserListView.as_view(), name='user_list'),
     path('users/new/', UserCreateView.as_view(), name='user_create'),
     path('users/<int:pk>/edit/', UserUpdateView.as_view(), name='user_edit'),
