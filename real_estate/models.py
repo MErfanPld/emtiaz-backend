@@ -1,7 +1,10 @@
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.translation import get_language
+
+from core.constants import Department
 
 
 _FA_DIGITS = str.maketrans('0123456789', '۰۱۲۳۴۵۶۷۸۹')
@@ -27,10 +30,23 @@ class Property(models.Model):
         OFFICE = 'office', 'اداری'
         COMMERCIAL = 'commercial', 'تجاری'
 
+    class PublishStatus(models.TextChoices):
+        PENDING = 'pending', 'در انتظار تأیید مدیر'
+        APPROVED = 'approved', 'تأیید و منتشر'
+        REJECTED = 'rejected', 'رد شده'
+
     code = models.CharField('کد ملک', max_length=32, unique=True)
     title = models.CharField('عنوان (فارسی)', max_length=200)
     title_en = models.CharField('عنوان (انگلیسی)', max_length=200, blank=True)
     slug = models.SlugField('اسلاگ', max_length=220, unique=True, blank=True)
+
+    department = models.CharField(
+        'بخش',
+        max_length=20,
+        choices=Department.CHOICES,
+        default=Department.SALE,
+        db_index=True,
+    )
 
     transaction_type = models.CharField(
         'نوع معامله',
@@ -94,9 +110,35 @@ class Property(models.Model):
     has_pool_or_roof = models.BooleanField('استخر / روف‌گاردن', default=False)
     is_brand_builder = models.BooleanField('سازنده برند', default=False)
 
-    is_active = models.BooleanField('فعال / نمایش عمومی', default=True, db_index=True)
+    is_active = models.BooleanField('فعال / نمایش عمومی', default=False, db_index=True)
     is_featured = models.BooleanField('ویژه', default=False)
     is_exclusive = models.BooleanField('انحصاری مجموعه', default=False)
+
+    publish_status = models.CharField(
+        'وضعیت انتشار',
+        max_length=20,
+        choices=PublishStatus.choices,
+        default=PublishStatus.PENDING,
+        db_index=True,
+    )
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='properties_created',
+        verbose_name='ثبت‌کننده',
+    )
+    reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='properties_reviewed',
+        verbose_name='تأییدکننده',
+    )
+    reviewed_at = models.DateTimeField('زمان بررسی', null=True, blank=True)
+    review_note = models.CharField('یادداشت بررسی', max_length=255, blank=True)
 
     description = models.TextField('توضیحات (فارسی)', blank=True)
     description_en = models.TextField('توضیحات (انگلیسی)', blank=True)
@@ -117,10 +159,41 @@ class Property(models.Model):
         if not self.slug:
             base = slugify(self.title_en or self.title, allow_unicode=True) or self.code
             self.slug = f'{base}-{self.code}'.lower()[:220]
+        # فقط املاک تأییدشده می‌توانند فعال/عمومی باشند
+        if self.publish_status != self.PublishStatus.APPROVED:
+            self.is_active = False
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('real_estate:detail', kwargs={'slug': self.slug})
+
+    @property
+    def is_published(self):
+        return self.publish_status == self.PublishStatus.APPROVED and self.is_active
+
+    def approve_publish(self, by_user, note=''):
+        from django.utils import timezone
+        self.publish_status = self.PublishStatus.APPROVED
+        self.is_active = True
+        self.reviewed_by = by_user
+        self.reviewed_at = timezone.now()
+        self.review_note = note or ''
+        self.save(update_fields=[
+            'publish_status', 'is_active', 'reviewed_by', 'reviewed_at',
+            'review_note', 'updated_at',
+        ])
+
+    def reject_publish(self, by_user, note=''):
+        from django.utils import timezone
+        self.publish_status = self.PublishStatus.REJECTED
+        self.is_active = False
+        self.reviewed_by = by_user
+        self.reviewed_at = timezone.now()
+        self.review_note = note or ''
+        self.save(update_fields=[
+            'publish_status', 'is_active', 'reviewed_by', 'reviewed_at',
+            'review_note', 'updated_at',
+        ])
 
     @property
     def display_image(self):
