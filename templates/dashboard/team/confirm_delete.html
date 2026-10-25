@@ -1,0 +1,18 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}حذف عضو تیم{% endblock %}
+{% block breadcrumb %}
+<a href="{% url 'dashboard:team_list' %}" class="hover:text-primary">تیم مجموعه</a>
+<span class="mx-1">/</span>
+<span class="text-primary font-bold">حذف</span>
+{% endblock %}
+{% block content %}
+<div class="max-w-md bg-white border border-[#c1c8c4] rounded-xl p-6 space-y-4">
+  <h2 class="text-lg font-extrabold text-primary">حذف عضو تیم</h2>
+  <p class="text-sm text-on-surface-variant">آیا از حذف «{{ object.name }}» مطمئن هستید؟ این عمل قابل بازگشت نیست.</p>
+  <form method="post" class="flex gap-3">
+    {% csrf_token %}
+    <button type="submit" class="px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-bold">بله، حذف شود</button>
+    <a href="{% url 'dashboard:team_list' %}" class="px-4 py-2 rounded-lg border text-sm font-semibold">انصراف</a>
+  </form>
+</div>
+{% endblock %}
