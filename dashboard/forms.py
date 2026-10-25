@@ -2,9 +2,9 @@ from django import forms
 from django.forms import inlineformset_factory
 
 from core.constants import Department
+from core.neighborhoods import NEIGHBORHOOD_CHOICES, TEHRAN_NEIGHBORHOODS
 from real_estate.models import Property, PropertyImage
 
-# نشان‌ها: مقدار فارسی → انگلیسی (همگام‌سازی خودکار در قالب)
 BADGE_MAP = {
     '': '',
     'فروش انحصاری': 'Exclusive listing',
@@ -115,6 +115,18 @@ class PropertyForm(forms.ModelForm):
         }),
         help_text='هر ۳ رقم با ویرگول جدا می‌شود.',
     )
+    # محله: انتخاب از لیست + امکان مقدار سفارشی در فیلد مدل
+    area_name = forms.CharField(
+        label='محله',
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': CSS_INPUT,
+            'id': 'id_area_name',
+            'list': 'tehran-neighborhoods',
+            'autocomplete': 'off',
+            'placeholder': 'از لیست انتخاب یا تایپ کنید',
+        }),
+    )
 
     class Meta:
         model = Property
@@ -143,7 +155,12 @@ class PropertyForm(forms.ModelForm):
             'slug': forms.TextInput(attrs={'placeholder': 'خالی بگذارید تا خودکار ساخته شود'}),
             'consultant_phone': forms.TextInput(attrs={'placeholder': '09xxxxxxxxx', 'dir': 'ltr'}),
             'sort_order': forms.NumberInput(attrs={'min': 0}),
-            'department': forms.Select(attrs={'class': CSS_INPUT}),
+            'department': forms.Select(attrs={'class': CSS_INPUT, 'id': 'id_department'}),
+            'area_name_en': forms.TextInput(attrs={
+                'class': CSS_INPUT,
+                'id': 'id_area_name_en',
+                'placeholder': 'خودکار از محله فارسی',
+            }),
         }
 
     def __init__(self, *args, user=None, **kwargs):
@@ -153,7 +170,7 @@ class PropertyForm(forms.ModelForm):
         if 'sort_order' in self.fields:
             self.fields['sort_order'].required = False
 
-        # محدودیت بخش بر اساس نقش کاربر
+        # بخش: محدود به دسترسی کاربر؛ اگر فقط یک بخش دارد، قفل + مقدار اولیه
         allowed = []
         if user is not None:
             allowed = user.allowed_departments()
@@ -162,8 +179,16 @@ class PropertyForm(forms.ModelForm):
                 (k, v) for k, v in Department.CHOICES if k in allowed
             ]
             if len(allowed) == 1:
-                self.fields['department'].initial = allowed[0]
-                self.fields['department'].widget.attrs['readonly'] = True
+                only = allowed[0]
+                self.fields['department'].initial = only
+                if not self.data:
+                    self.initial['department'] = only
+                # select غیرفعال ارسال نمی‌شود — از HiddenInput استفاده کن
+                self.fields['department'].widget = forms.HiddenInput()
+                self.fields['department'].widget.attrs['id'] = 'id_department'
+        else:
+            # کاربر بدون بخش: همه گزینه‌ها (مدیران)
+            self.fields['department'].choices = list(Department.CHOICES)
 
         is_create = not (self.instance and self.instance.pk)
         if is_create:
@@ -177,8 +202,6 @@ class PropertyForm(forms.ModelForm):
                 phone = getattr(user, 'phone_number', '') or ''
                 if phone and not self.fields['consultant_phone'].initial:
                     self.fields['consultant_phone'].initial = phone
-                if user.department and len(allowed) == 1:
-                    self.fields['department'].initial = user.department
 
         if self.instance and self.instance.pk and self.instance.price:
             try:
@@ -202,6 +225,8 @@ class PropertyForm(forms.ModelForm):
                 field.widget.attrs['class'] = 'rounded text-primary'
             elif isinstance(field.widget, forms.FileInput):
                 field.widget.attrs['class'] = 'text-sm'
+            elif isinstance(field.widget, forms.HiddenInput):
+                pass
             else:
                 existing = field.widget.attrs.get('class', '')
                 if 'w-full' not in existing:
@@ -209,11 +234,25 @@ class PropertyForm(forms.ModelForm):
 
     def clean_department(self):
         dept = self.cleaned_data.get('department')
+        if not dept:
+            # اگر کاربر فقط یک بخش دارد، از همان استفاده کن
+            if self.user is not None:
+                allowed = self.user.allowed_departments()
+                if len(allowed) == 1:
+                    return allowed[0]
+            raise forms.ValidationError('انتخاب بخش الزامی است.')
         if self.user is not None:
             allowed = self.user.allowed_departments()
             if allowed and dept not in allowed:
                 raise forms.ValidationError('شما مجاز به ثبت ملک در این بخش نیستید.')
         return dept
+
+    def clean_area_name_en(self):
+        fa = (self.cleaned_data.get('area_name') or '').strip()
+        en = (self.cleaned_data.get('area_name_en') or '').strip()
+        if fa in TEHRAN_NEIGHBORHOODS:
+            return TEHRAN_NEIGHBORHOODS[fa]
+        return en
 
     def clean_price(self):
         raw = _digits_only(self.cleaned_data.get('price') or '')
