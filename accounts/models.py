@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from core.constants import Department
+
 
 class UserManager(BaseUserManager):
     """مدیر با شناسه اصلی شماره موبایل."""
@@ -113,6 +115,16 @@ class User(AbstractUser):
         default='',
     )
 
+    department = models.CharField(
+        _('بخش تخصصی'),
+        max_length=20,
+        choices=Department.CHOICES,
+        blank=True,
+        default='',
+        db_index=True,
+        help_text=_('کارمند فقط می‌تواند برای این بخش ملک ثبت کند.'),
+    )
+
     manager = models.ForeignKey(
         'self',
         on_delete=models.SET_NULL,
@@ -188,6 +200,17 @@ class User(AbstractUser):
 
     def can_authenticate(self):
         return self.is_active and self.is_approved
+
+    def can_manage_all_departments(self):
+        return self.is_superuser or self.is_staff
+
+    def allowed_departments(self):
+        """بخش‌هایی که کاربر مجاز به ثبت ملک در آن‌هاست."""
+        if self.can_manage_all_departments():
+            return [c[0] for c in Department.CHOICES]
+        if self.department:
+            return [self.department]
+        return []
 
     def approve(self, by_user, commit=True):
         from django.utils import timezone
