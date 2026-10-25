@@ -28,7 +28,7 @@
   <button class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-bold whitespace-nowrap">فیلتر</button>
 </form>
 
-<p class="text-[11px] text-on-surface-variant mb-2 sm:hidden">جدول را افقی بکشید ←</p>
+<p class="dash-scroll-hint">جدول را افقی بکشید ←</p>
 
 <div class="bg-white rounded-xl border border-[#c1c8c4] overflow-hidden shadow-sm">
   <div class="dash-table-wrap">
@@ -70,18 +70,18 @@
             {% for g in u.groups.all %}<span class="inline-block px-1.5 py-0.5 rounded bg-[#ecefeb] ml-1 mb-0.5">{{ g.name }}</span>{% empty %}—{% endfor %}
           </td>
           <td class="nowrap">
-            <div class="flex flex-wrap items-center gap-1">
-              <a href="{% url 'dashboard:user_edit' u.pk %}" class="text-primary p-1" title="ویرایش"><i class="fa-solid fa-pen"></i></a>
+            <div class="dash-actions">
+              <a href="{% url 'dashboard:user_edit' u.pk %}" class="text-primary" title="ویرایش"><i class="fa-solid fa-pen"></i></a>
               {% if u.approval_status != 'approved' %}
               <form method="post" action="{% url 'dashboard:user_approve' u.pk %}" class="inline">{% csrf_token %}
                 <input type="hidden" name="action" value="approve"/>
-                <button type="submit" class="text-green-700 p-1" title="تأیید"><i class="fa-solid fa-check"></i></button>
+                <button type="submit" class="text-green-700" title="تأیید"><i class="fa-solid fa-check"></i></button>
               </form>
               {% endif %}
               {% if u.approval_status != 'rejected' %}
               <form method="post" action="{% url 'dashboard:user_approve' u.pk %}" class="inline">{% csrf_token %}
                 <input type="hidden" name="action" value="reject"/>
-                <button type="submit" class="text-red-600 p-1" title="رد" onclick="return confirm('رد این کاربر؟')"><i class="fa-solid fa-xmark"></i></button>
+                <button type="submit" class="text-red-600" title="رد" onclick="return confirm('رد این کاربر؟')"><i class="fa-solid fa-xmark"></i></button>
               </form>
               {% endif %}
             </div>
