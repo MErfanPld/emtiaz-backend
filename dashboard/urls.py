@@ -2,6 +2,8 @@ from django.urls import path
 
 from .views import (
     DashboardIndexView,
+    NotificationsView,
+    PropertyApproveView,
     PropertyCreateView,
     PropertyDashboardListView,
     PropertyDeleteView,
@@ -42,10 +44,12 @@ app_name = 'dashboard'
 
 urlpatterns = [
     path('', DashboardIndexView.as_view(), name='index'),
+    path('notifications/', NotificationsView.as_view(), name='notifications'),
     path('properties/', PropertyDashboardListView.as_view(), name='property_list'),
     path('properties/new/', PropertyCreateView.as_view(), name='property_create'),
     path('properties/<slug:slug>/edit/', PropertyUpdateView.as_view(), name='property_edit'),
     path('properties/<slug:slug>/delete/', PropertyDeleteView.as_view(), name='property_delete'),
+    path('properties/<slug:slug>/review/', PropertyApproveView.as_view(), name='property_review'),
     path('blog/', BlogPostListView.as_view(), name='blog_list'),
     path('blog/new/', BlogPostCreateView.as_view(), name='blog_create'),
     path('blog/<slug:slug>/edit/', BlogPostUpdateView.as_view(), name='blog_edit'),
