@@ -28,7 +28,7 @@
       </div>
       {% if m.department %}
       <span class="inline-flex self-start text-[11px] font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary mb-2">
-        {% if LANGUAGE_CODE == 'en' %}{{ m.department_label:'en' }}{% else %}{{ m.get_department_display }}{% endif %}
+        {% if LANGUAGE_CODE == 'en' %}{{ m.department_label_en }}{% else %}{{ m.get_department_display }}{% endif %}
       </span>
       {% endif %}
       <h3 class="font-extrabold text-primary">

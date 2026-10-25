@@ -104,3 +104,7 @@ class TeamMember(models.Model):
         if lang == 'en':
             return Department.CHOICES_EN.get(self.department, self.department)
         return dict(Department.CHOICES).get(self.department, self.department)
+
+    @property
+    def department_label_en(self):
+        return self.department_label(lang='en')
