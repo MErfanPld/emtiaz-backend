@@ -29,11 +29,22 @@ h1, h2, h3, h4, p, a, span, li {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   border-radius: inherit;
+  scrollbar-width: thin;
+  scrollbar-color: #c1c8c4 transparent;
+}
+
+.dash-table-wrap::-webkit-scrollbar {
+  height: 6px;
+}
+
+.dash-table-wrap::-webkit-scrollbar-thumb {
+  background: #c1c8c4;
+  border-radius: 9999px;
 }
 
 .dash-table {
   width: 100%;
-  min-width: 720px;
+  min-width: 680px;
   border-collapse: collapse;
   text-align: right;
   font-size: 0.875rem;
@@ -72,29 +83,39 @@ h1, h2, h3, h4, p, a, span, li {
   color: #181c1b;
 }
 
+/* جدول‌های کوچک‌تر (گروه، دسته، برچسب) */
+.dash-table.dash-table-sm {
+  min-width: 520px;
+}
+
 @media (max-width: 640px) {
   .dash-table {
-    min-width: 640px;
+    min-width: 600px;
     font-size: 0.8125rem;
+  }
+  .dash-table.dash-table-sm {
+    min-width: 480px;
   }
   .dash-table th,
   .dash-table td {
     padding: 0.55rem 0.5rem;
   }
   .dash-table .cell-title {
-    max-width: 160px;
+    max-width: 150px;
   }
 }
 
-/* اسکرول افقی با راهنمای لمس */
-.dash-table-wrap::after {
-  content: '';
+/* راهنمای اسکرول روی موبایل */
+.dash-scroll-hint {
   display: none;
+  font-size: 11px;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
 }
 
 @media (max-width: 1023px) {
-  .dash-table-wrap {
-    position: relative;
+  .dash-scroll-hint {
+    display: block;
   }
 }
 
@@ -133,6 +154,11 @@ h1, h2, h3, h4, p, a, span, li {
   .dash-main .max-w-2xl,
   .dash-main .max-w-md {
     max-width: 100% !important;
+  }
+
+  /* کارت‌های داخل محتوا */
+  .dash-main .grid {
+    gap: 0.75rem;
   }
 }
 
@@ -177,4 +203,22 @@ h1, h2, h3, h4, p, a, span, li {
 .dash-main code {
   overflow-x: auto;
   max-width: 100%;
+}
+
+/* دکمه‌های عملیات در جدول */
+.dash-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.dash-actions a,
+.dash-actions button {
+  min-height: 32px;
+  min-width: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
 }
