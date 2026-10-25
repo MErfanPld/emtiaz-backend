@@ -9,6 +9,13 @@ def _lang_is_en():
     return (get_language() or 'fa')[:2] == 'en'
 
 
+def published_qs():
+    return Property.objects.filter(
+        is_active=True,
+        publish_status=Property.PublishStatus.APPROVED,
+    )
+
+
 class PropertyListView(ListView):
     model = Property
     context_object_name = 'properties'
@@ -20,16 +27,19 @@ class PropertyListView(ListView):
         return ['real_estate/property_list.html']
 
     def get_queryset(self):
-        qs = Property.objects.filter(is_active=True)
-        tx = self.request.GET.get('tx')
+        qs = published_qs()
+        tx = self.request.GET.get('tx') or self.request.GET.get('transaction')
         ptype = self.request.GET.get('type')
-        area = self.request.GET.get('area')
+        area = self.request.GET.get('area') or self.request.GET.get('q')
+        dept = self.request.GET.get('department')
         sort = self.request.GET.get('sort', 'newest')
 
         if tx in dict(Property.TransactionType.choices):
             qs = qs.filter(transaction_type=tx)
         if ptype in dict(Property.PropertyType.choices):
             qs = qs.filter(property_type=ptype)
+        if dept:
+            qs = qs.filter(department=dept)
         if area:
             qs = qs.filter(
                 Q(area_name__icontains=area) | Q(area_name_en__icontains=area)
@@ -48,10 +58,10 @@ class PropertyListView(ListView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['total_count'] = Property.objects.filter(is_active=True).count()
-        ctx['current_tx'] = self.request.GET.get('tx', '')
+        ctx['total_count'] = published_qs().count()
+        ctx['current_tx'] = self.request.GET.get('tx', '') or self.request.GET.get('transaction', '')
         ctx['current_type'] = self.request.GET.get('type', '')
-        ctx['current_area'] = self.request.GET.get('area', '')
+        ctx['current_area'] = self.request.GET.get('area', '') or self.request.GET.get('q', '')
         ctx['current_sort'] = self.request.GET.get('sort', 'newest')
         ctx['transaction_types'] = Property.TransactionType.choices
         ctx['property_types'] = Property.PropertyType.choices
@@ -65,7 +75,7 @@ class PropertyDetailView(DetailView):
     slug_url_kwarg = 'slug'
 
     def get_queryset(self):
-        return Property.objects.filter(is_active=True).prefetch_related(
+        return published_qs().prefetch_related(
             Prefetch('images', queryset=PropertyImage.objects.order_by('sort_order', 'id'))
         )
 
@@ -80,7 +90,7 @@ class PropertyDetailView(DetailView):
         ctx['gallery'] = obj.gallery_urls()
         ctx['gallery_count'] = obj.gallery_count()
         ctx['similar'] = (
-            Property.objects.filter(is_active=True)
+            published_qs()
             .filter(Q(area_name=obj.area_name) | Q(property_type=obj.property_type))
             .exclude(pk=obj.pk)[:3]
         )
