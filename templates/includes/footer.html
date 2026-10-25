@@ -20,8 +20,8 @@
               <span class="text-lg sm:text-xl font-bold text-white tracking-tight">
                 {% if LANGUAGE_CODE == 'en' %}Emtiaz Real Estate{% else %}مجموعه املاک امتیاز{% endif %}
               </span>
-              <span class="text-xs text-white/70 mt-0.5">
-                {% if LANGUAGE_CODE == 'en' %}Credibility in northern Tehran property deals{% else %}توسعه و اعتبار معاملات ملکی در شمال تهران{% endif %}
+              <span class="text-xs text-secondary font-semibold mt-0.5">
+                {% if LANGUAGE_CODE == 'en' %}Your choice is our distinction{% else %}انتخاب شما امتیاز ماست{% endif %}
               </span>
             </div>
           </a>
@@ -53,7 +53,7 @@
         <ul class="space-y-3">
           <li><a class="text-white/70 hover:text-white transition-colors text-sm" href="{% url 'core:about' %}">{% if LANGUAGE_CODE == 'en' %}About{% else %}معرفی مجموعه{% endif %}</a></li>
           <li><a class="text-white/70 hover:text-white transition-colors text-sm" href="{% url 'real_estate:list' %}">{% if LANGUAGE_CODE == 'en' %}Properties{% else %}املاک{% endif %}</a></li>
-                    <li><a class="text-white/70 hover:text-white transition-colors text-sm" href="{% url 'blog:list' %}">{% if LANGUAGE_CODE == 'en' %}Properties{% else %}مقالات{% endif %}</a></li>
+          <li><a class="text-white/70 hover:text-white transition-colors text-sm" href="{% url 'blog:list' %}">{% if LANGUAGE_CODE == 'en' %}Blog{% else %}مقالات{% endif %}</a></li>
           <li><a class="text-white/70 hover:text-white transition-colors text-sm" href="{% url 'core:about' %}#visit">{% if LANGUAGE_CODE == 'en' %}Contact{% else %}تماس با ما{% endif %}</a></li>
         </ul>
       </div>
