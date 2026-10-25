@@ -72,6 +72,12 @@ class AboutView(TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
+        # همه اعضای فعال برای اسلایدر «تیم ما»
+        ctx['team_members'] = (
+            TeamMember.objects.filter(is_active=True)
+            .order_by('sort_order', 'role', 'id')
+        )
+        # مدیران بخش (در صورت نیاز جداگانه)
         ctx['dept_managers'] = (
             TeamMember.objects.filter(
                 is_active=True,
