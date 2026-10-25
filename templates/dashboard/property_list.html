@@ -2,58 +2,71 @@
 {% block title %}مدیریت املاک{% endblock %}
 {% block breadcrumb %}<a href="{% url 'dashboard:index' %}" class="hover:text-primary">داشبورد</a> / <span class="text-primary font-bold">املاک</span>{% endblock %}
 {% block header_actions %}
-<a href="{% url 'dashboard:property_create' %}" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary text-white text-sm font-bold"><i class="fa-solid fa-plus"></i> ملک جدید</a>
+<a href="{% url 'dashboard:property_create' %}" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-primary text-white text-xs sm:text-sm font-bold whitespace-nowrap"><i class="fa-solid fa-plus"></i><span class="hidden xs:inline sm:inline">ملک جدید</span></a>
 {% endblock %}
 {% block content %}
-<form method="get" class="flex flex-col sm:flex-row gap-3 mb-4">
-  <div class="relative flex-1">
-    <i class="fa-solid fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+<form method="get" class="dash-filters">
+  <div class="relative flex-1 min-w-0">
+    <i class="fa-solid fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
     <input type="text" name="q" value="{{ request.GET.q }}" placeholder="جستجو کد، عنوان، محله..." class="w-full pr-10 pl-4 py-2.5 rounded-lg border border-[#c1c8c4] bg-white text-sm"/>
   </div>
-  <select name="status" class="border border-[#c1c8c4] rounded-lg px-3 py-2.5 text-sm bg-white">
+  <select name="status" class="border border-[#c1c8c4] rounded-lg px-3 py-2.5 text-sm bg-white w-full sm:w-auto">
     <option value="">همه</option>
     <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>منتشرشده</option>
-    <option value="draft" {% if request.GET.status == 'draft' %}selected{% endif %}>پیش‌نویس</option>
+    <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>در انتظار</option>
+    <option value="draft" {% if request.GET.status == 'draft' %}selected{% endif %}>ردشده</option>
   </select>
-  <button type="submit" class="px-5 py-2.5 rounded-lg bg-primary text-white text-sm font-bold"><i class="fa-solid fa-filter ml-1"></i> فیلتر</button>
+  <button type="submit" class="px-5 py-2.5 rounded-lg bg-primary text-white text-sm font-bold whitespace-nowrap"><i class="fa-solid fa-filter ml-1"></i> فیلتر</button>
 </form>
 
+<p class="text-[11px] text-on-surface-variant mb-2 sm:hidden">جدول را افقی بکشید ←</p>
+
 <div class="bg-white rounded-xl border border-[#c1c8c4] shadow-sm overflow-hidden">
-  <div class="overflow-x-auto">
-    <table class="w-full text-right text-sm">
-      <thead class="bg-[#f7faf7] text-on-surface-variant">
+  <div class="dash-table-wrap">
+    <table class="dash-table">
+      <thead>
         <tr>
-          <th class="py-3 px-3">کاور</th>
-          <th class="py-3 px-3">کد</th>
-          <th class="py-3 px-3">عنوان</th>
-          <th class="py-3 px-3">معامله</th>
-          <th class="py-3 px-3">متراژ</th>
-          <th class="py-3 px-3">قیمت</th>
-          <th class="py-3 px-3">وضعیت</th>
-          <th class="py-3 px-3">عملیات</th>
+          <th>کاور</th>
+          <th class="nowrap">کد</th>
+          <th>عنوان</th>
+          <th class="nowrap">معامله</th>
+          <th class="nowrap">متراژ</th>
+          <th class="nowrap">قیمت</th>
+          <th class="nowrap">وضعیت</th>
+          <th class="nowrap">عملیات</th>
         </tr>
       </thead>
-      <tbody class="divide-y">
+      <tbody>
         {% for p in properties %}
-        <tr class="hover:bg-[#f7faf7]/50">
-          <td class="py-2 px-3">
+        <tr>
+          <td>
             {% if p.display_image %}
-            <img src="{{ p.display_image }}" alt="" class="w-14 h-10 object-cover rounded-md border"/>
+            <img src="{{ p.display_image }}" alt="" class="w-12 h-9 sm:w-14 sm:h-10 object-cover rounded-md border"/>
             {% else %}
-            <div class="w-14 h-10 rounded-md bg-[#ecefeb] flex items-center justify-center text-gray-400"><i class="fa-solid fa-image"></i></div>
+            <div class="w-12 h-9 sm:w-14 sm:h-10 rounded-md bg-[#ecefeb] flex items-center justify-center text-gray-400"><i class="fa-solid fa-image"></i></div>
             {% endif %}
           </td>
-          <td class="py-2 px-3 font-mono text-xs">{{ p.code }}</td>
-          <td class="py-2 px-3 font-bold text-primary">{{ p.title }}</td>
-          <td class="py-2 px-3">{{ p.get_transaction_type_display }}</td>
-          <td class="py-2 px-3">{{ p.area_sqm }} م</td>
-          <td class="py-2 px-3 font-bold">{{ p.formatted_price }}</td>
-          <td class="py-2 px-3">{% if p.is_active %}<span class="text-xs px-2 py-0.5 rounded-full bg-green-100">منتشر</span>{% else %}<span class="text-xs px-2 py-0.5 rounded-full bg-gray-100">پیش‌نویس</span>{% endif %}</td>
-          <td class="py-2 px-3">
+          <td class="nowrap font-mono text-xs">{{ p.code }}</td>
+          <td class="cell-title">{{ p.title }}</td>
+          <td class="nowrap">{{ p.get_transaction_type_display }}</td>
+          <td class="nowrap">{{ p.area_sqm }} م</td>
+          <td class="nowrap font-bold">{{ p.formatted_price }}</td>
+          <td class="nowrap">
+            {% if p.publish_status == 'pending' %}
+            <span class="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">در انتظار</span>
+            {% elif p.publish_status == 'rejected' %}
+            <span class="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-800">ردشده</span>
+            {% elif p.is_active %}
+            <span class="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-800">منتشر</span>
+            {% else %}
+            <span class="text-xs px-2 py-0.5 rounded-full bg-gray-100">پیش‌نویس</span>
+            {% endif %}
+          </td>
+          <td class="nowrap">
             <div class="flex items-center gap-2">
-              <a href="{% url 'real_estate:detail' p.slug %}" target="_blank" class="text-gray-500 hover:text-primary" title="مشاهده"><i class="fa-solid fa-eye"></i></a>
-              <a href="{% url 'dashboard:property_edit' p.slug %}" class="text-primary" title="ویرایش / گالری"><i class="fa-solid fa-images"></i></a>
-              <a href="{% url 'dashboard:property_delete' p.slug %}" class="text-red-600" title="حذف"><i class="fa-solid fa-trash"></i></a>
+              <a href="{% url 'real_estate:detail' p.slug %}" target="_blank" class="text-gray-500 hover:text-primary p-1" title="مشاهده"><i class="fa-solid fa-eye"></i></a>
+              <a href="{% url 'dashboard:property_edit' p.slug %}" class="text-primary p-1" title="ویرایش"><i class="fa-solid fa-pen"></i></a>
+              <a href="{% url 'dashboard:property_delete' p.slug %}" class="text-red-600 p-1" title="حذف"><i class="fa-solid fa-trash"></i></a>
             </div>
           </td>
         </tr>
@@ -64,10 +77,10 @@
     </table>
   </div>
   {% if page_obj.has_other_pages %}
-  <div class="p-4 border-t flex justify-center gap-2 text-sm">
-    {% if page_obj.has_previous %}<a class="px-3 py-1 border rounded" href="?page={{ page_obj.previous_page_number }}">&laquo;</a>{% endif %}
+  <div class="p-3 sm:p-4 border-t flex justify-center gap-2 text-sm">
+    {% if page_obj.has_previous %}<a class="px-3 py-1 border rounded" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">&laquo;</a>{% endif %}
     <span class="px-3 py-1">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
-    {% if page_obj.has_next %}<a class="px-3 py-1 border rounded" href="?page={{ page_obj.next_page_number }}">&raquo;</a>{% endif %}
+    {% if page_obj.has_next %}<a class="px-3 py-1 border rounded" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">&raquo;</a>{% endif %}
   </div>
   {% endif %}
 </div>
