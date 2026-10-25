@@ -1,0 +1,71 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}اعلانات{% endblock %}
+{% block breadcrumb %}<span class="text-primary font-bold">اعلانات</span>{% endblock %}
+{% block content %}
+<div class="space-y-8 max-w-5xl">
+  <div>
+    <h2 class="text-xl font-extrabold text-primary mb-1">اعلانات</h2>
+    <p class="text-sm text-on-surface-variant">املاک در انتظار تأیید و درخواست‌های مشاوره جدید</p>
+  </div>
+
+  <section class="bg-white rounded-xl border border-[#c1c8c4] overflow-hidden">
+    <div class="px-5 py-3 border-b border-[#c1c8c4] flex items-center justify-between">
+      <h3 class="font-bold text-primary flex items-center gap-2"><i class="fa-solid fa-house-circle-check"></i> املاک در انتظار تأیید</h3>
+      <span class="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full font-bold">{{ pending_properties|length }}</span>
+    </div>
+    <div class="divide-y divide-[#e8e1de]">
+      {% for p in pending_properties %}
+      <div class="p-4 flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+        <div class="text-sm">
+          <p class="font-bold text-primary">{{ p.code }} — {{ p.title }}</p>
+          <p class="text-xs text-on-surface-variant mt-1">
+            بخش: {{ p.get_department_display }} ·
+            ثبت‌کننده: {{ p.created_by.get_full_name|default:p.created_by|default:"—" }} ·
+            {{ p.created_at|date:"Y/m/d H:i" }}
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <a href="{% url 'dashboard:property_edit' p.slug %}" class="px-3 py-1.5 rounded-lg border text-xs font-semibold">مشاهده / ویرایش</a>
+          {% if is_manager %}
+          <form method="post" action="{% url 'dashboard:property_review' p.slug %}" class="inline">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="approve"/>
+            <input type="hidden" name="next" value="{% url 'dashboard:notifications' %}"/>
+            <button type="submit" class="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-bold">تأیید و انتشار</button>
+          </form>
+          <form method="post" action="{% url 'dashboard:property_review' p.slug %}" class="inline">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="reject"/>
+            <input type="hidden" name="next" value="{% url 'dashboard:notifications' %}"/>
+            <button type="submit" class="px-3 py-1.5 rounded-lg border border-red-300 text-red-700 text-xs font-bold">رد</button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+      {% empty %}
+      <p class="p-6 text-sm text-on-surface-variant">ملک در انتظاری نیست.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="bg-white rounded-xl border border-[#c1c8c4] overflow-hidden">
+    <div class="px-5 py-3 border-b border-[#c1c8c4] flex items-center justify-between">
+      <h3 class="font-bold text-primary flex items-center gap-2"><i class="fa-solid fa-headset"></i> درخواست‌های مشاوره جدید</h3>
+      <span class="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full font-bold">{{ new_consultations|length }}</span>
+    </div>
+    <div class="divide-y divide-[#e8e1de]">
+      {% for c in new_consultations %}
+      <div class="p-4 flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+        <div class="text-sm">
+          <p class="font-bold text-primary">{{ c.full_name }} — <span dir="ltr">{{ c.phone }}</span></p>
+          <p class="text-xs text-on-surface-variant mt-1">{{ c.get_request_type_display }} · {{ c.created_at|date:"Y/m/d H:i" }}</p>
+        </div>
+        <a href="{% url 'dashboard:consultation_detail' c.pk %}" class="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-bold">مشاهده</a>
+      </div>
+      {% empty %}
+      <p class="p-6 text-sm text-on-surface-variant">درخواست جدیدی نیست.</p>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}
