@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import inlineformset_factory
 
+from core.constants import Department
 from real_estate.models import Property, PropertyImage
 
 # نشان‌ها: مقدار فارسی → انگلیسی (همگام‌سازی خودکار در قالب)
@@ -20,7 +21,6 @@ BADGE_MAP = {
 
 BADGE_CHOICES = [('', '— بدون نشان —')] + [(k, k) for k in BADGE_MAP if k]
 
-# برچسب قیمت: فارسی → انگلیسی
 PRICE_LABEL_MAP = {
     '': '',
     'توافقی': 'Negotiable',
@@ -43,7 +43,6 @@ CSS_INPUT = (
 
 
 def _digits_only(value):
-    """حذف جداکننده هزارگان و ارقام فارسی/عربی → عدد خام."""
     if value is None:
         return ''
     s = str(value).strip()
@@ -121,6 +120,7 @@ class PropertyForm(forms.ModelForm):
         model = Property
         fields = [
             'code', 'title', 'title_en', 'slug',
+            'department',
             'transaction_type', 'property_type',
             'area_name', 'area_name_en', 'address_line', 'address_line_en',
             'area_sqm', 'bedrooms', 'parking', 'floor', 'floor_en',
@@ -132,7 +132,7 @@ class PropertyForm(forms.ModelForm):
             'badge_secondary', 'badge_secondary_en',
             'cover_image', 'cover_image_url',
             'has_deed', 'is_complex_office', 'has_pool_or_roof', 'is_brand_builder',
-            'is_active', 'is_featured', 'is_exclusive',
+            'is_featured', 'is_exclusive',
             'sort_order',
             'description', 'description_en',
         ]
@@ -143,15 +143,28 @@ class PropertyForm(forms.ModelForm):
             'slug': forms.TextInput(attrs={'placeholder': 'خالی بگذارید تا خودکار ساخته شود'}),
             'consultant_phone': forms.TextInput(attrs={'placeholder': '09xxxxxxxxx', 'dir': 'ltr'}),
             'sort_order': forms.NumberInput(attrs={'min': 0}),
+            'department': forms.Select(attrs={'class': CSS_INPUT}),
         }
 
     def __init__(self, *args, user=None, **kwargs):
+        self.user = user
         super().__init__(*args, **kwargs)
         self.fields['slug'].required = False
         if 'sort_order' in self.fields:
             self.fields['sort_order'].required = False
 
-        # پیش‌فرض‌ها فقط برای ساخت جدید (instance بدون pk)
+        # محدودیت بخش بر اساس نقش کاربر
+        allowed = []
+        if user is not None:
+            allowed = user.allowed_departments()
+        if allowed:
+            self.fields['department'].choices = [
+                (k, v) for k, v in Department.CHOICES if k in allowed
+            ]
+            if len(allowed) == 1:
+                self.fields['department'].initial = allowed[0]
+                self.fields['department'].widget.attrs['readonly'] = True
+
         is_create = not (self.instance and self.instance.pk)
         if is_create:
             self.fields['agency_name'].initial = AGENCY_FA_DEFAULT
@@ -164,15 +177,15 @@ class PropertyForm(forms.ModelForm):
                 phone = getattr(user, 'phone_number', '') or ''
                 if phone and not self.fields['consultant_phone'].initial:
                     self.fields['consultant_phone'].initial = phone
+                if user.department and len(allowed) == 1:
+                    self.fields['department'].initial = user.department
 
-        # نمایش قیمت با جداکننده هنگام ویرایش
         if self.instance and self.instance.pk and self.instance.price:
             try:
                 self.initial['price'] = f'{int(self.instance.price):,}'
             except (TypeError, ValueError):
                 pass
 
-        # اگر مقدار ذخیره‌شده در choices نباشد، اضافه کن تا select نشکند
         for field_name, choices in (
             ('badge_primary', BADGE_CHOICES),
             ('badge_secondary', BADGE_CHOICES),
@@ -193,6 +206,14 @@ class PropertyForm(forms.ModelForm):
                 existing = field.widget.attrs.get('class', '')
                 if 'w-full' not in existing:
                     field.widget.attrs['class'] = CSS_INPUT
+
+    def clean_department(self):
+        dept = self.cleaned_data.get('department')
+        if self.user is not None:
+            allowed = self.user.allowed_departments()
+            if allowed and dept not in allowed:
+                raise forms.ValidationError('شما مجاز به ثبت ملک در این بخش نیستید.')
+        return dept
 
     def clean_price(self):
         raw = _digits_only(self.cleaned_data.get('price') or '')
