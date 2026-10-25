@@ -1,43 +1,55 @@
 {% extends "dashboard/base_dashboard.html" %}
 {% load persian %}
 {% block title %}درخواست‌های مشاوره{% endblock %}
-{% block breadcrumb %}<span class="text-primary font-bold">درخواست‌های مشاوره</span>{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard:index' %}" class="hover:text-primary">داشبورد</a> / <span class="text-primary font-bold">درخواست‌های مشاوره</span>{% endblock %}
 {% block content %}
-<div class="flex flex-wrap gap-3 mb-4 text-sm">
-  <a href="{% url 'dashboard:consultation_list' %}" class="px-3 py-1.5 rounded-lg border {% if not request.GET.status %}bg-primary text-white{% endif %}">همه ({{ count_all|fa_num }})</a>
-  <a href="?status=new" class="px-3 py-1.5 rounded-lg border {% if request.GET.status == 'new' %}bg-amber-500 text-white{% endif %}">جدید ({{ count_new|fa_num }})</a>
-  <a href="?status=contacted" class="px-3 py-1.5 rounded-lg border">تماس‌گرفته</a>
-  <a href="?status=done" class="px-3 py-1.5 rounded-lg border">انجام‌شده</a>
+<div class="flex flex-wrap gap-2 mb-4 text-sm">
+  <a href="{% url 'dashboard:consultation_list' %}" class="px-3 py-1.5 rounded-lg border {% if not request.GET.status %}bg-primary text-white border-primary{% endif %}">همه ({{ count_all|fa_num }})</a>
+  <a href="?status=new" class="px-3 py-1.5 rounded-lg border {% if request.GET.status == 'new' %}bg-amber-500 text-white border-amber-500{% endif %}">جدید ({{ count_new|fa_num }})</a>
+  <a href="?status=contacted" class="px-3 py-1.5 rounded-lg border {% if request.GET.status == 'contacted' %}bg-primary text-white border-primary{% endif %}">تماس‌گرفته</a>
+  <a href="?status=done" class="px-3 py-1.5 rounded-lg border {% if request.GET.status == 'done' %}bg-primary text-white border-primary{% endif %}">انجام‌شده</a>
 </div>
-<form method="get" class="mb-4 flex gap-2">
-  <input type="text" name="q" value="{{ request.GET.q }}" placeholder="جستجو نام یا موبایل..." class="flex-1 border rounded-lg px-3 py-2 text-sm"/>
+
+<form method="get" class="dash-filters">
+  <input type="text" name="q" value="{{ request.GET.q }}" placeholder="جستجو نام یا موبایل..." class="flex-1 min-w-0 border border-[#c1c8c4] rounded-lg px-3 py-2.5 text-sm"/>
   {% if request.GET.status %}<input type="hidden" name="status" value="{{ request.GET.status }}"/>{% endif %}
-  <button class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-bold">جستجو</button>
+  <button type="submit" class="px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-bold whitespace-nowrap">جستجو</button>
 </form>
-<div class="bg-white rounded-xl border overflow-hidden">
-  <table class="w-full text-sm text-right">
-    <thead class="bg-[#f7faf7]"><tr>
-      <th class="py-3 px-3">نام</th>
-      <th class="py-3 px-3">موبایل</th>
-      <th class="py-3 px-3">موضوع</th>
-      <th class="py-3 px-3">وضعیت</th>
-      <th class="py-3 px-3">زمان</th>
-      <th class="py-3 px-3"></th>
-    </tr></thead>
-    <tbody class="divide-y">
-      {% for item in items %}
-      <tr class="hover:bg-[#f7faf7]/50 {% if item.status == 'new' %}bg-amber-50/40{% endif %}">
-        <td class="py-3 px-3 font-bold">{{ item.full_name }}</td>
-        <td class="py-3 px-3 font-mono" dir="ltr">{{ item.phone|fa_num }}</td>
-        <td class="py-3 px-3">{{ item.get_request_type_display }}</td>
-        <td class="py-3 px-3"><span class="text-xs px-2 py-0.5 rounded-full {% if item.status == 'new' %}bg-amber-100{% elif item.status == 'done' %}bg-green-100{% else %}bg-gray-100{% endif %}">{{ item.get_status_display }}</span></td>
-        <td class="py-3 px-3 text-xs">{{ item.created_at|jalali:"j F Y — H:i" }}</td>
-        <td class="py-3 px-3"><a href="{% url 'dashboard:consultation_detail' item.pk %}" class="text-primary font-bold text-xs">جزئیات</a></td>
-      </tr>
-      {% empty %}
-      <tr><td colspan="6" class="py-10 text-center text-on-surface-variant">درخواستی ثبت نشده است.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+
+<p class="dash-scroll-hint">جدول را افقی بکشید ←</p>
+
+<div class="bg-white rounded-xl border border-[#c1c8c4] shadow-sm overflow-hidden">
+  <div class="dash-table-wrap">
+    <table class="dash-table">
+      <thead>
+        <tr>
+          <th>نام</th>
+          <th class="nowrap">موبایل</th>
+          <th class="nowrap">موضوع</th>
+          <th class="nowrap">وضعیت</th>
+          <th class="nowrap">زمان</th>
+          <th class="nowrap"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr class="{% if item.status == 'new' %}bg-amber-50/40{% endif %}">
+          <td class="cell-title">{{ item.full_name }}</td>
+          <td class="nowrap font-mono text-xs" dir="ltr">{{ item.phone|fa_num }}</td>
+          <td class="nowrap">{{ item.get_request_type_display }}</td>
+          <td class="nowrap">
+            <span class="text-xs px-2 py-0.5 rounded-full {% if item.status == 'new' %}bg-amber-100 text-amber-800{% elif item.status == 'done' %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-700{% endif %}">{{ item.get_status_display }}</span>
+          </td>
+          <td class="nowrap text-xs">{{ item.created_at|jalali:"j F Y — H:i" }}</td>
+          <td class="nowrap">
+            <a href="{% url 'dashboard:consultation_detail' item.pk %}" class="text-primary font-bold text-xs whitespace-nowrap">جزئیات</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="py-10 text-center text-on-surface-variant">درخواستی ثبت نشده است.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}
