@@ -19,7 +19,7 @@
   <button type="submit" class="px-5 py-2.5 rounded-lg bg-primary text-white text-sm font-bold whitespace-nowrap"><i class="fa-solid fa-filter ml-1"></i> فیلتر</button>
 </form>
 
-<p class="text-[11px] text-on-surface-variant mb-2 sm:hidden">جدول را افقی بکشید ←</p>
+<p class="dash-scroll-hint">جدول را افقی بکشید ←</p>
 
 <div class="bg-white rounded-xl border border-[#c1c8c4] shadow-sm overflow-hidden">
   <div class="dash-table-wrap">
@@ -63,10 +63,10 @@
             {% endif %}
           </td>
           <td class="nowrap">
-            <div class="flex items-center gap-2">
-              <a href="{% url 'real_estate:detail' p.slug %}" target="_blank" class="text-gray-500 hover:text-primary p-1" title="مشاهده"><i class="fa-solid fa-eye"></i></a>
-              <a href="{% url 'dashboard:property_edit' p.slug %}" class="text-primary p-1" title="ویرایش"><i class="fa-solid fa-pen"></i></a>
-              <a href="{% url 'dashboard:property_delete' p.slug %}" class="text-red-600 p-1" title="حذف"><i class="fa-solid fa-trash"></i></a>
+            <div class="dash-actions">
+              <a href="{% url 'real_estate:detail' p.slug %}" target="_blank" class="text-gray-500 hover:text-primary" title="مشاهده"><i class="fa-solid fa-eye"></i></a>
+              <a href="{% url 'dashboard:property_edit' p.slug %}" class="text-primary" title="ویرایش"><i class="fa-solid fa-pen"></i></a>
+              <a href="{% url 'dashboard:property_delete' p.slug %}" class="text-red-600" title="حذف"><i class="fa-solid fa-trash"></i></a>
             </div>
           </td>
         </tr>
