@@ -8,11 +8,11 @@ from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 from blog.models import Category, Post, Tag
 
 from .blog_forms import CategoryForm, PostForm, TagForm
-from .views import ApprovedRequiredMixin
+from .views import StaffManagerMixin
 
 
 @method_decorator(login_required, name='dispatch')
-class BlogPostListView(ApprovedRequiredMixin, ListView):
+class BlogPostListView(StaffManagerMixin, ListView):
     model = Post
     template_name = 'dashboard/blog/post_list.html'
     context_object_name = 'posts'
@@ -32,7 +32,7 @@ class BlogPostListView(ApprovedRequiredMixin, ListView):
 
 
 @method_decorator(login_required, name='dispatch')
-class BlogPostCreateView(ApprovedRequiredMixin, CreateView):
+class BlogPostCreateView(StaffManagerMixin, CreateView):
     model = Post
     form_class = PostForm
     template_name = 'dashboard/blog/post_form.html'
@@ -51,7 +51,7 @@ class BlogPostCreateView(ApprovedRequiredMixin, CreateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class BlogPostUpdateView(ApprovedRequiredMixin, UpdateView):
+class BlogPostUpdateView(StaffManagerMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'dashboard/blog/post_form.html'
@@ -71,7 +71,7 @@ class BlogPostUpdateView(ApprovedRequiredMixin, UpdateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class BlogPostDeleteView(ApprovedRequiredMixin, DeleteView):
+class BlogPostDeleteView(StaffManagerMixin, DeleteView):
     model = Post
     template_name = 'dashboard/blog/post_confirm_delete.html'
     success_url = reverse_lazy('dashboard:blog_list')
@@ -84,14 +84,14 @@ class BlogPostDeleteView(ApprovedRequiredMixin, DeleteView):
 
 
 @method_decorator(login_required, name='dispatch')
-class BlogCategoryListView(ApprovedRequiredMixin, ListView):
+class BlogCategoryListView(StaffManagerMixin, ListView):
     model = Category
     template_name = 'dashboard/blog/category_list.html'
     context_object_name = 'categories'
 
 
 @method_decorator(login_required, name='dispatch')
-class BlogCategoryCreateView(ApprovedRequiredMixin, CreateView):
+class BlogCategoryCreateView(StaffManagerMixin, CreateView):
     model = Category
     form_class = CategoryForm
     template_name = 'dashboard/blog/category_form.html'
@@ -108,7 +108,7 @@ class BlogCategoryCreateView(ApprovedRequiredMixin, CreateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class BlogCategoryUpdateView(ApprovedRequiredMixin, UpdateView):
+class BlogCategoryUpdateView(StaffManagerMixin, UpdateView):
     model = Category
     form_class = CategoryForm
     template_name = 'dashboard/blog/category_form.html'
@@ -125,7 +125,7 @@ class BlogCategoryUpdateView(ApprovedRequiredMixin, UpdateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class BlogCategoryDeleteView(ApprovedRequiredMixin, DeleteView):
+class BlogCategoryDeleteView(StaffManagerMixin, DeleteView):
     model = Category
     template_name = 'dashboard/blog/category_confirm_delete.html'
     success_url = reverse_lazy('dashboard:blog_category_list')
@@ -135,17 +135,15 @@ class BlogCategoryDeleteView(ApprovedRequiredMixin, DeleteView):
         return super().form_valid(form)
 
 
-# ─── Tags ───────────────────────────────────────────────
-
 @method_decorator(login_required, name='dispatch')
-class BlogTagListView(ApprovedRequiredMixin, ListView):
+class BlogTagListView(StaffManagerMixin, ListView):
     model = Tag
     template_name = 'dashboard/blog/tag_list.html'
     context_object_name = 'tags'
 
 
 @method_decorator(login_required, name='dispatch')
-class BlogTagCreateView(ApprovedRequiredMixin, CreateView):
+class BlogTagCreateView(StaffManagerMixin, CreateView):
     model = Tag
     form_class = TagForm
     template_name = 'dashboard/blog/tag_form.html'
@@ -162,7 +160,7 @@ class BlogTagCreateView(ApprovedRequiredMixin, CreateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class BlogTagUpdateView(ApprovedRequiredMixin, UpdateView):
+class BlogTagUpdateView(StaffManagerMixin, UpdateView):
     model = Tag
     form_class = TagForm
     template_name = 'dashboard/blog/tag_form.html'
@@ -179,7 +177,7 @@ class BlogTagUpdateView(ApprovedRequiredMixin, UpdateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class BlogTagDeleteView(ApprovedRequiredMixin, DeleteView):
+class BlogTagDeleteView(StaffManagerMixin, DeleteView):
     model = Tag
     template_name = 'dashboard/blog/tag_confirm_delete.html'
     success_url = reverse_lazy('dashboard:blog_tag_list')
