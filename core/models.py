@@ -50,26 +50,27 @@ class ConsultationRequest(models.Model):
 
 
 class TeamMember(models.Model):
-    """مدیران مجموعه و مدیران بخش‌ها (صفحه اصلی / معرفی)."""
+    """اعضای تیم مجموعه (مدیران، مدیران بخش، مشاوران) برای صفحه معرفی و اصلی."""
 
     class Role(models.TextChoices):
         CO_DIRECTOR = 'co_director', 'مدیر مجموعه'
         DEPT_MANAGER = 'dept_manager', 'مدیر بخش'
+        MEMBER = 'member', 'عضو تیم'
 
     role = models.CharField(
-        'نقش',
+        'دسته / نقش',
         max_length=20,
         choices=Role.choices,
-        default=Role.DEPT_MANAGER,
+        default=Role.MEMBER,
         db_index=True,
     )
     department = models.CharField(
-        'بخش',
+        'بخش تخصصی',
         max_length=20,
         choices=Department.CHOICES,
         blank=True,
         default='',
-        help_text='فقط برای مدیر بخش',
+        help_text='اختیاری — مثلاً برای مدیر بخش یا مشاور همان بخش',
     )
     name = models.CharField('نام (فارسی)', max_length=120)
     name_en = models.CharField('نام (انگلیسی)', max_length=120, blank=True)
@@ -79,15 +80,15 @@ class TeamMember(models.Model):
     bio_en = models.TextField('توضیح کوتاه (انگلیسی)', blank=True)
     photo = models.ImageField('تصویر', upload_to='team/%Y/%m/', blank=True, null=True)
     photo_url = models.URLField('لینک تصویر جایگزین', blank=True)
-    is_active = models.BooleanField('فعال', default=True)
-    sort_order = models.PositiveIntegerField('ترتیب', default=0)
+    is_active = models.BooleanField('فعال / نمایش در سایت', default=True)
+    sort_order = models.PositiveIntegerField('ترتیب نمایش', default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = 'عضو تیم مدیریت'
-        verbose_name_plural = 'تیم مدیریت'
-        ordering = ['role', 'sort_order', 'id']
+        verbose_name = 'عضو تیم'
+        verbose_name_plural = 'تیم مجموعه'
+        ordering = ['sort_order', 'role', 'id']
 
     def __str__(self):
         return f'{self.name} ({self.get_role_display()})'
