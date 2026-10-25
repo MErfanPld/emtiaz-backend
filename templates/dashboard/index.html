@@ -15,9 +15,9 @@
 {% block content %}
 <div class="space-y-6">
 
-  <div class="bg-white rounded-xl p-5 border border-[#c1c8c4] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+  <div class="bg-white rounded-xl p-4 sm:p-5 border border-[#c1c8c4] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
     <div>
-      <h2 class="text-xl font-bold text-[#181c1b] mb-1">خوش آمدید، {{ user.get_full_name|default:user.phone_number }}</h2>
+      <h2 class="text-lg sm:text-xl font-bold text-[#181c1b] mb-1">خوش آمدید، {{ user.get_full_name|default:user.phone_number }}</h2>
       <p class="text-sm text-[#3d4441]">مدیریت املاک، مقالات و دسترسی‌های مجموعه املاک امتیاز</p>
     </div>
     <div class="flex flex-wrap gap-2">
@@ -37,18 +37,18 @@
     <h3 class="text-sm font-bold text-[#3d4441] mb-3 flex items-center gap-2">
       <i class="fa-solid fa-building text-secondary"></i> املاک
     </h3>
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <a href="{% url 'dashboard:property_list' %}" class="bg-white p-5 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+      <a href="{% url 'dashboard:property_list' %}" class="bg-white p-4 sm:p-5 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
         <div class="flex justify-between mb-2 text-sm text-[#3d4441]"><span>کل املاک</span><i class="fa-solid fa-building text-[#181c1b]"></i></div>
-        <div class="text-3xl font-black text-[#181c1b]">{{ property_total|fa_num }}</div>
+        <div class="text-2xl sm:text-3xl font-black text-[#181c1b]">{{ property_total|fa_num }}</div>
       </a>
-      <a href="{% url 'dashboard:property_list' %}?status=active" class="bg-white p-5 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
+      <a href="{% url 'dashboard:property_list' %}?status=active" class="bg-white p-4 sm:p-5 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
         <div class="flex justify-between mb-2 text-sm text-[#3d4441]"><span>منتشرشده</span><i class="fa-solid fa-circle-check text-black-600"></i></div>
-        <div class="text-3xl font-black text-[#181c1b]">{{ property_active|fa_num }}</div>
+        <div class="text-2xl sm:text-3xl font-black text-[#181c1b]">{{ property_active|fa_num }}</div>
       </a>
-      <a href="{% url 'dashboard:property_list' %}?status=draft" class="bg-white p-5 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
+      <a href="{% url 'dashboard:property_list' %}?status=draft" class="bg-white p-4 sm:p-5 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
         <div class="flex justify-between mb-2 text-sm text-[#3d4441]"><span>پیش‌نویس</span><i class="fa-solid fa-file text-[#181c1b]"></i></div>
-        <div class="text-3xl font-black text-[#181c1b]">{{ property_draft|fa_num }}</div>
+        <div class="text-2xl sm:text-3xl font-black text-[#181c1b]">{{ property_draft|fa_num }}</div>
       </a>
     </div>
   </div>
@@ -57,26 +57,26 @@
     <h3 class="text-sm font-bold text-[#3d4441] mb-3 flex items-center gap-2">
       <i class="fa-solid fa-newspaper text-secondary"></i> مقالات
     </h3>
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-      <a href="{% url 'dashboard:blog_list' %}" class="bg-white p-4 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+      <a href="{% url 'dashboard:blog_list' %}" class="bg-white p-3 sm:p-4 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
         <div class="flex justify-between mb-1 text-xs text-[#3d4441]"><span>کل مقالات</span><i class="fa-solid fa-newspaper text-[#181c1b]"></i></div>
-        <div class="text-2xl font-black text-[#181c1b]">{{ post_total|fa_num }}</div>
+        <div class="text-xl sm:text-2xl font-black text-[#181c1b]">{{ post_total|fa_num }}</div>
       </a>
-      <a href="{% url 'dashboard:blog_list' %}?status=published" class="bg-white p-4 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
+      <a href="{% url 'dashboard:blog_list' %}?status=published" class="bg-white p-3 sm:p-4 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
         <div class="flex justify-between mb-1 text-xs text-[#3d4441]"><span>منتشر</span><i class="fa-solid fa-circle-check text-black-600"></i></div>
-        <div class="text-2xl font-black text-[#181c1b]">{{ post_published|fa_num }}</div>
+        <div class="text-xl sm:text-2xl font-black text-[#181c1b]">{{ post_published|fa_num }}</div>
       </a>
-      <a href="{% url 'dashboard:blog_list' %}?status=draft" class="bg-white p-4 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
+      <a href="{% url 'dashboard:blog_list' %}?status=draft" class="bg-white p-3 sm:p-4 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
         <div class="flex justify-between mb-1 text-xs text-[#3d4441]"><span>پیش‌نویس</span><i class="fa-solid fa-file text-[#181c1b]"></i></div>
-        <div class="text-2xl font-black text-[#181c1b]">{{ post_draft|fa_num }}</div>
+        <div class="text-xl sm:text-2xl font-black text-[#181c1b]">{{ post_draft|fa_num }}</div>
       </a>
-      <div class="bg-white p-4 rounded-xl border border-[#c1c8c4] shadow-sm">
+      <div class="bg-white p-3 sm:p-4 rounded-xl border border-[#c1c8c4] shadow-sm">
         <div class="flex justify-between mb-1 text-xs text-[#3d4441]"><span>بازدید کل</span><i class="fa-solid fa-eye text-[#181c1b]"></i></div>
-        <div class="text-2xl font-black text-[#181c1b]">{{ post_views|fa_num }}</div>
+        <div class="text-xl sm:text-2xl font-black text-[#181c1b]">{{ post_views|fa_num }}</div>
       </div>
-      <a href="{% url 'dashboard:blog_category_list' %}" class="bg-white p-4 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
+      <a href="{% url 'dashboard:blog_category_list' %}" class="bg-white p-3 sm:p-4 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
         <div class="flex justify-between mb-1 text-xs text-[#3d4441]"><span>دسته / برچسب</span><i class="fa-solid fa-tags text-[#181c1b]"></i></div>
-        <div class="text-2xl font-black text-[#181c1b]">{{ category_count|fa_num }} <span class="text-base text-[#3d4441]">/ {{ tag_count|fa_num }}</span></div>
+        <div class="text-xl sm:text-2xl font-black text-[#181c1b]">{{ category_count|fa_num }} <span class="text-base text-[#3d4441]">/ {{ tag_count|fa_num }}</span></div>
       </a>
     </div>
   </div>
@@ -86,18 +86,18 @@
     <h3 class="text-sm font-bold text-[#3d4441] mb-3 flex items-center gap-2">
       <i class="fa-solid fa-users text-secondary"></i> کاربران
     </h3>
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <a href="{% url 'dashboard:user_list' %}" class="bg-white p-5 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+      <a href="{% url 'dashboard:user_list' %}" class="bg-white p-4 sm:p-5 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
         <div class="flex justify-between mb-2 text-sm text-[#3d4441]"><span>کل کاربران</span><i class="fa-solid fa-users text-[#181c1b]"></i></div>
-        <div class="text-3xl font-black text-[#181c1b]">{{ user_total|fa_num }}</div>
+        <div class="text-2xl sm:text-3xl font-black text-[#181c1b]">{{ user_total|fa_num }}</div>
       </a>
-      <a href="{% url 'dashboard:user_list' %}" class="bg-white p-5 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
+      <a href="{% url 'dashboard:user_list' %}" class="bg-white p-4 sm:p-5 rounded-xl border border-[#c1c8c4] shadow-sm hover:border-primary transition-colors">
         <div class="flex justify-between mb-2 text-sm text-[#3d4441]"><span>تأییدشده</span><i class="fa-solid fa-user-check text-black-600"></i></div>
-        <div class="text-3xl font-black text-[#181c1b]">{{ user_approved|fa_num }}</div>
+        <div class="text-2xl sm:text-3xl font-black text-[#181c1b]">{{ user_approved|fa_num }}</div>
       </a>
-      <a href="{% url 'dashboard:user_list' %}" class="bg-white p-5 rounded-xl border {% if user_pending %}border-amber-300{% else %}border-[#c1c8c4]{% endif %} shadow-sm hover:border-primary transition-colors">
+      <a href="{% url 'dashboard:user_list' %}" class="bg-white p-4 sm:p-5 rounded-xl border {% if user_pending %}border-amber-300{% else %}border-[#c1c8c4]{% endif %} shadow-sm hover:border-primary transition-colors">
         <div class="flex justify-between mb-2 text-sm text-[#3d4441]"><span>در انتظار تأیید</span><i class="fa-solid fa-user-clock text-black-600"></i></div>
-        <div class="text-3xl font-black {% if user_pending %}text-amber-700{% else %}text-[#181c1b]{% endif %}">{{ user_pending|fa_num }}</div>
+        <div class="text-2xl sm:text-3xl font-black {% if user_pending %}text-amber-700{% else %}text-[#181c1b]{% endif %}">{{ user_pending|fa_num }}</div>
       </a>
     </div>
   </div>
@@ -110,57 +110,52 @@
         <div class="w-11 h-11 rounded-lg bg-primary text-white flex items-center justify-center"><i class="fa-solid fa-plus"></i></div>
         <span class="text-xs font-bold text-[#181c1b]">ملک جدید</span>
       </a>
-
       <a href="{% url 'dashboard:property_list' %}" class="bg-white p-4 rounded-xl border border-[#c1c8c4] hover:border-primary flex flex-col items-center gap-2 text-center">
         <div class="w-11 h-11 rounded-lg bg-primary text-white flex items-center justify-center"><i class="fa-solid fa-list"></i></div>
         <span class="text-xs font-bold text-[#181c1b]">لیست املاک</span>
       </a>
-      
       <a href="{% url 'dashboard:blog_create' %}" class="bg-white p-4 rounded-xl border border-[#c1c8c4] hover:border-primary flex flex-col items-center gap-2 text-center">
         <div class="w-11 h-11 rounded-lg bg-primary text-white flex items-center justify-center"><i class="fa-solid fa-pen-to-square"></i></div>
         <span class="text-xs font-bold text-[#181c1b]">مقاله جدید</span>
       </a>
-
       <a href="{% url 'dashboard:blog_list' %}" class="bg-white p-4 rounded-xl border border-[#c1c8c4] hover:border-primary flex flex-col items-center gap-2 text-center">
         <div class="w-11 h-11 rounded-lg bg-primary text-white flex items-center justify-center"><i class="fa-solid fa-newspaper"></i></div>
         <span class="text-xs font-bold text-[#181c1b]">لیست مقالات</span>
       </a>
-
       <a href="{% url 'dashboard:blog_category_list' %}" class="bg-white p-4 rounded-xl border border-[#c1c8c4] hover:border-primary flex flex-col items-center gap-2 text-center">
         <div class="w-11 h-11 rounded-lg bg-primary text-white flex items-center justify-center"><i class="fa-solid fa-folder"></i></div>
         <span class="text-xs font-bold text-[#181c1b]">دسته بندی ها</span>
       </a>
-
-
       <a href="{% url 'dashboard:blog_tag_list' %}" class="bg-white p-4 rounded-xl border border-[#c1c8c4] hover:border-primary flex flex-col items-center gap-2 text-center">
         <div class="w-11 h-11 rounded-lg bg-primary text-white flex items-center justify-center"><i class="fa-solid fa-tags"></i></div>
         <span class="text-xs font-bold text-[#181c1b]">برچسب ها</span>
-      </a>      
-
+      </a>
     </div>
   </div>
 
-  <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
     <div class="bg-white rounded-xl border border-[#c1c8c4] shadow-sm overflow-hidden">
-      <div class="p-4 border-b border-[#c1c8c4] flex justify-between items-center">
-        <h3 class="font-bold text-[#181c1b]"><i class="fa-solid fa-building ml-1 text-secondary"></i> آخرین املاک</h3>
+      <div class="p-3 sm:p-4 border-b border-[#c1c8c4] flex justify-between items-center">
+        <h3 class="font-bold text-[#181c1b] text-sm sm:text-base"><i class="fa-solid fa-building ml-1 text-secondary"></i> آخرین املاک</h3>
         <a href="{% url 'dashboard:property_list' %}" class="text-sm font-bold text-primary">همه</a>
       </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm text-right">
-          <thead class="bg-[#f7faf7] text-[#3d4441]"><tr>
-            <th class="py-2.5 px-3">کد</th>
-            <th class="py-2.5 px-3">عنوان</th>
-            <th class="py-2.5 px-3">وضعیت</th>
-            <th class="py-2.5 px-3"></th>
-          </tr></thead>
-          <tbody class="divide-y divide-[#e8ece9]">
+      <div class="dash-table-wrap">
+        <table class="dash-table dash-table-sm">
+          <thead>
+            <tr>
+              <th class="nowrap">کد</th>
+              <th>عنوان</th>
+              <th class="nowrap">وضعیت</th>
+              <th class="nowrap"></th>
+            </tr>
+          </thead>
+          <tbody>
             {% for p in recent_properties %}
-            <tr class="hover:bg-[#f7faf7]/60">
-              <td class="py-2.5 px-3 font-mono text-xs text-[#181c1b]">{{ p.code|fa_num }}</td>
-              <td class="py-2.5 px-3 font-semibold text-[#181c1b]">{{ p.title|truncatechars:36 }}</td>
-              <td class="py-2.5 px-3">{% if p.is_active %}<span class="text-[11px] px-2 py-0.5 rounded-full bg-green-100 text-green-800">منتشر</span>{% else %}<span class="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">پیش‌نویس</span>{% endif %}</td>
-              <td class="py-2.5 px-3"><a class="text-primary" href="{% url 'dashboard:property_edit' p.slug %}"><i class="fa-solid fa-pen"></i></a></td>
+            <tr>
+              <td class="nowrap font-mono text-xs">{{ p.code|fa_num }}</td>
+              <td class="cell-title">{{ p.title|truncatechars:36 }}</td>
+              <td class="nowrap">{% if p.is_active %}<span class="text-[11px] px-2 py-0.5 rounded-full bg-green-100 text-green-800">منتشر</span>{% else %}<span class="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">پیش‌نویس</span>{% endif %}</td>
+              <td class="nowrap"><a class="text-primary" href="{% url 'dashboard:property_edit' p.slug %}"><i class="fa-solid fa-pen"></i></a></td>
             </tr>
             {% empty %}
             <tr><td colspan="4" class="py-8 text-center text-[#3d4441]">ملکی ثبت نشده. <a href="{% url 'dashboard:property_create' %}" class="text-primary font-bold">افزودن</a></td></tr>
@@ -171,25 +166,27 @@
     </div>
 
     <div class="bg-white rounded-xl border border-[#c1c8c4] shadow-sm overflow-hidden">
-      <div class="p-4 border-b border-[#c1c8c4] flex justify-between items-center">
-        <h3 class="font-bold text-[#181c1b]"><i class="fa-solid fa-newspaper ml-1 text-secondary"></i> آخرین مقالات</h3>
+      <div class="p-3 sm:p-4 border-b border-[#c1c8c4] flex justify-between items-center">
+        <h3 class="font-bold text-[#181c1b] text-sm sm:text-base"><i class="fa-solid fa-newspaper ml-1 text-secondary"></i> آخرین مقالات</h3>
         <a href="{% url 'dashboard:blog_list' %}" class="text-sm font-bold text-primary">همه</a>
       </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm text-right">
-          <thead class="bg-[#f7faf7] text-[#3d4441]"><tr>
-            <th class="py-2.5 px-3">عنوان</th>
-            <th class="py-2.5 px-3">دسته</th>
-            <th class="py-2.5 px-3">وضعیت</th>
-            <th class="py-2.5 px-3"></th>
-          </tr></thead>
-          <tbody class="divide-y divide-[#e8ece9]">
+      <div class="dash-table-wrap">
+        <table class="dash-table dash-table-sm">
+          <thead>
+            <tr>
+              <th>عنوان</th>
+              <th class="nowrap">دسته</th>
+              <th class="nowrap">وضعیت</th>
+              <th class="nowrap"></th>
+            </tr>
+          </thead>
+          <tbody>
             {% for post in recent_posts %}
-            <tr class="hover:bg-[#f7faf7]/60">
-              <td class="py-2.5 px-3 font-semibold text-[#181c1b]">{{ post.title|truncatechars:40 }}</td>
-              <td class="py-2.5 px-3 text-[#3d4441]">{{ post.category|default:"—" }}</td>
-              <td class="py-2.5 px-3">{% if post.is_published %}<span class="text-[11px] px-2 py-0.5 rounded-full bg-green-100 text-green-800">منتشر</span>{% else %}<span class="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">پیش‌نویس</span>{% endif %}</td>
-              <td class="py-2.5 px-3"><a class="text-primary" href="{% url 'dashboard:blog_edit' post.slug %}"><i class="fa-solid fa-pen"></i></a></td>
+            <tr>
+              <td class="cell-title">{{ post.title|truncatechars:40 }}</td>
+              <td class="nowrap">{{ post.category|default:"—" }}</td>
+              <td class="nowrap">{% if post.is_published %}<span class="text-[11px] px-2 py-0.5 rounded-full bg-green-100 text-green-800">منتشر</span>{% else %}<span class="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">پیش‌نویس</span>{% endif %}</td>
+              <td class="nowrap"><a class="text-primary" href="{% url 'dashboard:blog_edit' post.slug %}"><i class="fa-solid fa-pen"></i></a></td>
             </tr>
             {% empty %}
             <tr><td colspan="4" class="py-8 text-center text-[#3d4441]">مقاله‌ای نیست. <a href="{% url 'dashboard:blog_create' %}" class="text-primary font-bold">نوشتن</a></td></tr>
