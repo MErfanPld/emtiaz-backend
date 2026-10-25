@@ -34,6 +34,32 @@
     padding-left: 2.5rem !important;
     padding-right: 0.75rem !important;
   }
+  @keyframes notif-blink {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.35; transform: scale(1.15); }
+  }
+  .notif-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    padding: 0 0.35rem;
+    border-radius: 9999px;
+    background: #dc2626;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+    animation: notif-blink 1.1s ease-in-out infinite;
+  }
+  .nav-link.has-notif i.fa-bell {
+    color: #dc2626;
+    animation: notif-blink 1.1s ease-in-out infinite;
+  }
+  .nav-link.active.has-notif i.fa-bell {
+    color: #fca5a5;
+  }
 </style>
 {% block extra_head %}{% endblock %}
 </head>
@@ -51,7 +77,13 @@
   </div>
   <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1 text-sm">
     <a class="nav-link {% if url_name == 'index' %}active{% endif %}" href="{% url 'dashboard:index' %}"><i class="fa-solid fa-gauge-high"></i><span>داشبورد</span></a>
-    <a class="nav-link {% if url_name == 'notifications' %}active{% endif %}" href="{% url 'dashboard:notifications' %}"><i class="fa-solid fa-bell"></i><span>اعلانات</span></a>
+    <a class="nav-link {% if url_name == 'notifications' %}active{% endif %} {% if has_notifications %}has-notif{% endif %}" href="{% url 'dashboard:notifications' %}">
+      <i class="fa-solid fa-bell"></i>
+      <span class="flex-1">اعلانات</span>
+      {% if has_notifications %}
+      <span class="notif-badge">{{ notif_total }}</span>
+      {% endif %}
+    </a>
     <p class="px-4 pt-4 pb-1 text-[11px] font-bold text-on-surface-variant/80">املاک</p>
     <a class="nav-link {% if url_name == 'property_list' or url_name == 'property_edit' or url_name == 'property_delete' or url_name == 'property_review' %}active{% endif %}" href="{% url 'dashboard:property_list' %}"><i class="fa-solid fa-house-chimney"></i><span>لیست املاک</span></a>
     <a class="nav-link {% if url_name == 'property_create' %}active{% endif %}" href="{% url 'dashboard:property_create' %}"><i class="fa-solid fa-plus"></i><span>افزودن ملک</span></a>
@@ -63,6 +95,8 @@
     <p class="px-4 pt-4 pb-1 text-[11px] font-bold text-on-surface-variant/80">ارتباط با مشتریان</p>
     <a class="nav-link {% if 'consultation' in url_name %}active{% endif %}" href="{% url 'dashboard:consultation_list' %}"><i class="fa-solid fa-headset"></i><span>درخواست‌های مشاوره</span></a>
     {% if user.is_staff or user.is_superuser %}
+    <p class="px-4 pt-4 pb-1 text-[11px] font-bold text-on-surface-variant/80">محتوای سایت</p>
+    <a class="nav-link {% if 'team' in url_name %}active{% endif %}" href="{% url 'dashboard:team_list' %}"><i class="fa-solid fa-user-tie"></i><span>تیم مجموعه</span></a>
     <p class="px-4 pt-4 pb-1 text-[11px] font-bold text-on-surface-variant/80">کاربران و دسترسی</p>
     <a class="nav-link {% if url_name == 'user_list' or url_name == 'user_edit' or url_name == 'user_create' %}active{% endif %}" href="{% url 'dashboard:user_list' %}"><i class="fa-solid fa-users"></i><span>کاربران</span></a>
     <a class="nav-link {% if url_name == 'group_list' or url_name == 'group_edit' or url_name == 'group_create' %}active{% endif %}" href="{% url 'dashboard:group_list' %}"><i class="fa-solid fa-layer-group"></i><span>گروه‌ها</span></a>
@@ -94,7 +128,15 @@
     <button type="button" id="dash-menu-btn" class="lg:hidden w-10 h-10 rounded-lg border flex items-center justify-center"><i class="fa-solid fa-bars"></i></button>
     <div class="text-sm text-on-surface-variant">{% block breadcrumb %}داشبورد{% endblock %}</div>
   </div>
-  <div class="flex items-center gap-2">{% block header_actions %}{% endblock %}</div>
+  <div class="flex items-center gap-2">
+    {% if has_notifications %}
+    <a href="{% url 'dashboard:notifications' %}" class="relative w-10 h-10 rounded-lg border flex items-center justify-center text-red-600" title="اعلانات">
+      <i class="fa-solid fa-bell" style="animation: notif-blink 1.1s ease-in-out infinite;"></i>
+      <span class="notif-badge absolute -top-1 -left-1">{{ notif_total }}</span>
+    </a>
+    {% endif %}
+    {% block header_actions %}{% endblock %}
+  </div>
 </header>
 <main class="dash-main mr-72 flex-1 p-4 sm:p-6 max-w-[calc(100%-18rem)] min-h-[calc(100vh-3.5rem)]">
   {% if messages %}<div class="mb-4 space-y-2">{% for message in messages %}<div class="rounded-lg border px-4 py-3 text-sm {% if message.tags == 'error' %}border-red-300 bg-red-50 text-red-800{% elif message.tags == 'warning' %}border-amber-300 bg-amber-50 text-amber-900{% else %}border-secondary/40 bg-[#f7faf7] text-primary{% endif %}">{{ message }}</div>{% endfor %}</div>{% endif %}
