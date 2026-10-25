@@ -23,8 +23,6 @@
   .nav-link:hover { background: #ecefeb; color: #181c1b; }
   .nav-link.active { background: #1a1a1a; color: #fff; font-weight: 700; }
   .nav-link i { width: 1.25rem; text-align: center; }
-
-  /* Fix select chevron overlapping text (RTL) */
   select {
     -webkit-appearance: none !important;
     -moz-appearance: none !important;
@@ -47,14 +45,15 @@
       <div class="w-10 h-10 rounded-lg bg-primary text-white flex items-center justify-center"><i class="fa-solid fa-building"></i></div>
       <div>
         <h1 class="text-primary font-bold text-sm">مجموعه املاک امتیاز</h1>
-        <p class="text-xs text-on-surface-variant">سامانه مدیریت</p>
+        <p class="text-xs text-secondary font-semibold">انتخاب شما امتیاز ماست</p>
       </div>
     </div>
   </div>
   <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1 text-sm">
     <a class="nav-link {% if url_name == 'index' %}active{% endif %}" href="{% url 'dashboard:index' %}"><i class="fa-solid fa-gauge-high"></i><span>داشبورد</span></a>
+    <a class="nav-link {% if url_name == 'notifications' %}active{% endif %}" href="{% url 'dashboard:notifications' %}"><i class="fa-solid fa-bell"></i><span>اعلانات</span></a>
     <p class="px-4 pt-4 pb-1 text-[11px] font-bold text-on-surface-variant/80">املاک</p>
-    <a class="nav-link {% if url_name == 'property_list' or url_name == 'property_edit' or url_name == 'property_delete' %}active{% endif %}" href="{% url 'dashboard:property_list' %}"><i class="fa-solid fa-house-chimney"></i><span>لیست املاک</span></a>
+    <a class="nav-link {% if url_name == 'property_list' or url_name == 'property_edit' or url_name == 'property_delete' or url_name == 'property_review' %}active{% endif %}" href="{% url 'dashboard:property_list' %}"><i class="fa-solid fa-house-chimney"></i><span>لیست املاک</span></a>
     <a class="nav-link {% if url_name == 'property_create' %}active{% endif %}" href="{% url 'dashboard:property_create' %}"><i class="fa-solid fa-plus"></i><span>افزودن ملک</span></a>
     <p class="px-4 pt-4 pb-1 text-[11px] font-bold text-on-surface-variant/80">مقالات</p>
     <a class="nav-link {% if url_name == 'blog_list' or url_name == 'blog_edit' or url_name == 'blog_delete' %}active{% endif %}" href="{% url 'dashboard:blog_list' %}"><i class="fa-solid fa-newspaper"></i><span>لیست مقالات</span></a>
@@ -80,7 +79,7 @@
       <div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">{{ user.first_name|slice:":1"|default:"ک" }}</div>
       <div class="min-w-0 flex-1">
         <p class="font-medium text-sm truncate">{{ user.get_full_name|default:user.phone_number }}</p>
-        <p class="text-[11px] text-secondary">{% if user.is_superuser %}مدیر کل مجموعه{% elif user.is_staff %}مدیر / کارمند{% else %}{{ user.job_title|default:"کاربر تأییدشده" }}{% endif %}</p>
+        <p class="text-[11px] text-secondary">{% if user.is_superuser %}مدیر کل مجموعه{% elif user.is_staff %}مدیر / کارمند{% else %}{{ user.job_title|default:"کاربر تأییدشده" }}{% endif %}{% if user.department %} · {{ user.get_department_display }}{% endif %}</p>
       </div>
     </div>
     <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}
