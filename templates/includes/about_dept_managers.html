@@ -1,0 +1,47 @@
+{% if dept_managers %}
+<section class="py-20 max-w-[1320px] mx-auto px-6 md:px-12" id="dept-managers">
+  <div class="{% if LANGUAGE_CODE == 'en' %}text-left{% else %}text-right{% endif %} mb-10">
+    <div class="inline-flex items-center gap-2 text-secondary mb-2">
+      <span class="w-6 h-[2px] bg-secondary"></span>
+      <span class="font-bold text-sm">{% if LANGUAGE_CODE == 'en' %}Department heads{% else %}مدیران بخش‌ها{% endif %}</span>
+    </div>
+    <h2 class="text-2xl md:text-3xl font-extrabold text-primary mb-2">
+      {% if LANGUAGE_CODE == 'en' %}Specialist managers by section{% else %}مدیران تخصصی هر بخش{% endif %}
+    </h2>
+    <p class="text-on-surface-variant text-sm max-w-2xl">
+      {% if LANGUAGE_CODE == 'en' %}
+        Rent & lease, buy & sell, old stock, construction partnership, and standalone properties — each led by a dedicated manager.
+      {% else %}
+        رهن و اجاره، خرید و فروش، کلنگی، مشارکت در ساخت و مستقلات — هر بخش با مدیر متخصص.
+      {% endif %}
+    </p>
+  </div>
+  <div class="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible">
+    {% for m in dept_managers %}
+    <article class="min-w-[260px] max-w-[320px] md:max-w-none md:min-w-0 snap-start bg-white rounded-xl border border-[#c1c8c4] p-5 flex flex-col {% if LANGUAGE_CODE == 'en' %}text-left{% else %}text-right{% endif %}">
+      <div class="w-full aspect-[16/10] rounded-lg overflow-hidden bg-[#ecefeb] mb-4">
+        {% if m.display_photo %}
+        <img src="{{ m.display_photo }}" alt="{{ m.name }}" class="w-full h-full object-cover"/>
+        {% else %}
+        <div class="w-full h-full flex items-center justify-center text-primary/20"><i class="fa-solid fa-user text-4xl"></i></div>
+        {% endif %}
+      </div>
+      {% if m.department %}
+      <span class="inline-flex self-start text-[11px] font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary mb-2">
+        {% if LANGUAGE_CODE == 'en' %}{{ m.department_label:'en' }}{% else %}{{ m.get_department_display }}{% endif %}
+      </span>
+      {% endif %}
+      <h3 class="font-extrabold text-primary">
+        {% if LANGUAGE_CODE == 'en' %}{{ m.name_en|default:m.name }}{% else %}{{ m.name }}{% endif %}
+      </h3>
+      <p class="text-xs text-secondary font-semibold mt-1 mb-2">
+        {% if LANGUAGE_CODE == 'en' %}{{ m.title_en|default:m.title }}{% else %}{{ m.title }}{% endif %}
+      </p>
+      <p class="text-sm text-on-surface-variant leading-relaxed line-clamp-4">
+        {% if LANGUAGE_CODE == 'en' %}{{ m.bio_en|default:m.bio }}{% else %}{{ m.bio }}{% endif %}
+      </p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
