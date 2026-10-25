@@ -9,11 +9,11 @@ from django.views.generic import DetailView, ListView
 
 from core.models import ConsultationRequest
 
-from .views import ApprovedRequiredMixin
+from .views import StaffManagerMixin
 
 
 @method_decorator(login_required, name='dispatch')
-class ConsultationListView(ApprovedRequiredMixin, ListView):
+class ConsultationListView(StaffManagerMixin, ListView):
     model = ConsultationRequest
     template_name = 'dashboard/consultation/list.html'
     context_object_name = 'items'
@@ -38,14 +38,14 @@ class ConsultationListView(ApprovedRequiredMixin, ListView):
 
 
 @method_decorator(login_required, name='dispatch')
-class ConsultationDetailView(ApprovedRequiredMixin, DetailView):
+class ConsultationDetailView(StaffManagerMixin, DetailView):
     model = ConsultationRequest
     template_name = 'dashboard/consultation/detail.html'
     context_object_name = 'item'
 
 
 @method_decorator(login_required, name='dispatch')
-class ConsultationStatusView(ApprovedRequiredMixin, View):
+class ConsultationStatusView(StaffManagerMixin, View):
     def post(self, request, pk):
         item = get_object_or_404(ConsultationRequest, pk=pk)
         status = request.POST.get('status')
