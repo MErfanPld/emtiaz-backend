@@ -7,7 +7,7 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get("SECRET_KEY", "")
+SECRET_KEY = "y65WcyGjNespblusMarvgTGPeBPT8GoV_35onZDymRjEITbZ4fbmc2_9UTpr37hqdBE"
 DEBUG = os.environ.get("DEBUG", "False").lower() in (
     "1", "true", "yes", "on"
 )
