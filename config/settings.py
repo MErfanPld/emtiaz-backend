@@ -3,14 +3,23 @@ Django settings for config project.
 """
 
 from pathlib import Path
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-64%5@i1t*ncjjykn#ascnf#ui(wp*v+3i!#5r4ft67z!9#*@&6'
+SECRET_KEY = os.environ.get("SECRET_KEY", "")
+DEBUG = os.environ.get("DEBUG", "False").lower() in (
+    "1", "true", "yes", "on"
+)
 
-DEBUG = True
-
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get(
+        "ALLOWED_HOSTS",
+        "emtiazrealestate.com,www.emtiazrealestate.com"
+    ).split(",")
+    if host.strip()
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
